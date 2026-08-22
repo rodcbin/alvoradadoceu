@@ -28,12 +28,12 @@
 [[headers]]
   for = "/js/*"
   [headers.values]
-    Cache-Control = "public, max-age=86400"
+    Cache-Control = "public, max-age=3600, must-revalidate"
 
 [[headers]]
   for = "/css/*"
   [headers.values]
-    Cache-Control = "public, max-age=86400"
+    Cache-Control = "public, max-age=3600, must-revalidate"
 
 # ---------------------------------------------------------
 # Bloqueio de caminhos sensíveis (defesa extra — a raiz

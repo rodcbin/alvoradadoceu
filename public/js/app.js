@@ -2185,9 +2185,10 @@
         renderPhrase();
         renderChips();
         applyStageFormat();
-        const src = item.full || item.thumb;
-        el.cardImg.src = src;
-        state.lastBlob = dataUrlToBlob(src);
+          const src = item.full || item.thumb;
+          el.cardImg.src = src;
+          state.lastBlob = dataUrlToBlob(src);
+          state.composedBlob = state.lastBlob;
         const img = new Image();
         img.onload = () => {
           const W = state.format.w;

@@ -121,6 +121,11 @@ async function handleCf(req) {
   let steps = Number(body.steps) || 4;
   steps = Math.min(8, Math.max(1, Math.round(steps)));
 
+  /* dimensões suportadas pelo flux-1-schnell: múltiplos de 8, entre 256 e 1024 */
+  const clampDim = (v) => Math.min(1024, Math.max(256, Math.round((Number(v) || 1024) / 8) * 8));
+  const width = clampDim(body.width);
+  const height = clampDim(body.height);
+
   const res = await fetch(
     "https://api.cloudflare.com/client/v4/accounts/" + account + "/ai/run/" + CF_IMAGE_MODEL,
     {
@@ -130,7 +135,7 @@ async function handleCf(req) {
         "Content-Type": "application/json",
         "User-Agent": UA,
       },
-      body: JSON.stringify({ prompt, steps }),
+      body: JSON.stringify({ prompt, steps, width, height }),
       signal: AbortSignal.timeout(45000),
     }
   );
