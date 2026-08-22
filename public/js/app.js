@@ -2225,11 +2225,13 @@
   /* ---------- oração e versículo do dia ---------- */
   function initDaily() {
     if (!el.dailyVerseText || !el.dailyPrayerText) return;
-    const dayIndex = Math.floor(Date.now() / 86400000);
+    /* índice baseado na data LOCAL — muda à meia-noide do dispositivo, não em UTC */
+    const nowD = new Date();
+    const dayIndex = Math.floor(Date.UTC(nowD.getFullYear(), nowD.getMonth(), nowD.getDate()) / 86400000);
     const verse = QUOTES.biblia[dayIndex % QUOTES.biblia.length];
     const prayer = DAILY_PRAYERS[dayIndex % DAILY_PRAYERS.length];
 
-    const dateStr = new Date().toLocaleDateString("pt-BR", {
+    const dateStr = nowD.toLocaleDateString("pt-BR", {
       weekday: "long",
       day: "numeric",
       month: "long",
