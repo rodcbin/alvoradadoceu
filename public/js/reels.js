@@ -128,6 +128,17 @@
     portrait: { label: "Retrato 4:5", w: 1080, h: 1350, desc: "Feed vertical" },
   };
 
+  /* garante que as fontes do canvas estejam carregadas antes de desenhar */
+  async function ensureCanvasFonts() {
+    try {
+      await Promise.all([
+        document.fonts.load("700 48px 'Playfair Display'"),
+        document.fonts.load("600 40px 'Poppins'"),
+      ]);
+    } catch (e) { /* segue com fallback */ }
+    await document.fonts.ready;
+  }
+
   const el = {
     modeChips: $("#mode-chips"),
     typeChips: $("#type-chips"),
@@ -623,7 +634,7 @@
       let lines = [];
       const maxW = W * 0.82;
       while (size > 38) {
-        ctx.font = "600 " + size + "px 'Cormorant Garamond', Georgia, serif";
+        ctx.font = "600 " + size + "px 'Playfair Display','Cormorant Garamond', Georgia, serif";
         const words = String(text).split(" ");
         lines = [];
         let line = "";
@@ -762,36 +773,11 @@
       ctx.fillStyle = "#fffdf6";
       const cx = W / 2;
       let y = topY + lineH / 2;
-      ctx.font = "600 " + size + "px 'Cormorant Garamond', Georgia, serif";
+      ctx.font = "600 " + size + "px 'Playfair Display','Cormorant Garamond', Georgia, serif";
       for (const line of lines) {
         ctx.fillText(line, cx, y);
         y += lineH;
       }
-      ctx.restore();
-    }
-
-    function drawTitleChip(content, t) {
-      if (t > 4) return;
-      const alpha = clamp((4 - t) / 1, 0, 1) * clamp(t / 0.4, 0, 1);
-      if (alpha <= 0) return;
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      const label = (content.e || "🙏") + " " + (content.t || "");
-      ctx.font = "600 40px 'Cormorant Garamond', Georgia, serif";
-      const tw = ctx.measureText(label).width;
-      const padX = 34;
-      const bw = tw + padX * 2;
-      const bx = (W - bw) / 2;
-      const by = H * 0.14 - 30;
-      ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(bx, by, bw, 60, 30);
-      else ctx.rect(bx, by, bw, 60);
-      ctx.fillStyle = "rgba(6,5,14,0.55)";
-      ctx.fill();
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = "rgba(255,253,246,0.96)";
-      ctx.fillText(label, W / 2, by + 30);
       ctx.restore();
     }
 
@@ -847,7 +833,6 @@
 
       drawScrim();
       if (seg) drawChunkText(seg.text, p, seg.dur);
-      drawTitleChip(content, t);
       drawWatermark();
     }
 
@@ -1010,7 +995,7 @@
       }
 
       setStatus("Desenhando a frase…", 0.6);
-      await document.fonts.ready;
+      await ensureCanvasFonts();
 
       const ctx = el.canvas.getContext("2d");
       ctx.clearRect(0, 0, FW, FH);
@@ -1036,31 +1021,13 @@
       ctx.fillStyle = t;
       ctx.fillRect(0, 0, FW, FH);
 
-      /* title chip */
-      const label = (content.e || "🙏") + " " + (content.t || "");
-      ctx.font = "600 " + Math.round(FW * 0.037) + "px 'Cormorant Garamond', Georgia, serif";
-      const ltw = ctx.measureText(label).width;
-      const padX = Math.round(FW * 0.032);
-      const lbw = ltw + padX * 2;
-      const lbx = (FW - lbw) / 2;
-      const lby = FH * 0.12;
-      ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(lbx, lby, lbw, FH * 0.055, FH * 0.027);
-      else ctx.rect(lbx, lby, lbw, FH * 0.055);
-      ctx.fillStyle = "rgba(6,5,14,0.55)";
-      ctx.fill();
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = "rgba(255,253,246,0.96)";
-      ctx.fillText(label, FW / 2, lby + FH * 0.0275);
-
       /* main text — word wrap */
       const fullText = content.x + (content.ref ? " " + content.ref : "");
-      let fontSize = Math.min(FW * 0.068, 84);
+      let fontSize = Math.min(FW * 0.082, 96);
       let lines = [];
-      const maxW = FW * 0.82;
+      const maxW = FW * 0.84;
       while (fontSize > 32) {
-        ctx.font = "600 " + fontSize + "px 'Cormorant Garamond', Georgia, serif";
+        ctx.font = "700 " + fontSize + "px 'Playfair Display','Playfair Display','Cormorant Garamond', Georgia, serif";
         const words = String(fullText).split(" ");
         lines = [];
         let line = "";
@@ -1073,17 +1040,17 @@
         if (lines.length <= 5) break;
         fontSize -= 3;
       }
-      const lineH = fontSize * 1.28;
+      const lineH = fontSize * 1.3;
       const blockH = lines.length * lineH;
       const topY = FH * 0.62 - blockH / 2;
 
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.shadowColor = "rgba(0,0,0,0.85)";
-      ctx.shadowBlur = fontSize * 0.16;
-      ctx.shadowOffsetY = fontSize * 0.05;
+      ctx.shadowColor = "rgba(0,0,0,0.9)";
+      ctx.shadowBlur = fontSize * 0.22;
+      ctx.shadowOffsetY = fontSize * 0.06;
       ctx.fillStyle = "#fffdf6";
-      ctx.font = "600 " + fontSize + "px 'Cormorant Garamond', Georgia, serif";
+      ctx.font = "700 " + fontSize + "px 'Playfair Display','Playfair Display','Cormorant Garamond', Georgia, serif";
       let y = topY + lineH / 2;
       for (const line of lines) {
         ctx.fillText(line, FW / 2, y);
@@ -1307,7 +1274,7 @@
 
   /* desenha um slide completo no canvas */
   async function drawSlide(ctx, FW, FH, slide, bgImg, variant) {
-    await document.fonts.ready;
+    await ensureCanvasFonts();
 
     /* fundo cobrindo o slide, com leve variação de zoom por slide */
     ctx.clearRect(0, 0, FW, FH);
@@ -1351,7 +1318,7 @@
       ctx.fillText(slide.emoji || "✨", FW / 2, FH * 0.3);
       /* título */
       const tSize = Math.min(FW * 0.098, 108);
-      const font = "700 " + tSize + "px 'Cormorant Garamond', Georgia, serif";
+      const font = "700 " + tSize + "px 'Playfair Display','Cormorant Garamond', Georgia, serif";
       const lines = wrapLines(ctx, slide.title, font, FW * 0.84, 4);
       const lh = tSize * 1.22;
       let y = FH * 0.52 - ((lines.length - 1) * lh) / 2;
@@ -1382,12 +1349,12 @@
       ctx.save();
       ctx.globalAlpha = 0.16;
       ctx.fillStyle = "#e6c35a";
-      ctx.font = "700 " + Math.round(FW * 0.62) + "px 'Cormorant Garamond', Georgia, serif";
+      ctx.font = "700 " + Math.round(FW * 0.62) + "px 'Playfair Display','Cormorant Garamond', Georgia, serif";
       ctx.fillText(String(slide.num), FW / 2, FH * 0.4);
       ctx.restore();
       /* texto da mensagem */
       const mSize = Math.min(FW * 0.062, 74);
-      const mfont = "600 " + mSize + "px 'Cormorant Garamond', Georgia, serif";
+      const mfont = "600 " + mSize + "px 'Playfair Display','Cormorant Garamond', Georgia, serif";
       const mlines = wrapLines(ctx, slide.text, mfont, FW * 0.82, 6);
       const mlh = mSize * 1.3;
       let my = FH * 0.56 - ((mlines.length - 1) * mlh) / 2;
@@ -1451,7 +1418,7 @@
         ctx.fillText(badge, FW / 2, FH * 0.12 + bh / 2 + 1);
       }
       const tSize = Math.min(FW * 0.066, 80);
-      const tfont = "600 " + tSize + "px 'Cormorant Garamond', Georgia, serif";
+      const tfont = "600 " + tSize + "px 'Playfair Display','Cormorant Garamond', Georgia, serif";
       const tlines = wrapLines(ctx, slide.text, tfont, FW * 0.82, 7);
       const tlh = tSize * 1.3;
       let ty = FH * 0.54 - ((tlines.length - 1) * tlh) / 2;
@@ -1755,7 +1722,7 @@
       // renderer + gravação
       const renderer = setupRenderer(segs, htmlImages, content);
       setStatus("Gravando o reels (~" + Math.round(total) + "s)…", 0.05);
-      await document.fonts.ready;
+      await ensureCanvasFonts();
       const { blob, isMp4 } = await capture(segs, total, renderer.draw);
 
       /* valida resolução — Instagram Reels exige exatamente 1080×1920 (9:16) */

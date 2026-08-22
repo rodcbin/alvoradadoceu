@@ -1292,7 +1292,35 @@
     c.fillRect(0, 0, W, H);
   }
 
+  function drawDailyBadge(c, W, H, label) {
+    const fs = Math.max(13, Math.round(W * 0.02));
+    c.save();
+    c.font = "600 " + fs + "px 'Poppins','Segoe UI',sans-serif";
+    try { c.letterSpacing = fs * 0.24 + "px"; } catch (e) {}
+    const text = String(label).toUpperCase();
+    const tw = c.measureText(text).width;
+    const padX = fs * 1.15;
+    const pillH = fs * 2.15;
+    const pw = tw + padX * 2 + fs * 0.24;
+    const px = (W - pw) / 2;
+    const py = H * 0.062;
+    c.beginPath();
+    if (c.roundRect) c.roundRect(px, py, pw, pillH, pillH / 2);
+    else c.rect(px, py, pw, pillH);
+    c.fillStyle = "rgba(8,6,18,0.42)";
+    c.fill();
+    c.strokeStyle = "rgba(230,195,90,0.9)";
+    c.lineWidth = Math.max(1, W * 0.0016);
+    c.stroke();
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    c.fillStyle = "#f0d68c";
+    c.fillText(text, px + pw / 2 - fs * 0.12, py + pillH / 2 + fs * 0.04);
+    c.restore();
+  }
+
   function drawQuoteCard(c, W, H, quote) {
+    if (quote.badge) drawDailyBadge(c, W, H, quote.badge);
     const cx = W / 2;
     const oy = H * 0.47;
 
@@ -2145,6 +2173,7 @@
       author: state.quote.author,
       cat: state.category.id,
       format: state.format.key,
+      badge: state.quote.badge || null,
       ts: Date.now(),
     };
     sessionRecent = [item, ...sessionRecent.filter((x) => x.text !== item.text)].slice(0, MAX_RECENT);
@@ -2178,7 +2207,7 @@
       btn.addEventListener("click", () => {
         const cat = QUOTE_CATEGORIES.find((c) => c.id === item.cat) || state.category;
         state.category = cat;
-        state.quote = { text: item.text, author: item.author, category: cat };
+        state.quote = { text: item.text, author: item.author, category: cat, badge: item.badge || null };
         if (item.format && FLAT_FORMATS[item.format]) {
           state.format = { key: item.format, ...FLAT_FORMATS[item.format] };
         }
@@ -2246,7 +2275,7 @@
     el.dailyVerseUse.addEventListener("click", () => {
       const cat = QUOTE_CATEGORIES.find((c) => c.id === "biblia");
       state.category = cat;
-      state.quote = { text: verse.text, author: verse.author, category: cat };
+      state.quote = { text: verse.text, author: verse.author, category: cat, badge: "Versículo do dia" };
       renderPhrase();
       renderChips();
       scrollToGenerator();
@@ -2256,7 +2285,7 @@
     el.dailyPrayerUse.addEventListener("click", () => {
       const cat = QUOTE_CATEGORIES.find((c) => c.id === "oracao");
       state.category = cat;
-      state.quote = { text: prayer.text, author: prayer.author, category: cat };
+      state.quote = { text: prayer.text, author: prayer.author, category: cat, badge: "Oração do dia" };
       renderPhrase();
       renderChips();
       scrollToGenerator();
