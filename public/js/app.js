@@ -33,6 +33,7 @@
     melody: "none",
     busy: false,
     lastBlob: null,
+    composedBlob: null,
     lastEngine: null,
     audioCtx: null,
     audioDest: null,
@@ -1156,6 +1157,7 @@
     el.revealStage.classList.remove("ready");
 
     try {
+      state.composedBlob = null;
       const { blob, engine } = await generateImage();
       state.lastBlob = blob;
       state.lastEngine = engine;
@@ -1385,6 +1387,7 @@
     ctx.textBaseline = "alphabetic";
 
     el.cardImg.src = el.canvas.toDataURL("image/png", 0.95);
+    state.composedBlob = await new Promise((resolve) => el.canvas.toBlob(resolve, "image/png"));
     el.cardImg.alt = state.quote.text;
     el.revealStage.classList.add("ready");
   }
@@ -1804,9 +1807,10 @@
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
       showToast(state.lastEngine === "story-mp4" ? "Story MP4 salvo na sua pasta de downloads. ✧" : "Reels salvo na sua pasta de downloads. ✧", "ok");
     } else {
-      const ext = state.lastBlob.type.includes("png") ? "png" : "jpg";
+      const out = state.composedBlob || state.lastBlob;
+      const ext = out.type.includes("png") ? "png" : "jpg";
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(state.lastBlob);
+      a.href = URL.createObjectURL(out);
       a.download = "alvorada-do-ceu-" + slug + "." + ext;
       document.body.appendChild(a);
       a.click();
