@@ -121,10 +121,8 @@ async function handleCf(req) {
   let steps = Number(body.steps) || 4;
   steps = Math.min(8, Math.max(1, Math.round(steps)));
 
-  /* dimensões suportadas pelo flux-1-schnell: múltiplos de 8, entre 256 e 1024 */
-  const clampDim = (v) => Math.min(1024, Math.max(256, Math.round((Number(v) || 1024) / 8) * 8));
-  const width = clampDim(body.width);
-  const height = clampDim(body.height);
+  /* o flux-1-schnell aceita apenas prompt e steps — width/height retornam
+     "Bad input: additional properties not allowed" da Cloudflare */
 
   /* erros transitórios da Cloudflare: "busy", modelo carregando, throttle etc. */
   const TRANSIENT_RE = /busy|loading|not ready|capacity|overload|throttl|rate.?limit|quota|try again|timeout/i;
@@ -140,7 +138,7 @@ async function handleCf(req) {
           "Content-Type": "application/json",
           "User-Agent": UA,
         },
-        body: JSON.stringify({ prompt, steps, width, height }),
+        body: JSON.stringify({ prompt, steps }),
         signal: AbortSignal.timeout(30000),
       }
     );
