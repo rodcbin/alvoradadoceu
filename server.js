@@ -163,42 +163,62 @@ async function handleCf(req, res) {
   const url =
     "https://api.cloudflare.com/client/v4/accounts/" + CLOUDFLARE_ACCOUNT +
     "/ai/run/" + CF_IMAGE_MODEL;
-  const body = JSON.stringify({ prompt, steps });
-  const rq = https.request(url, {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer " + CLOUDFLARE_TOKEN,
-      "Content-Type": "application/json",
-      "User-Agent": UA,
-    },
-  }, (upstream) => {
-    let data = "";
-    upstream.setEncoding("utf8");
-    upstream.on("data", (c) => (data += c));
-    upstream.on("end", () => {
-      try {
-        const j = JSON.parse(data);
-        if (!j.success) {
-          const msg = (j.errors && j.errors[0] && j.errors[0].message) || "Cloudflare AI error";
-          sendError(res, 502, msg);
-          return;
-        }
-        if (!j.result || !j.result.image) {
-          sendError(res, 502, "Cloudflare AI não retornou imagem.");
-          return;
-        }
-        const buf = Buffer.from(j.result.image, "base64");
-        res.writeHead(200, { "Content-Type": "image/jpeg", "Cache-Control": "no-store" });
-        res.end(buf);
-      } catch (e) {
-        sendError(res, 502, "Cloudflare AI error: " + e.message);
-      }
+  const payload = JSON.stringify({ prompt, steps });
+
+  function cfAttempt() {
+    return new Promise((resolve, reject) => {
+      const rq = https.request(url, {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + CLOUDFLARE_TOKEN,
+          "Content-Type": "application/json",
+          "User-Agent": UA,
+        },
+      }, (upstream) => {
+        let data = "";
+        upstream.setEncoding("utf8");
+        upstream.on("data", (c) => (data += c));
+        upstream.on("end", () => {
+          try {
+            const j = JSON.parse(data);
+            if (!j.success) {
+              reject(new Error((j.errors && j.errors[0] && j.errors[0].message) || "Cloudflare AI error"));
+              return;
+            }
+            if (!j.result || !j.result.image) {
+              reject(new Error("Cloudflare AI não retornou imagem."));
+              return;
+            }
+            resolve(Buffer.from(j.result.image, "base64"));
+          } catch (e) {
+            reject(new Error("Resposta inválida da Cloudflare."));
+          }
+        });
+      });
+      rq.setTimeout(45000, () => rq.destroy(new Error("timeout")));
+      rq.on("error", reject);
+      rq.write(payload);
+      rq.end();
     });
-  });
-  rq.setTimeout(45000, () => rq.destroy(new Error("timeout")));
-  rq.on("error", (err) => sendError(res, 502, "Cloudflare AI error: " + err.message));
-  rq.write(body);
-  rq.end();
+  }
+
+  /* erros transitórios da Cloudflare: "busy", modelo carregando, throttle etc. */
+  const TRANSIENT_RE = /busy|loading|not ready|capacity|overload|throttl|rate.?limit|quota|try again|timeout/i;
+
+  let lastErr = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const buf = await cfAttempt();
+      res.writeHead(200, { "Content-Type": "image/jpeg", "Cache-Control": "no-store" });
+      res.end(buf);
+      return;
+    } catch (err) {
+      lastErr = err;
+      if (!TRANSIENT_RE.test(String(err && err.message))) break;
+      await new Promise((r) => setTimeout(r, 1200 * (attempt + 1)));
+    }
+  }
+  sendError(res, 502, "Cloudflare AI error: " + (lastErr ? lastErr.message : "desconhecido"));
 }
 
 /* ---------------- util: resposta de IA genérica (base64 ou URL) ---------------- */

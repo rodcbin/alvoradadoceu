@@ -649,7 +649,7 @@
       }
       const lineH = size * 1.28;
       const blockH = lines.length * lineH;
-      const topY = H * 0.64 - blockH / 2;
+      const topY = H / 2 - blockH / 2;
       const cached = { lines, size, lineH, topY, blockH };
       textCache.set(text, cached);
       return cached;
@@ -739,16 +739,13 @@
     }
 
     function drawScrim() {
-      const g = ctx.createLinearGradient(0, H * 0.38, 0, H);
-      g.addColorStop(0, "rgba(8,8,16,0)");
-      g.addColorStop(0.5, "rgba(8,8,16,0.42)");
-      g.addColorStop(1, "rgba(8,8,16,0.86)");
+      const g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, "rgba(8,8,16,0.5)");
+      g.addColorStop(0.18, "rgba(8,8,16,0.06)");
+      g.addColorStop(0.5, "rgba(8,8,16,0.4)");
+      g.addColorStop(0.82, "rgba(8,8,16,0.06)");
+      g.addColorStop(1, "rgba(8,8,16,0.55)");
       ctx.fillStyle = g;
-      ctx.fillRect(0, 0, W, H);
-      const t = ctx.createLinearGradient(0, 0, 0, H * 0.3);
-      t.addColorStop(0, "rgba(8,8,16,0.5)");
-      t.addColorStop(1, "rgba(8,8,16,0)");
-      ctx.fillStyle = t;
       ctx.fillRect(0, 0, W, H);
     }
 
@@ -1008,17 +1005,14 @@
       else { sw = img.width; sh = img.width / cr; sx = 0; sy = (img.height - sh) / 2; }
       ctx.drawImage(img, sx, sy, sw, sh, 0, 0, FW, FH);
 
-      /* scrim gradient */
-      const g = ctx.createLinearGradient(0, FH * 0.35, 0, FH);
-      g.addColorStop(0, "rgba(8,8,16,0)");
-      g.addColorStop(0.5, "rgba(8,8,16,0.42)");
-      g.addColorStop(1, "rgba(8,8,16,0.86)");
+      /* scrim gradient — protege o texto centralizado */
+      const g = ctx.createLinearGradient(0, 0, 0, FH);
+      g.addColorStop(0, "rgba(8,8,16,0.5)");
+      g.addColorStop(0.18, "rgba(8,8,16,0.06)");
+      g.addColorStop(0.5, "rgba(8,8,16,0.38)");
+      g.addColorStop(0.82, "rgba(8,8,16,0.06)");
+      g.addColorStop(1, "rgba(8,8,16,0.55)");
       ctx.fillStyle = g;
-      ctx.fillRect(0, 0, FW, FH);
-      const t = ctx.createLinearGradient(0, 0, 0, FH * 0.25);
-      t.addColorStop(0, "rgba(8,8,16,0.45)");
-      t.addColorStop(1, "rgba(8,8,16,0)");
-      ctx.fillStyle = t;
       ctx.fillRect(0, 0, FW, FH);
 
       /* main text — word wrap */
@@ -1042,7 +1036,7 @@
       }
       const lineH = fontSize * 1.3;
       const blockH = lines.length * lineH;
-      const topY = FH * 0.62 - blockH / 2;
+      const topY = FH / 2 - blockH / 2;
 
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -1321,7 +1315,7 @@
       const font = "700 " + tSize + "px 'Playfair Display','Cormorant Garamond', Georgia, serif";
       const lines = wrapLines(ctx, slide.title, font, FW * 0.84, 4);
       const lh = tSize * 1.22;
-      let y = FH * 0.52 - ((lines.length - 1) * lh) / 2;
+      let y = FH / 2 - ((lines.length - 1) * lh) / 2;
       ctx.shadowColor = "rgba(0,0,0,0.85)";
       ctx.shadowBlur = tSize * 0.18;
       ctx.shadowOffsetY = tSize * 0.05;
@@ -1357,7 +1351,7 @@
       const mfont = "600 " + mSize + "px 'Playfair Display','Cormorant Garamond', Georgia, serif";
       const mlines = wrapLines(ctx, slide.text, mfont, FW * 0.82, 6);
       const mlh = mSize * 1.3;
-      let my = FH * 0.56 - ((mlines.length - 1) * mlh) / 2;
+      let my = FH / 2 - ((mlines.length - 1) * mlh) / 2;
       ctx.shadowColor = "rgba(0,0,0,0.85)";
       ctx.shadowBlur = mSize * 0.16;
       ctx.shadowOffsetY = mSize * 0.05;
@@ -1387,7 +1381,7 @@
       const tSize = Math.min(FW * 0.052, 60);
       const sSize = Math.min(FW * 0.033, 38);
       const blockH = lines.length * (tSize + sSize + FH * 0.035);
-      let y = FH * 0.48 - blockH / 2 + tSize / 2;
+      let y = FH / 2 - blockH / 2 + tSize / 2;
       for (const [main, sub] of lines) {
         ctx.shadowColor = "rgba(0,0,0,0.85)";
         ctx.shadowBlur = tSize * 0.15;
@@ -1421,7 +1415,7 @@
       const tfont = "600 " + tSize + "px 'Playfair Display','Cormorant Garamond', Georgia, serif";
       const tlines = wrapLines(ctx, slide.text, tfont, FW * 0.82, 7);
       const tlh = tSize * 1.3;
-      let ty = FH * 0.54 - ((tlines.length - 1) * tlh) / 2;
+      let ty = FH / 2 - ((tlines.length - 1) * tlh) / 2;
       ctx.shadowColor = "rgba(0,0,0,0.85)";
       ctx.shadowBlur = tSize * 0.16;
       ctx.shadowOffsetY = tSize * 0.05;
@@ -1502,9 +1496,12 @@
       /* fundos — poucas imagens reaproveitadas entre os slides */
       const nBg = Math.min(3, deck.slides.length);
       setStatus("Buscando " + nBg + " fundos (" + (IMAGE_SOURCES[state.source] || IMAGE_SOURCES.cloudflare).label + ")…", 0.05);
-      const bgBlobs = await Promise.all(
-        Array.from({ length: nBg }, () => generateFrame(theme, style, state.source))
-      );
+      /* em sequência: pedidos paralelos derrubam a Cloudflare com "busy" */
+      const bgBlobs = [];
+      for (let i = 0; i < nBg; i++) {
+        bgBlobs.push(await generateFrame(theme, style, state.source));
+        setStatus("Buscando fundos… " + (i + 1) + "/" + nBg + " prontos", 0.05 + ((i + 1) / nBg) * 0.15);
+      }
       const bgImgs = [];
       for (let i = 0; i < bgBlobs.length; i++) {
         bgImgs.push(await loadHtmlImage(bgBlobs[i].blob));
@@ -1712,7 +1709,10 @@
         }
       }
       const imgWorkers = [];
-      for (let i = 0; i < Math.min(IMG_CONCURRENCY, nImg); i++) imgWorkers.push(genNextImage());
+      for (let i = 0; i < Math.min(IMG_CONCURRENCY, nImg); i++) {
+        /* escalona os inícios: chamadas simultâneas fazem a Cloudflare responder "busy" */
+        imgWorkers.push((async () => { await sleep(i * 1200); await genNextImage(); })());
+      }
       await Promise.all(imgWorkers);
       htmlImages = imageResults.map((i) => i.img);
 

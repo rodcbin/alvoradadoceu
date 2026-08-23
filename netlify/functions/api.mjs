@@ -126,26 +126,33 @@ async function handleCf(req) {
   const width = clampDim(body.width);
   const height = clampDim(body.height);
 
-  const res = await fetch(
-    "https://api.cloudflare.com/client/v4/accounts/" + account + "/ai/run/" + CF_IMAGE_MODEL,
-    {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + token,
-        "Content-Type": "application/json",
-        "User-Agent": UA,
-      },
-      body: JSON.stringify({ prompt, steps, width, height }),
-      signal: AbortSignal.timeout(45000),
+  /* erros transitórios da Cloudflare: "busy", modelo carregando, throttle etc. */
+  const TRANSIENT_RE = /busy|loading|not ready|capacity|overload|throttl|rate.?limit|quota|try again|timeout/i;
+
+  let msg = "";
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await fetch(
+      "https://api.cloudflare.com/client/v4/accounts/" + account + "/ai/run/" + CF_IMAGE_MODEL,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+          "User-Agent": UA,
+        },
+        body: JSON.stringify({ prompt, steps, width, height }),
+        signal: AbortSignal.timeout(30000),
+      }
+    );
+    const j = await res.json().catch(() => null);
+    if (j && j.success && j.result && j.result.image) {
+      return mediaResponse(Uint8Array.from(atob(j.result.image), (c) => c.charCodeAt(0)), "image/jpeg");
     }
-  );
-  const j = await res.json().catch(() => null);
-  if (!j || !j.success) {
-    const msg = (j && j.errors && j.errors[0] && j.errors[0].message) || "Cloudflare AI error";
-    return errRes(msg);
+    msg = (j && j.errors && j.errors[0] && j.errors[0].message) || "Cloudflare AI não retornou imagem.";
+    if (!TRANSIENT_RE.test(msg)) break;
+    await new Promise((r) => setTimeout(r, 1200 * (attempt + 1)));
   }
-  if (!j.result || !j.result.image) return errRes("Cloudflare AI não retornou imagem.");
-  return mediaResponse(Uint8Array.from(atob(j.result.image), (c) => c.charCodeAt(0)), "image/jpeg");
+  return errRes(msg);
 }
 
 /* ---------------- Pollinations (proxy de imagem) ---------------- */
