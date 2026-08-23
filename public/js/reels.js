@@ -1136,6 +1136,45 @@
     return lines.slice(0, maxLines || 99);
   }
 
+  function roundRectPath(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, y, w, h, r);
+    else ctx.rect(x, y, w, h);
+  }
+
+  /* fonte auto-ajustável: reduz até caber em maxW */
+  function fitFont(ctx, text, weight, sizePx, family, maxW, minPx) {
+    let s = sizePx;
+    let f = weight + " " + Math.round(s) + "px " + family;
+    ctx.font = f;
+    while (ctx.measureText(text).width > maxW && s > minPx) {
+      s -= 1;
+      f = weight + " " + Math.round(s) + "px " + family;
+      ctx.font = f;
+    }
+    return f;
+  }
+
+  /* divisor ornamental: linha ✦ linha */
+  function drawDivider(ctx, cx, cy, halfW, color, size) {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = Math.max(2, size * 0.055);
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(cx - halfW, cy);
+    ctx.lineTo(cx - halfW * 0.24, cy);
+    ctx.moveTo(cx + halfW * 0.24, cy);
+    ctx.lineTo(cx + halfW, cy);
+    ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = Math.round(size) + "px 'Poppins','Segoe UI',sans-serif";
+    ctx.fillText("✦", cx, cy + size * 0.04);
+    ctx.restore();
+  }
+
   /* divide texto em N partes equilibradas por palavra (para oração em passos) */
   function splitBalanced(text, parts) {
     const words = String(text).replace(/\s+/g, " ").trim().split(" ");
@@ -1162,7 +1201,7 @@
         emoji: "🎲",
         captionLead: "Deus tem uma palavra específica para você hoje.",
         slides: [
-          { type: "cover", emoji: "🎲", title: "Qual mensagem Deus tem para você hoje?", sub: "Escolha um número de 1 a " + msgs.length + " 👇" },
+          { type: "cover", emoji: "🎲", kicker: "Escolha e receba sua bênção", title: "Qual mensagem Deus tem para você hoje?", sub: "Escolha um número de 1 a " + msgs.length + " 👇" },
           ...msgs.map((m, i) => ({ type: "number", num: i + 1, emoji: m.e, text: m.x })),
           { type: "cta", ctaKind: "quiz", total: msgs.length },
         ],
@@ -1179,7 +1218,7 @@
         emoji: cat.emoji || "💬",
         captionLead: picks[0] ? picks[0].text : "",
         slides: [
-          { type: "cover", emoji: cat.emoji || "💬", title: hook, sub: cat.label + " · deslize para ler →" },
+          { type: "cover", emoji: cat.emoji || "💬", kicker: "Palavras que abençoam", title: hook, sub: cat.label + " · deslize para ler →" },
           ...picks.map((q) => ({ type: "item", text: q.text, author: q.author })),
           { type: "cta", ctaKind: "padrao" },
         ],
@@ -1194,7 +1233,7 @@
         emoji: "📖",
         captionLead: picks[0] ? picks[0].x + " (" + picks[0].ref + ")" : "",
         slides: [
-          { type: "cover", emoji: "📖", title: hook, sub: "Versículos para guardar no coração →" },
+          { type: "cover", emoji: "📖", kicker: "A Palavra para hoje", title: hook, sub: "Versículos para guardar no coração →" },
           ...picks.map((v) => ({ type: "item", text: v.x, ref: v.ref })),
           { type: "cta", ctaKind: "salvar" },
         ],
@@ -1210,7 +1249,7 @@
         emoji: deck.e,
         captionLead: deck.hook,
         slides: [
-          { type: "cover", emoji: deck.e, title: deck.t, sub: "Deslize para ver todos →" },
+          { type: "cover", emoji: deck.e, kicker: "Para guardar no coração", title: deck.t, sub: "Deslize para ver todos →" },
           ...items.map((it, i) => ({ type: "number", num: i + 1, emoji: "", text: it })),
           { type: "cta", ctaKind: "salvar" },
         ],
@@ -1234,40 +1273,53 @@
       emoji: prayer.e || "🙏",
       captionLead: "Ore comigo: " + prayer.t.toLowerCase() + ".",
       slides: [
-        { type: "cover", emoji: prayer.e || "🙏", title: "Ore comigo agora", sub: prayer.t + " · deslize e reze →" },
+        { type: "cover", emoji: prayer.e || "🙏", kicker: "Um momento de oração", title: "Ore comigo agora", sub: prayer.t + " · deslize e reze →" },
         ...chunks.map((c, i) => ({ type: "item", idx: "Passo " + (i + 1), text: c })),
         { type: "cta", ctaKind: "amem" },
       ],
     };
   }
 
+  /* headline emocional do slide final, por modelo */
+  const CTA_HEADLINE = {
+    quiz: "Qual número você escolheu?",
+    amem: "Vamos fechar em oração",
+    salvar: "Qual palavra tocou você?",
+    padrao: "Isso falou com o seu coração?",
+  };
+
   function ctaLinesFor(kindCta) {
     if (kindCta === "quiz") {
       return [
-        ["👇 Comente o número que você escolheu", "e eu te respondo com uma palavra"],
-        ["📌 Salve este perfil", "@alvoradadoceu para receber fé todo dia"],
-        ["✨ Compartilhe", "com quem precisa de uma palavra hoje"],
+        ["👇", "Comente o seu número", "aqui nos comentários"],
+        ["🙏", "Eu vou te responder", "com uma palavra de fé"],
+        ["✨", "Marque alguém", "para escolher um número também"],
       ];
     }
     if (kindCta === "amem") {
       return [
-        ["🙏 Termine dizendo AMÉM", "nos comentários"],
-        ["📌 Salve esta oração", "para rezar de novo depois"],
-        ["✨ Envie para alguém", "que precisa orar com você"],
+        ["🙏", "Diga AMÉM", "nos comentários"],
+        ["📌", "Salve esta oração", "para rezar de novo depois"],
+        ["✨", "Envie para alguém", "que precisa orar com você"],
       ];
     }
     if (kindCta === "salvar") {
       return [
-        ["📌 Salve agora", "para reler quando precisar"],
-        ["🙏 Comente AMÉM", "para declarar essa palavra"],
-        ["✨ Compartilhe", "com quem ama a Palavra"],
+        ["📌", "Salve esta palavra", "para reler quando precisar"],
+        ["🙏", "Comente AMÉM", "para declarar essa promessa"],
+        ["✨", "Compartilhe", "com quem ama a Palavra"],
       ];
     }
-    return CAROUSEL_CTA_LINES.map((l) => [l[0], l[1]]);
+    /* todas as variantes retornam [ícone, texto principal, subtítulo] */
+    return CAROUSEL_CTA_LINES.slice(0, 3).map((l) => {
+      const str = String(l[0]);
+      const s = str.indexOf(" ");
+      return [s > -1 ? str.slice(0, s) : "", s > -1 ? str.slice(s + 1).trim() : str, String(l[1])];
+    });
   }
 
   /* desenha um slide completo no canvas */
-  async function drawSlide(ctx, FW, FH, slide, bgImg, variant) {
+  async function drawSlide(ctx, FW, FH, slide, bgImg, variant, deck) {
     await ensureCanvasFonts();
 
     /* fundo cobrindo o slide, com leve variação de zoom por slide */
@@ -1307,37 +1359,110 @@
     ctx.textBaseline = "middle";
 
     if (slide.type === "cover") {
+      /* moldura fina dourada */
+      const inset = FW * 0.036;
+      ctx.save();
+      ctx.strokeStyle = "rgba(230,195,90,0.4)";
+      ctx.lineWidth = Math.max(2, FW * 0.0024);
+      ctx.strokeRect(inset, inset, FW - inset * 2, FH - inset * 2);
+      ctx.restore();
+
+      /* brilho radial atrás do título */
+      const rg = ctx.createRadialGradient(FW / 2, FH * 0.46, 0, FW / 2, FH * 0.46, FW * 0.8);
+      rg.addColorStop(0, "rgba(230,195,90,0.17)");
+      rg.addColorStop(1, "rgba(230,195,90,0)");
+      ctx.fillStyle = rg;
+      ctx.fillRect(0, 0, FW, FH);
+
+      /* kicker (eyebrow) em caixa alta com espaçamento de letras */
+      const kick = String(slide.kicker || "").trim();
+      if (kick) {
+        ctx.save();
+        try { ctx.letterSpacing = Math.round(FW * 0.009) + "px"; } catch (e) {}
+        fitFont(ctx, kick.toUpperCase(), "600", FW * 0.028, "'Poppins','Segoe UI',sans-serif", FW * 0.76, FW * 0.02);
+        ctx.shadowColor = "rgba(0,0,0,0.65)";
+        ctx.shadowBlur = FW * 0.012;
+        ctx.fillStyle = "rgba(230,195,90,0.95)";
+        ctx.fillText(kick.toUpperCase(), FW / 2, FH * 0.15);
+        ctx.shadowBlur = 0;
+        try { ctx.letterSpacing = "0px"; } catch (e) {}
+        ctx.restore();
+      }
+
       /* emoji */
-      ctx.font = Math.round(FW * 0.13) + "px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
-      ctx.fillText(slide.emoji || "✨", FW / 2, FH * 0.3);
-      /* título */
-      const tSize = Math.min(FW * 0.098, 108);
-      const font = "700 " + tSize + "px 'Playfair Display','Cormorant Garamond', Georgia, serif";
-      const lines = wrapLines(ctx, slide.title, font, FW * 0.84, 4);
-      const lh = tSize * 1.22;
-      let y = FH / 2 - ((lines.length - 1) * lh) / 2;
+      ctx.font = Math.round(FW * 0.115) + "px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+      ctx.fillText(slide.emoji || "✨", FW / 2, FH * 0.245);
+
+      /* título grande com quebra progressiva */
+      let tSize = Math.min(FW * 0.104, 114);
+      const tFamily = "'Playfair Display','Cormorant Garamond', Georgia, serif";
+      let lines = wrapLines(ctx, slide.title, "700 " + tSize + "px " + tFamily, FW * 0.8, 99);
+      while (lines.length > 4 && tSize > 44) {
+        tSize -= 3;
+        lines = wrapLines(ctx, slide.title, "700 " + tSize + "px " + tFamily, FW * 0.8, 99);
+      }
+      if (lines.length > 5) lines = lines.slice(0, 5);
+      const lh = tSize * 1.18;
+      let y = FH * 0.45 - ((lines.length - 1) * lh) / 2;
       ctx.shadowColor = "rgba(0,0,0,0.85)";
       ctx.shadowBlur = tSize * 0.18;
       ctx.shadowOffsetY = tSize * 0.05;
       ctx.fillStyle = "#fffdf6";
-      ctx.font = font;
+      ctx.font = "700 " + tSize + "px " + tFamily;
       for (const ln of lines) { ctx.fillText(ln, FW / 2, y); y += lh; }
       ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
-      /* pílula "deslize" */
-      const subFont = "600 " + Math.round(FW * 0.034) + "px 'Poppins','Segoe UI',sans-serif";
-      ctx.font = subFont;
-      const stw = ctx.measureText(slide.sub).width;
-      const pw = stw + FW * 0.07;
-      const ph = FH * 0.052;
+
+      /* divisor ornamental logo abaixo do título */
+      const dividerY = y - lh + lh * 0.72;
+      drawDivider(ctx, FW / 2, dividerY, FW * 0.16, "rgba(230,195,90,0.92)", FW * 0.05);
+
+      /* pílula dourada com a instrução/deslize */
+      const subText = String(slide.sub || "");
+      const sFont = fitFont(ctx, subText, "700", FW * 0.036, "'Poppins','Segoe UI',sans-serif", FW * 0.72, FW * 0.024);
+      const stw = ctx.measureText(subText).width;
+      const pw = stw + FW * 0.09;
+      const ph = FH * 0.057;
       const px = (FW - pw) / 2;
-      const py = FH * 0.76;
-      ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(px, py, pw, ph, ph / 2);
-      else ctx.rect(px, py, pw, ph);
-      ctx.fillStyle = "rgba(230,195,90,0.92)";
+      const py = FH * 0.7 - ph / 2;
+      ctx.save();
+      ctx.shadowColor = "rgba(212,175,55,0.4)";
+      ctx.shadowBlur = FW * 0.025;
+      ctx.shadowOffsetY = FW * 0.007;
+      const pg = ctx.createLinearGradient(px, py, px + pw, py + ph);
+      pg.addColorStop(0, "#f4dc8e");
+      pg.addColorStop(0.55, "#d4af37");
+      pg.addColorStop(1, "#b78f2e");
+      roundRectPath(ctx, px, py, pw, ph, ph / 2);
+      ctx.fillStyle = pg;
       ctx.fill();
+      ctx.restore();
       ctx.fillStyle = "#241c08";
-      ctx.fillText(slide.sub, FW / 2, py + ph / 2 + 1);
+      ctx.font = sFont;
+      ctx.fillText(subText, FW / 2, py + ph / 2 + 1);
+
+      /* pontinhos de progresso (estilo stories) */
+      const nDots = deck && Array.isArray(deck.slides) ? Math.min(deck.slides.length, 10) : 0;
+      if (nDots > 1) {
+        const dotR = FW * 0.0052;
+        const gap = FW * 0.014;
+        const activeW = dotR * 5.2;
+        const totalW = activeW + (nDots - 1) * (dotR * 2 + gap);
+        let dx = FW / 2 - totalW / 2;
+        const dy = FH * 0.785;
+        for (let i = 0; i < nDots; i++) {
+          const activeDot = i === 0;
+          ctx.beginPath();
+          if (activeDot) {
+            roundRectPath(ctx, dx, dy - dotR, activeW, dotR * 2, dotR);
+            ctx.fillStyle = "rgba(230,195,90,0.95)";
+          } else {
+            ctx.arc(dx + dotR, dy, dotR, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(255,253,246,0.38)";
+          }
+          ctx.fill();
+          dx += (activeDot ? activeW : dotR * 2) + gap;
+        }
+      }
     } else if (slide.type === "number") {
       /* número gigante translúcido ao fundo */
       ctx.save();
@@ -1377,24 +1502,109 @@
       ctx.fillStyle = "rgba(255,253,246,0.95)";
       ctx.fillText(blabel, FW / 2, FH * 0.115 + bh / 2 + 1);
     } else if (slide.type === "cta") {
-      const lines = ctaLinesFor(slide.ctaKind);
-      const tSize = Math.min(FW * 0.052, 60);
-      const sSize = Math.min(FW * 0.033, 38);
-      const blockH = lines.length * (tSize + sSize + FH * 0.035);
-      let y = FH / 2 - blockH / 2 + tSize / 2;
-      for (const [main, sub] of lines) {
-        ctx.shadowColor = "rgba(0,0,0,0.85)";
-        ctx.shadowBlur = tSize * 0.15;
+      const fam = "'Poppins','Segoe UI',sans-serif";
+
+      /* headline emocional por modelo */
+      const headText = CTA_HEADLINE[slide.ctaKind] || CTA_HEADLINE.padrao;
+      const hFont = fitFont(ctx, headText, "600", Math.min(FW * 0.074, 86), "'Playfair Display','Cormorant Garamond', Georgia, serif", FW * 0.84, FW * 0.04);
+      ctx.shadowColor = "rgba(0,0,0,0.85)";
+      ctx.shadowBlur = FW * 0.02;
+      ctx.shadowOffsetY = FW * 0.006;
+      ctx.fillStyle = "#fffdf6";
+      ctx.font = hFont;
+      ctx.fillText(headText, FW / 2, FH * 0.15);
+      ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+      drawDivider(ctx, FW / 2, FH * 0.205, FW * 0.14, "rgba(230,195,90,0.9)", FW * 0.045);
+
+      /* linhas de ação com badge circular */
+      const rows = ctaLinesFor(slide.ctaKind);
+      const badgeD = FW * 0.088;
+      let rowY = FH * 0.285;
+      for (const row of rows) {
+        const icon = String(row[0] || "");
+        const main = String(row[1] || "");
+        const sub = String(row[2] || "");
+
+        const gap = FW * 0.024;
+        let mSize = Math.min(FW * 0.047, 52);
+        ctx.font = "700 " + mSize + "px " + fam;
+        while (badgeD + gap + ctx.measureText(main).width > FW * 0.84 && mSize > FW * 0.03) {
+          mSize -= 1;
+          ctx.font = "700 " + mSize + "px " + fam;
+        }
+        const tw = ctx.measureText(main).width;
+        const startX = (FW - (badgeD + gap + tw)) / 2;
+        const cy = rowY;
+
+        /* badge */
+        ctx.beginPath();
+        ctx.arc(startX + badgeD / 2, cy, badgeD / 2, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(230,195,90,0.16)";
+        ctx.fill();
+        ctx.strokeStyle = "rgba(230,195,90,0.55)";
+        ctx.lineWidth = Math.max(2, FW * 0.0022);
+        ctx.stroke();
+        if (icon) {
+          ctx.font = Math.round(badgeD * 0.46) + "px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+          ctx.fillText(icon, startX + badgeD / 2, cy + 1);
+        }
+
+        /* texto principal alinhado ao badge */
+        ctx.save();
+        ctx.textAlign = "left";
+        ctx.shadowColor = "rgba(0,0,0,0.8)";
+        ctx.shadowBlur = FW * 0.012;
         ctx.fillStyle = "#ffe9a8";
-        ctx.font = "700 " + tSize + "px 'Poppins','Segoe UI',sans-serif";
-        ctx.fillText(main, FW / 2, y);
-        y += tSize * 0.72;
-        ctx.fillStyle = "rgba(255,253,246,0.85)";
-        ctx.font = "500 " + sSize + "px 'Poppins','Segoe UI',sans-serif";
-        ctx.fillText(sub, FW / 2, y + sSize * 0.4);
-        y += sSize + FH * 0.035;
+        ctx.font = "700 " + mSize + "px " + fam;
+        ctx.fillText(main, startX + badgeD + gap, cy + 1);
+        ctx.restore();
+
+        /* subtítulo centralizado abaixo */
+        ctx.shadowColor = "rgba(0,0,0,0.8)";
+        ctx.shadowBlur = FW * 0.01;
+        ctx.fillStyle = "rgba(255,253,246,0.8)";
+        ctx.font = "500 " + Math.round(Math.min(FW * 0.033, 37)) + "px " + fam;
+        ctx.fillText(sub, FW / 2, cy + badgeD / 2 + FW * 0.05);
+        ctx.shadowBlur = 0;
+
+        rowY += FH * 0.125;
       }
-      ctx.shadowBlur = 0;
+
+      /* bloco seguir — botão no estilo nativo do Instagram */
+      drawDivider(ctx, FW / 2, FH * 0.685, FW * 0.11, "rgba(230,195,90,0.75)", FW * 0.04);
+
+      const promptText = "Quer receber palavras assim todo dia?";
+      ctx.fillStyle = "rgba(255,253,246,0.85)";
+      ctx.font = "500 " + Math.round(Math.min(FW * 0.035, 39)) + "px " + fam;
+      ctx.fillText(promptText, FW / 2, FH * 0.745);
+
+      const followLabel = "+ Seguir  @alvoradadoceu";
+      const fFont = fitFont(ctx, followLabel, "700", Math.min(FW * 0.043, 48), fam, FW * 0.76, FW * 0.026);
+      const ftw = ctx.measureText(followLabel).width;
+      const fbw = ftw + FW * 0.11;
+      const fbh = FH * 0.062;
+      const fbx = (FW - fbw) / 2;
+      const fby = FH * 0.795 - fbh / 2;
+      ctx.save();
+      ctx.shadowColor = "rgba(212,175,55,0.45)";
+      ctx.shadowBlur = FW * 0.03;
+      ctx.shadowOffsetY = FW * 0.008;
+      const fg = ctx.createLinearGradient(fbx, fby, fbx + fbw, fby + fbh);
+      fg.addColorStop(0, "#f4dc8e");
+      fg.addColorStop(0.55, "#d4af37");
+      fg.addColorStop(1, "#a8852a");
+      roundRectPath(ctx, fbx, fby, fbw, fbh, fbh / 2);
+      ctx.fillStyle = fg;
+      ctx.fill();
+      ctx.restore();
+      ctx.fillStyle = "#241c08";
+      ctx.font = fFont;
+      ctx.fillText(followLabel, FW / 2, fby + fbh / 2 + 1);
+
+      ctx.fillStyle = "rgba(255,253,246,0.62)";
+      ctx.font = "400 " + Math.round(Math.min(FW * 0.027, 31)) + "px " + fam;
+      ctx.fillText("🔔 Ative os avisos para não perder a palavra de amanhã", FW / 2, FH * 0.865);
+      ctx.shadowColor = "transparent";
     } else {
       /* item — frase/versículo/passo */
       const badge = slide.idx || slide.ref || "";
@@ -1511,7 +1721,7 @@
       const slides = [];
       for (let i = 0; i < deck.slides.length; i++) {
         setStatus("Renderizando slide " + (i + 1) + " de " + deck.slides.length + "…", 0.25 + (i / deck.slides.length) * 0.65);
-        await drawSlide(ctx, FW, FH, deck.slides[i], bgImgs[i % bgImgs.length], i);
+        await drawSlide(ctx, FW, FH, deck.slides[i], bgImgs[i % bgImgs.length], i, deck);
         const blob = await new Promise((resolve) => {
           el.canvas.toBlob((b) => resolve(b || new Blob([], { type: "image/png" })), "image/png", 1);
         });
