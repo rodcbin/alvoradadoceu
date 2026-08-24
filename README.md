@@ -8,6 +8,8 @@ Plataforma de conteúdo espiritual: gerador de imagens com frase, carrosséis pa
 ├── public/              # site (publicado no Netlify)
 │   ├── index.html       # gerador de imagem + carrossel + reels
 │   ├── reels.html       # estúdio de reels/carrosséis
+│   ├── plus.html        # aba Plus: posts de engajamento + mix semanal
+│   ├── perfil.html      # aba Perfil: capas de Destaques + bio + fixados
 │   ├── 404.html
 │   ├── css/
 │   └── js/

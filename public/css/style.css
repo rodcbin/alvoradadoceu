@@ -93,6 +93,13 @@ button { font-family: inherit; }
   transition: color 0.2s;
 }
 .site-nav a:hover { color: var(--ink); }
+.site-nav .nav-plus {
+  background: linear-gradient(135deg, rgba(230, 195, 90, 0.18), rgba(139, 111, 232, 0.18));
+  border: 1px solid rgba(230, 195, 90, 0.35);
+  padding: 8px 16px;
+  border-radius: 999px;
+}
+.site-nav .nav-plus:hover { color: var(--gold); }
 .nav-toggle {
   display: none;
   flex-direction: column;
