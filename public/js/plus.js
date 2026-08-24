@@ -198,6 +198,20 @@
   /* =========================================================
      CONTEÚDO POR FORMATO
      ========================================================= */
+  /* lembra o último conteúdo usado por formato para nunca repetir ao gerar de novo */
+  const lastPick = {};
+  function pickFresh(items, keyFn) {
+    const lastKey = lastPick[state.fmt];
+    let pool = items;
+    if (items.length > 1 && lastKey != null) {
+      const filtered = items.filter((it) => keyFn(it) !== lastKey);
+      if (filtered.length) pool = filtered;
+    }
+    const pick = randomItem(pool);
+    lastPick[state.fmt] = keyFn(pick);
+    return pick;
+  }
+
   function pickContent() {
     const c = buildContent();
     state.content = c;
@@ -208,18 +222,18 @@
 
   function buildContent() {
     switch (state.fmt) {
-      case "versiculo": return randomItem(PLUS_VERSES);
-      case "amem": return randomItem(PLUS_AMEN_PRAYERS);
+      case "versiculo": return pickFresh(PLUS_VERSES, (v) => v.x);
+      case "amem": return pickFresh(PLUS_AMEN_PRAYERS, (p) => p.x);
       case "marque": {
-        const line = randomItem(PLUS_MARK_LINES);
-        return { head: line.head, sub: line.sub, x: randomItem(PLUS_MARK_TEXTS) };
+        const line = pickFresh(PLUS_MARK_LINES, (l) => l.head);
+        return { head: line.head, sub: line.sub, x: pickFresh(PLUS_MARK_TEXTS, (t) => t) };
       }
       case "mensagem": {
-        const m = randomItem(PLUS_MESSAGES);
-        return { hook: randomItem(PLUS_MESSAGE_HOOKS), x: m.x, ref: m.ref };
+        const m = pickFresh(PLUS_MESSAGES, (mm) => mm.x);
+        return { hook: pickFresh(PLUS_MESSAGE_HOOKS, (h) => h), x: m.x, ref: m.ref };
       }
       case "carrossel": {
-        const serie = randomItem(PLUS_CAROUSELS);
+        const serie = pickFresh(PLUS_CAROUSELS, (s) => s.id);
         return {
           id: serie.id,
           title: serie.title,
@@ -476,11 +490,11 @@
     ctx.font = "600 " + Math.round(FW * 0.026) + "px 'Poppins','Segoe UI',sans-serif";
     try { ctx.letterSpacing = "2px"; } catch (e) {}
     ctx.fillStyle = light ? "rgba(122,94,20,0.9)" : "rgba(230,195,90,0.95)";
-    ctx.fillText("ALVORADA DO CÉU ✧", FW - FW * 0.032, FH - FH * 0.03);
+    ctx.fillText("ALVORADA DO CÉU ✧", FW - FW * 0.032, FH * 0.952);
     try { ctx.letterSpacing = "0px"; } catch (e) {}
     ctx.font = "500 " + Math.round(FW * 0.022) + "px 'Poppins','Segoe UI',sans-serif";
     ctx.fillStyle = light ? "rgba(60,48,16,0.75)" : "rgba(255,255,255,0.85)";
-    ctx.fillText("@alvoradadoceu", FW - FW * 0.032, FH - FH * 0.013);
+    ctx.fillText("@alvoradadoceu", FW - FW * 0.032, FH * 0.984);
     ctx.restore();
   }
 
@@ -520,14 +534,15 @@
     return { pw, ph };
   }
 
-  function drawCtaRow(ctx, FW, y, icon, main, sub, light) {
-    const badgeD = FW * 0.085;
+  function drawCtaRow(ctx, FW, y, icon, main, sub, light, compactK) {
+    const k = compactK || 1;
+    const badgeD = FW * 0.085 * k;
     const gap = FW * 0.024;
-    let mSize = FW * 0.046;
+    let mSize = FW * 0.046 * k;
     const badgeFill = light ? "rgba(158,124,34,0.14)" : "rgba(230,195,90,0.16)";
     const badgeStroke = light ? "rgba(140,108,28,0.6)" : "rgba(230,195,90,0.55)";
     ctx.font = "700 " + mSize + "px 'Poppins','Segoe UI',sans-serif";
-    while (badgeD + gap + ctx.measureText(main).width > FW * 0.84 && mSize > FW * 0.03) {
+    while (badgeD + gap + ctx.measureText(main).width > FW * 0.84 && mSize > FW * 0.03 * k) {
       mSize -= 1;
       ctx.font = "700 " + mSize + "px 'Poppins','Segoe UI',sans-serif";
     }
@@ -563,8 +578,8 @@
     ctx.shadowBlur = FW * 0.01;
     ctx.textAlign = "center";
     ctx.fillStyle = light ? "rgba(70,56,24,0.85)" : "rgba(255,253,246,0.82)";
-    ctx.font = "500 " + Math.round(FW * 0.032) + "px 'Poppins','Segoe UI',sans-serif";
-    ctx.fillText(sub, FW / 2, y + badgeD / 2 + FW * 0.048);
+    ctx.font = "500 " + Math.round(FW * 0.032 * k) + "px 'Poppins','Segoe UI',sans-serif";
+    ctx.fillText(sub, FW / 2, y + badgeD / 2 + FW * 0.048 * k);
     ctx.shadowBlur = 0;
   }
 
@@ -800,8 +815,12 @@
 
   /* =========================================================
      POST ÚNICO DE ENGAJAMENTO (AMÉM / Marque / Mensagem)
+     Layout fluido: mede título+corpo, encolhe até caber antes
+     dos CTAs — nunca sobrepõe em nenhuma resolução.
      ========================================================= */
   function drawEngagementCard(ctx, FW, FH, spec) {
+    const serif = "'Playfair Display','Cormorant Garamond',Georgia,serif";
+    const sans = "'Poppins','Segoe UI',sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
@@ -814,64 +833,104 @@
     /* kicker dourado */
     ctx.save();
     try { ctx.letterSpacing = Math.round(FW * 0.009) + "px"; } catch (e) {}
-    const kFont = fitFont(ctx, spec.kicker.toUpperCase(), "600", FW * 0.028, "'Poppins','Segoe UI',sans-serif", FW * 0.76, FW * 0.02);
+    const kFont = fitFont(ctx, spec.kicker.toUpperCase(), "600", FW * 0.028, sans, FW * 0.76, FW * 0.02);
     ctx.shadowColor = "rgba(0,0,0,0.7)";
     ctx.shadowBlur = FW * 0.012;
     ctx.fillStyle = "rgba(230,195,90,0.95)";
     ctx.font = kFont;
-    ctx.fillText(spec.kicker.toUpperCase(), FW / 2, FH * 0.14);
+    ctx.fillText(spec.kicker.toUpperCase(), FW / 2, FH * 0.125);
     try { ctx.letterSpacing = "0px"; } catch (e) {}
     ctx.restore();
 
     /* emoji */
     if (spec.emoji) {
-      ctx.font = Math.round(FW * 0.1) + "px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
-      ctx.fillText(spec.emoji, FW / 2, FH * 0.235);
+      ctx.font = Math.round(FW * 0.095) + "px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+      ctx.fillText(spec.emoji, FW / 2, FH * 0.212);
+    }
+
+    /* título + corpo: blocos medidos em cascata */
+    let tSize = Math.min(FW * 0.088, 96);
+    let bSize = Math.min(FW * 0.041, 46);
+    const titleTop = FH * (spec.emoji ? 0.295 : 0.265);
+    const maxTitleW = FW * 0.8;
+    const maxBodyW = FW * 0.76;
+
+    function measureBlocks() {
+      const tLines = wrapLines(ctx, spec.title, "700 " + Math.round(tSize) + "px " + serif, maxTitleW, 4);
+      const tlh = tSize * 1.18;
+      const bLines = spec.body ? wrapLines(ctx, spec.body, "500 " + Math.round(bSize) + "px " + sans, maxBodyW, 6) : [];
+      const blh = bSize * 1.48;
+      const bodyGap = bLines.length ? FH * 0.05 : 0;
+      const bottom = titleTop + tLines.length * tlh + tlh * 0.62 + bodyGap + bLines.length * blh;
+      return { tLines, tlh, bLines, blh, bodyGap, bottom };
+    }
+    let m = measureBlocks();
+    let guard = 44;
+    while (m.bottom > FH * 0.55 && guard-- > 0 && (tSize > FW * 0.042 || bSize > FW * 0.028)) {
+      if (tSize > FW * 0.042) tSize = Math.max(FW * 0.042, tSize * 0.955);
+      if (bSize > FW * 0.028) bSize = Math.max(FW * 0.028, bSize * 0.955);
+      m = measureBlocks();
     }
 
     /* título */
-    const serif = "'Playfair Display','Cormorant Garamond',Georgia,serif";
-    let tSize = Math.min(FW * 0.092, 104);
-    let lines = wrapLines(ctx, spec.title, "700 " + Math.round(tSize) + "px " + serif, FW * 0.8, 99);
-    while ((lines.length > 4 || lines.length * tSize * 1.2 > FH * 0.3) && tSize > FW * 0.045) {
-      tSize -= 2;
-      lines = wrapLines(ctx, spec.title, "700 " + Math.round(tSize) + "px " + serif, FW * 0.8, 99);
-    }
-    const tlh = tSize * 1.2;
-    let ty = FH * 0.42 - ((lines.length - 1) * tlh) / 2;
+    let ty = titleTop + m.tlh / 2;
     ctx.save();
     ctx.shadowColor = "rgba(0,0,0,0.85)";
     ctx.shadowBlur = tSize * 0.18;
     ctx.shadowOffsetY = tSize * 0.05;
     ctx.fillStyle = "#fffdf6";
     ctx.font = "700 " + Math.round(tSize) + "px " + serif;
-    for (const ln of lines) { ctx.fillText(ln, FW / 2, ty); ty += tlh; }
+    for (const ln of m.tLines) { ctx.fillText(ln, FW / 2, ty); ty += m.tlh; }
     ctx.restore();
 
-    drawDivider(ctx, FW / 2, ty - tlh + tlh * 0.68, FW * 0.13, "rgba(230,195,90,0.92)", FW * 0.042);
+    /* divisor logo abaixo da última linha do título */
+    drawDivider(ctx, FW / 2, ty - m.tlh + m.tlh * 0.62, FW * 0.13, "rgba(230,195,90,0.92)", FW * 0.042);
 
     /* corpo */
-    if (spec.body) {
-      const bSize = Math.min(FW * 0.043, 50);
-      const blines = wrapLines(ctx, spec.body, "500 " + Math.round(bSize) + "px 'Poppins','Segoe UI',sans-serif", FW * 0.76, 6);
-      const blh = bSize * 1.5;
-      let by = ty - tlh + FH * 0.045 + (blines.length * blh) / 2;
+    let bodyBottom = ty - m.tlh;
+    if (m.bLines.length) {
+      let by = ty - m.tlh + m.bodyGap + m.blh / 2;
       ctx.fillStyle = "rgba(255,253,246,0.88)";
-      ctx.font = "500 " + Math.round(bSize) + "px 'Poppins','Segoe UI',sans-serif";
+      ctx.font = "500 " + Math.round(bSize) + "px " + sans;
       ctx.shadowColor = "rgba(0,0,0,0.7)";
       ctx.shadowBlur = FW * 0.01;
-      for (const ln of blines) { ctx.fillText(ln, FW / 2, by); by += blh; }
+      for (const ln of m.bLines) { ctx.fillText(ln, FW / 2, by); by += m.blh; }
       ctx.shadowBlur = 0;
+      bodyBottom = by - m.blh / 2;
     }
 
-    /* linhas de CTA */
-    let rowY = FH * 0.63;
-    for (const row of spec.ctaRows) {
-      drawCtaRow(ctx, FW, rowY, row[0], row[1], row[2]);
-      rowY += FH * 0.115;
+    /* linhas de CTA + botão seguir: posições resolvidas por medida,
+       garantindo folga entre corpo → CTAs → botão em qualquer resolução */
+    const ctaK = FH < FW * 1.25 ? 0.78 : 1; /* quadrado: linhas compactas */
+    const g1 = FH * 0.05;
+    const g2 = FH * 0.042;
+    const subExtent = (FW * 0.048 + FW * 0.0425) * ctaK; /* distância do centro da linha ao fim do subtítulo */
+
+    function placeRows(n) {
+      const start = Math.max(bodyBottom + g1, FH * 0.555);
+      const followLabelTop = FH * 0.862 - FH * 0.05 - FW * 0.022;
+      /* cada linha precisa de subExtent + respiro, senão o subtítulo invade a linha seguinte */
+      const minSlot = subExtent + FH * 0.04;
+      const maxN = Math.max(1, Math.min(3, Math.floor((followLabelTop - g2 - start - subExtent) / minSlot) + 1));
+      n = Math.min(n, maxN);
+      const slot = Math.max(minSlot, Math.min(FH * 0.118, n > 1 ? (followLabelTop - g2 - start) / (n - 1) : FH * 0.118));
+      const lastCenter = start + (n - 1) * slot;
+      const subBottom = lastCenter + subExtent;
+      const cyFollow = Math.min(FH * 0.885, Math.max(subBottom + g2 + FH * 0.05 + FW * 0.02, FH * 0.84));
+      return { n, start, slot, subBottom, cyFollow };
     }
 
-    drawFollowButton(ctx, FW, FH, FH * 0.87);
+    let rows = spec.ctaRows;
+    const lay = placeRows(rows.length);
+    rows = rows.slice(0, lay.n);
+
+    let rowY = lay.start;
+    for (const row of rows) {
+      drawCtaRow(ctx, FW, rowY, row[0], row[1], row[2], false, ctaK);
+      rowY += lay.slot;
+    }
+
+    drawFollowButton(ctx, FW, FH, lay.cyFollow);
     drawWatermark(ctx, FW, FH, false);
   }
 
@@ -893,22 +952,24 @@
     try { ctx.letterSpacing = Math.round(FW * 0.009) + "px"; } catch (e) {}
     ctx.font = "600 " + Math.round(FW * 0.028) + "px 'Poppins','Segoe UI',sans-serif";
     ctx.fillStyle = "rgba(230,195,90,0.95)";
-    ctx.fillText("QUIZ BÍBLICO", FW / 2, FH * 0.14);
+    ctx.fillText("QUIZ BÍBLICO", FW / 2, FH * 0.135);
     try { ctx.letterSpacing = "0px"; } catch (e) {}
     ctx.restore();
 
-    ctx.font = Math.round(FW * 0.11) + "px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
-    ctx.fillText("🧠", FW / 2, FH * 0.245);
+    ctx.font = Math.round(FW * 0.1) + "px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+    ctx.fillText("🧠", FW / 2, FH * 0.215);
 
+    /* pergunta: fluxo de cima para baixo, encolhe até caber antes da pílula */
     const serif = "'Playfair Display','Cormorant Garamond',Georgia,serif";
-    let tSize = Math.min(FW * 0.078, 90);
+    let tSize = Math.min(FW * 0.075, 84);
+    const qTop = FH * 0.29;
     let lines = wrapLines(ctx, quiz.q, "700 " + Math.round(tSize) + "px " + serif, FW * 0.8, 99);
-    while ((lines.length > 5) && tSize > FW * 0.045) {
+    while ((lines.length > 5 || qTop + lines.length * tSize * 1.24 > FH * 0.58) && tSize > FW * 0.042) {
       tSize -= 2;
       lines = wrapLines(ctx, quiz.q, "700 " + Math.round(tSize) + "px " + serif, FW * 0.8, 99);
     }
     const tlh = tSize * 1.24;
-    let ty = FH * 0.46 - ((lines.length - 1) * tlh) / 2;
+    let ty = qTop + tlh / 2;
     ctx.save();
     ctx.shadowColor = "rgba(0,0,0,0.85)";
     ctx.shadowBlur = tSize * 0.16;
@@ -917,14 +978,14 @@
     for (const ln of lines) { ctx.fillText(ln, FW / 2, ty); ty += tlh; }
     ctx.restore();
 
-    drawDivider(ctx, FW / 2, ty - tlh + tlh * 0.7, FW * 0.13, "rgba(230,195,90,0.92)", FW * 0.042);
+    drawDivider(ctx, FW / 2, ty - tlh + tlh * 0.66, FW * 0.13, "rgba(230,195,90,0.92)", FW * 0.042);
 
     const subText = "Responde aqui nos comentários 👇";
-    drawGoldPill(ctx, FW / 2, FH * 0.71, subText, FW * 0.034);
+    const pill = drawGoldPill(ctx, FW / 2, Math.max(ty - tlh + tlh * 0.66 + FH * 0.065, FH * 0.68), subText, FW * 0.034);
 
     ctx.fillStyle = "rgba(255,253,246,0.66)";
     ctx.font = "500 " + Math.round(FW * 0.028) + "px 'Poppins','Segoe UI',sans-serif";
-    ctx.fillText("Deslize para conferir a resposta →", FW / 2, FH * 0.79);
+    ctx.fillText("Deslize para conferir a resposta →", FW / 2, pill.ph / 2 + Math.max(ty - tlh + tlh * 0.66 + FH * 0.065, FH * 0.68) + FH * 0.05);
 
     drawFollowButton(ctx, FW, FH, FH * 0.89);
     drawWatermark(ctx, FW, FH, false);
@@ -952,16 +1013,17 @@
     try { ctx.letterSpacing = "0px"; } catch (e) {}
     ctx.restore();
 
-    /* versículo completo */
+    /* versículo completo: fluxo com limite antes do destaque */
     const serif = "'Playfair Display','Cormorant Garamond',Georgia,serif";
-    let vSize = Math.min(FW * 0.066, 74);
+    let vSize = Math.min(FW * 0.064, 72);
+    const vTop = FH * 0.235;
     let lines = wrapLines(ctx, quiz.verse, "600 " + Math.round(vSize) + "px " + serif, FW * 0.8, 99);
-    while ((lines.length > 6) && vSize > FW * 0.04) {
+    while ((lines.length > 6 || vTop + lines.length * vSize * 1.3 > FH * 0.55) && vSize > FW * 0.036) {
       vSize -= 2;
       lines = wrapLines(ctx, quiz.verse, "600 " + Math.round(vSize) + "px " + serif, FW * 0.8, 99);
     }
     const vlh = vSize * 1.3;
-    let vy = FH * 0.4 - ((lines.length - 1) * vlh) / 2;
+    let vy = vTop + vlh / 2;
     ctx.save();
     ctx.shadowColor = "rgba(0,0,0,0.85)";
     ctx.shadowBlur = vSize * 0.18;
@@ -970,16 +1032,18 @@
     for (const ln of lines) { ctx.fillText(ln, FW / 2, vy); vy += vlh; }
     ctx.restore();
 
+    const refY = vy - vlh + vlh * 0.72;
     ctx.fillStyle = "rgba(255,253,246,0.7)";
     ctx.font = "600 " + Math.round(FW * 0.03) + "px 'Poppins','Segoe UI',sans-serif";
-    ctx.fillText(quiz.ref, FW / 2, vy + FH * 0.012);
+    ctx.fillText(quiz.ref, FW / 2, refY);
 
-    /* palavra que faltava em destaque */
-    drawGoldPill(ctx, FW / 2, FH * 0.66, "✨ " + quiz.answer.toUpperCase() + " ✨", FW * 0.042);
+    /* palavra que faltava em destaque — sempre abaixo do versículo */
+    const pillY = Math.max(refY + FH * 0.055, FH * 0.64);
+    const pill = drawGoldPill(ctx, FW / 2, pillY, "✨ " + quiz.answer.toUpperCase() + " ✨", FW * 0.042);
 
     ctx.fillStyle = "rgba(255,253,246,0.75)";
     ctx.font = "500 " + Math.round(FW * 0.031) + "px 'Poppins','Segoe UI',sans-serif";
-    ctx.fillText("Acertou? Comenta \"ACERTEI\" 🙌", FW / 2, FH * 0.735);
+    ctx.fillText("Acertou? Comenta \"ACERTEI\" 🙌", FW / 2, pillY + pill.ph / 2 + FH * 0.05);
 
     drawFollowButton(ctx, FW, FH, FH * 0.86);
     drawWatermark(ctx, FW, FH, false);
@@ -1077,10 +1141,13 @@
       });
     }
 
-    /* rodapé de instrução */
+    /* rodapé de instrução — sempre abaixo do sticker/enquete, nunca por cima */
+    const stickerBottom = story.id === "ask"
+      ? stickerTop + FH * 0.17
+      : stickerTop + Math.min(story.options.length, 3) * FH * 0.075 + (Math.min(story.options.length, 3) - 1) * FH * 0.022;
     ctx.fillStyle = "rgba(255,253,246,0.8)";
     ctx.font = "500 " + Math.round(FW * 0.03) + "px 'Poppins','Segoe UI',sans-serif";
-    ctx.fillText(story.id === "ask" ? "Cole o sticker \"pergunta\" no story 👆" : "Cole o sticker \"enquete\" no story 👆", FW / 2, FH * 0.83);
+    ctx.fillText(story.id === "ask" ? "Cole o sticker \"pergunta\" no story 👆" : "Cole o sticker \"enquete\" no story 👆", FW / 2, Math.max(stickerBottom + FH * 0.045, FH * 0.86));
     drawWatermark(ctx, FW, FH, false);
   }
 
@@ -1265,7 +1332,7 @@
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,253,246,0.6)";
     ctx.font = "500 " + Math.round(FW * 0.024) + "px 'Poppins','Segoe UI',sans-serif";
-    ctx.fillText("Constância é o que transforma visitante em seguidor fiel 🙏", FW / 2, FH * 0.955);
+    ctx.fillText("Constância é o que transforma visitante em seguidor fiel 🙏", FW / 2, FH * 0.935);
 
     drawWatermark(ctx, FW, FH, false);
   }
@@ -1501,7 +1568,10 @@
   }
 
   async function generateQuiz() {
-    const quiz = randomItem(PLUS_QUIZ);
+    const savedFmt = state.fmt;
+    state.fmt = "quiz";
+    const quiz = pickFresh(PLUS_QUIZ, (q) => q.q);
+    state.fmt = savedFmt;
     const FW = 1080;
     const FH = 1350;
     stageAspect(FW, FH);
@@ -1600,32 +1670,44 @@
     try { ctx.letterSpacing = Math.round(FW * 0.012) + "px"; } catch (e) {}
     ctx.font = "600 " + Math.round(FW * 0.028) + "px " + p.sans;
     ctx.fillStyle = p.gold;
-    ctx.fillText((serie.kicker || "Série de palavras").toUpperCase(), FW / 2, FH * 0.17);
+    const kickerY = FH * 0.15;
+    ctx.fillText((serie.kicker || "Série de palavras").toUpperCase(), FW / 2, kickerY);
     try { ctx.letterSpacing = "0px"; } catch (e) {}
     ctx.restore();
 
-    /* ornamento e título */
-    drawDivider(ctx, FW / 2, FH * 0.235, FW * 0.09, p.gold, FW * 0.004);
-    const titleLines = wrapLines(ctx, serie.title || "Palavras para o coração", "700 " + Math.round(FW * 0.088) + "px " + p.serif, FW * 0.78, 3);
-    let ty = FH * 0.36 - ((titleLines.length - 1) * FW * 0.055);
+    /* ornamento e título: fluxo de cima para baixo com limite antes da pílula */
+    const divY = kickerY + FH * 0.05;
+    drawDivider(ctx, FW / 2, divY, FW * 0.09, p.gold, FW * 0.004);
+    let tSize = FW * 0.085;
+    const titleTop = divY + FH * 0.058;
+    const titleText = serie.title || "Palavras para o coração";
+    let titleLines = wrapLines(ctx, titleText, "700 " + Math.round(tSize) + "px " + p.serif, FW * 0.78, 99);
+    while ((titleLines.length > 3 || titleTop + titleLines.length * tSize * 1.16 > FH * 0.52) && tSize > FW * 0.048) {
+      tSize *= 0.955;
+      titleLines = wrapLines(ctx, titleText, "700 " + Math.round(tSize) + "px " + p.serif, FW * 0.78, 99);
+    }
+    const tlh = tSize * 1.16;
+    let ty = titleTop + tlh / 2;
     titleLines.forEach((line) => {
       ctx.fillStyle = p.inkMain;
-      ctx.font = "700 " + Math.round(FW * 0.088) + "px " + p.serif;
+      ctx.font = "700 " + Math.round(tSize) + "px " + p.serif;
       ctx.fillText(line, FW / 2, ty);
-      ty += FW * 0.11;
+      ty += tlh;
     });
 
     /* subtítulo com contagem de versículos */
+    const lastTitleBaseline = ty - tlh;
+    const subY = lastTitleBaseline + tlh * 0.66;
     const nVerses = (serie.verses || []).length;
     ctx.font = "400 " + Math.round(FW * 0.032) + "px " + p.sans;
     ctx.fillStyle = p.inkDim;
-    ctx.fillText(nVerses + " versículos para guardar no coração", FW / 2, ty + FH * 0.02);
+    ctx.fillText(nVerses + " versículos para guardar no coração", FW / 2, subY);
 
-    /* selo "arraste" */
-    drawGoldPill(ctx, FW / 2, FH * 0.62, "ARRASTE PARA O LADO ➜", Math.round(FW * 0.026));
+    /* selo "arraste" e bolinhas — ancorados abaixo do texto, nunca por cima */
+    const pillY = Math.max(subY + FH * 0.062, FH * 0.6);
+    const pill = drawGoldPill(ctx, FW / 2, pillY, "ARRASTE PARA O LADO ➜", Math.round(FW * 0.026));
 
-    /* bolinhas de progresso */
-    const dotY = FH * 0.72;
+    const dotY = pillY + pill.ph / 2 + FH * 0.05;
     const gap = FW * 0.032;
     const startX = FW / 2 - ((total - 1) * gap) / 2;
     for (let i = 0; i < total; i++) {
@@ -1645,24 +1727,29 @@
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    drawDivider(ctx, FW / 2, FH * 0.16, FW * 0.09, p.gold, FW * 0.004);
+    drawDivider(ctx, FW / 2, FH * 0.15, FW * 0.09, p.gold, FW * 0.004);
 
     ctx.fillStyle = p.inkMain;
     ctx.font = "700 " + Math.round(FW * 0.066) + "px " + p.serif;
-    ctx.fillText("Guarde estas palavras", FW / 2, FH * 0.245);
+    ctx.fillText("Guarde estas palavras", FW / 2, FH * 0.225);
 
     const rows = [
       ["📌", "Salve este carrossel", "para reler nos dias difíceis"],
       ["✨", "Compartilhe nos stories", "alguém precisa ler isso hoje"],
       ["💌", "Marque uma pessoa", "que ama a Palavra como você"],
     ];
-    let rowY = FH * 0.37;
+    const endK = FH < FW * 1.25 ? 0.78 : 1;
+    let rowY = FH * 0.345;
+    const endSlot = Math.max(FH * 0.108, (FW * 0.0905 + FH * 0.035) * endK);
     for (const row of rows) {
-      drawCtaRow(ctx, FW, rowY, row[0], row[1], row[2], p.light);
-      rowY += FH * 0.115;
+      drawCtaRow(ctx, FW, rowY, row[0], row[1], row[2], p.light, endK);
+      rowY += endSlot;
     }
 
-    drawGoldPill(ctx, FW / 2, rowY + FH * 0.01, "“" + (serie.title || "Palavra de Deus") + "”", Math.round(FW * 0.024));
+    /* citação da série: ancorada abaixo do texto das CTAs, nunca sobreposta */
+    const lastSubBottom = rowY - FH * 0.112 + FW * 0.048 + FW * 0.0425;
+    const quotePill = drawGoldPill(ctx, FW / 2, Math.max(lastSubBottom + FH * 0.045, FH * 0.7), "\u201C" + (serie.title || "Palavra de Deus") + "\u201D", Math.round(FW * 0.024));
+    void quotePill;
     drawFollowButton(ctx, FW, FH, FH * 0.86);
     drawWatermark(ctx, FW, FH, p.light);
   }
@@ -1927,6 +2014,7 @@
     el.scriptRef = $("#script-ref");
     el.refRow = $("#ref-row");
     el.scriptMeta = $("#script-meta");
+    el.btnNewContent = $("#btn-new-content");
     el.engineNote = $("#engine-note");
     el.btnGenerate = $("#btn-generate");
     el.btnSurprise = $("#btn-surprise");
@@ -2013,6 +2101,18 @@
     el.btnGenerate.addEventListener("click", handleGenerate);
     el.btnSurprise.addEventListener("click", () => surprise(false));
     if (el.btnSurpriseHero) el.btnSurpriseHero.addEventListener("click", () => surprise(true));
+    /* ↻ Outro: sorteia um novo texto e, se já houver arte na tela,
+       regenera na hora usando a IA do site (Cloudflare → demais fontes) */
+    if (el.btnNewContent) {
+      el.btnNewContent.addEventListener("click", async () => {
+        if (state.busy) return;
+        pickContent();
+        showToast("Novo texto sorteado — pode editar antes de gerar. ✧", "ok");
+        if (state.slides && state.slides.length && !el.scriptBox.hidden) {
+          await handleGenerate();
+        }
+      });
+    }
     el.btnDownload.addEventListener("click", downloadAll);
     el.btnCopyCaption.addEventListener("click", async () => {
       try {
