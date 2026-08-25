@@ -77,6 +77,14 @@ const REELS_TYPES = [
     hook: "Um milagre que acontece quando você confia em Deus",
     hashtags: ["#milagre", "#deus", "#fé", "#testemunho"],
   },
+  {
+    id: "cura",
+    label: "Cura e libertação",
+    emoji: "💗",
+    cta: "EU RECEBO",
+    hook: "Uma palavra de cura e libertação para o seu coração",
+    hashtags: ["#cura", "#libertacao", "#curainterior", "#restauracao"],
+  },
 ];
 
 const REELS_THEMES = [
@@ -185,6 +193,34 @@ const REELS_THEMES = [
     scene: "a magnificent golden gate opening into brilliant heavenly light, divine portal, ethereal mist, sacred mysterious atmosphere, vertical composition, no text",
     motion: "gates slowly opening, light flooding outward, divine radiance expanding",
   },
+  {
+    id: "deserto",
+    label: "Deserto florido",
+    emoji: "🏜️",
+    scene: "golden desert dunes with delicate wildflowers blooming after the rain, warm sunset light, hope rising in a barren land, soft glowing horizon, vertical composition, no text",
+    motion: "slow camera glide over the dunes, petals swaying gently, warm light breathing over the sand",
+  },
+  {
+    id: "caminho",
+    label: "Caminho de fé",
+    emoji: "🛤️",
+    scene: "a narrow peaceful path through golden wheat fields leading toward radiant morning light on the horizon, birds flying high, hopeful pilgrimage mood, vertical composition, no text",
+    motion: "gentle forward walk along the path, wheat swaying in the breeze, sunlight growing warmer ahead",
+  },
+  {
+    id: "janela",
+    label: "Luz na janela",
+    emoji: "🪟",
+    scene: "warm golden light streaming through an open rustic window onto a simple table with an old book and flowers, dust particles glowing in the beam, cozy sacred stillness, vertical composition, no text",
+    motion: "light beams slowly shifting, curtains breathing softly, dust particles floating in sacred silence",
+  },
+  {
+    id: "entardecer",
+    label: "Entardecer sagrado",
+    emoji: "🌇",
+    scene: "breathtaking sunset sky in deep orange and violet tones above calm silhouetted hills, last golden rays touching the clouds, grateful peaceful end of day, vertical composition, no text",
+    motion: "sun slowly setting behind the hills, clouds glowing warmly, colors melting into night",
+  },
 ];
 
 const REELS_STYLES = {
@@ -194,6 +230,9 @@ const REELS_STYLES = {
   minimal: { label: "Minimalista", prompt: "minimalist composition, clean elegant negative space, soft luminous gradients, premium refined design" },
   moonlight: { label: "Luar", prompt: "luminous moonlight scene, deep midnight blues with silver highlights, tranquil glowing atmosphere, ethereal" },
   vintage: { label: "Vintage dourado", prompt: "warm vintage romantic painting, soft sepia and cream tones, gentle golden light, timeless nostalgic atmosphere" },
+  oil: { label: "Óleo clássico", prompt: "classical oil painting, rich textured brushstrokes, warm renaissance tones, dramatic soft chiaroscuro, museum masterpiece" },
+  studio: { label: "Fotografia", prompt: "professional studio photography, soft diffused lighting, ultra sharp photorealistic detail, high-end editorial quality, elegant composition" },
+  fantasy: { label: "Fantasia", prompt: "epic fantasy concept art, dramatic magical atmosphere, glowing luminous particles, rich saturated colors, intricate detail, breathtaking" },
 };
 
 const REELS_VOICES = [
@@ -374,6 +413,21 @@ const REELS_MIRACLES = [
   { t: "Milagre disfarçado de tempo", e: "⏰", x: "Nem todo milagre é instantâneo. Alguns chegam devagar, como a cura que vem dia após dia, a reconciliação que se constrói, a prosperidade que cresce. Não despreze o processo: o tempo nas mãos de Deus é milagre acontecendo em câmera lenta." },
 ];
 
+const REELS_CURA = [
+  { t: "Cura para o coração ferido", e: "💗", x: "Senhor Jesus, tu viste cada ferida que eu escondi por trás de um sorriso. Toca agora o lugar que dói dentro de mim. Onde houve rejeição, derrama amor; onde houve traição, restaura a confiança. Eu acredito que a tua mão ainda cura corações hoje. Amém." },
+  { t: "Livre do passado", e: "🕊️", x: "Deus, hoje eu decido deixar o passado nas tuas mãos. Aquilo que me marcou não vai mais me definir. Tira de mim a amargura, o rancor e a culpa que eu carrego há tanto tempo. Eu quero caminhar leve, porque quem tu libertas é livre verdadeiramente." },
+  { t: "O perdão que liberta", e: "💛", x: "Senhor, eu escolho perdoar quem me feriu, mesmo quando ainda dói. Que o perdão seja a chave que abre a porta da minha prisão interior. Eu solto essa pessoa das minhas acusações e entrego a justiça em tuas mãos. A partir de hoje, eu vivo livre." },
+  { t: "Cura das memórias", e: "🕯️", x: "Pai, existem memórias que ainda machucam quando voltam à mente. Eu te peço: cura as minhas lembranças. Onde houve dor, sela com a tua paz; onde houve medo, enche de segurança. Que ao lembrar, eu veja a tua mão me sustentando o tempo inteiro." },
+  { t: "Coragem contra o medo", e: "🛡️", x: "Espírito Santo, afasta de mim todo espírito de medo que me paralisa. Eu não nasci para viver escondido, mas para brilhar com a luz que tu me deste. Dá-me coragem para enfrentar o que me assusta, sabendo que o Senhor dos exércitos marcha comigo." },
+  { t: "A alma restaurada", e: "🌱", x: "Deus, a minha alma está cansada de tanto lutar sozinha. Hoje eu descanso em ti. Restaura o que a vida desgastou, renova as forças que o tempo consumiu e devolve a alegria que as batalhas roubaram. Tu és o Deus que restaura os anos que o gafanhuro comeu." },
+  { t: "Quebrando as correntes", e: "⛓️‍💥", x: "Jesus, em teu nome eu declaro liberdade sobre a minha vida. Toda corrente de vício, de dependência e de pensamento negativo se quebra agora. O que me prendeu ontem não tem poder sobre mim hoje. Eu sou obra nova em Cristo: o velho passou, e tudo se fez novo." },
+  { t: "Paz depois da dor", e: "🌊", x: "Senhor, depois da tempestade que passei, ensina-me a sentir paz de novo. Cura a desconfiança que ficou, acalma os alarmes do meu coração e me mostra que nem todo amor fere e nem toda porta fecha. Com tua mão em minha vida, eu posso recomeçar." },
+  { t: "Identidade restaurada", e: "👑", x: "Pai, muitas vezes eu me senti sem valor por causa de palavras que ouvi. Hoje eu escuto a tua voz: tu me chamas de filho, de herança, de obra-prima. Nenhum rótulo do mundo define quem eu sou. A minha identidade está escrita por ti e gravada nas tuas mãos." },
+  { t: "Cura para a minha família", e: "🏠", x: "Deus, eu peço cura para a minha família inteira. Sana as mágoas antigas entre irmãos, pais e filhos. Une o que a distância separou, perdoa o que a orgulho endureceu. Que a nossa casa volte a ser lugar de paz, mesa partilhada e abraço sincero." },
+  { t: "Entregando as feridas", e: "🤲", x: "Senhor, eu abro as mãos agora e entrego a ti tudo aquilo que eu não consigo carregar mais: as cicatrizes, as perguntas sem resposta e a saudade que aperta. Cuida do que é meu demais para eu entender. Eu confio a minha cura na tua vontade perfeita." },
+  { t: "Vitória em Cristo", e: "✨", x: "Deus, eu agradeço porque a minha história não termina na ferida. Em Cristo, eu sou mais vencedor. O inimigo veio para roubar, matar e destruir, mas tu vieste para dar vida em abundância. Eu recebo esta vida plena, esta liberdade santa e esta cura completa. Amém." },
+];
+
 /* =========================================================
    Carrosséis — modelos de alta conversão para o nicho de fé
    ========================================================= */
@@ -493,6 +547,20 @@ const CAROUSEL_LIST_DECKS = [
       "O amor de Deus me cerca de manhã à noite.",
     ],
   },
+  {
+    t: "7 passos para viver a cura interior",
+    e: "💗",
+    hook: "A cura começa quando você entrega — deslize com fé",
+    items: [
+      "Reconheça a ferida: o que dói precisa ser nomeado diante de Deus.",
+      "Entregue nas mãos do Pai: você não foi feito para carregar tudo sozinho.",
+      "Perdoe quem feriu: o perdão liberta primeiro quem perdoa.",
+      "Renuncie às mentiras: você não é aquilo que a dor te disse.",
+      "Aceite o amor de Deus: deixe-se amar antes de tentar entender tudo.",
+      "Busque ajuda: oração, comunidade e cuidado caminham juntos com a fé.",
+      "Declare a vitória: em Cristo, você já é mais vencedor da sua história.",
+    ],
+  },
 ];
 
 /* linhas de CTA para o slide final */
@@ -501,6 +569,42 @@ const CAROUSEL_CTA_LINES = [
   ["📌 Salve este post", "para reler quando precisar"],
   ["✨ Compartilhe", "com alguém que precisa ouvir isso"],
   ["💛 Siga @alvoradadoceu", "para receber fé todos os dias"],
+];
+
+/* desafios de oração — um tema por dia para salvar e acompanhar */
+const CAROUSEL_PRAYER_PLANS = [
+  {
+    t: "Desafio de 7 dias de gratidão",
+    e: "🗓️",
+    sub: "Um tema por dia · salve para acompanhar 👇",
+    hook: "Sete dias para transformar o seu coração através da gratidão",
+    days: [
+      "Agradeça pelo dom da vida e por mais um novo começo.",
+      "Lembre-se de uma dificuldade vencida e agradeça pela força recebida.",
+      "Ore por três pessoas que fazem bem ao seu coração.",
+      "Agradeça pelo pão de cada dia: comida, teto, trabalho e saúde.",
+      "Escolha algo simples do seu dia e veja a mão de Deus nele.",
+      "Perdoe alguém em silêncio e agradeça pela liberdade que isso traz.",
+      "Feche a semana louvando: liste dez bênçãos que você quase não percebeu.",
+      "Escreva uma carta curta de gratidão a Deus e guarde como memória.",
+    ],
+  },
+  {
+    t: "7 dias orando pela sua família",
+    e: "🏡",
+    sub: "Uma intenção por dia · comece hoje mesmo 🙏",
+    hook: "Uma semana intercedendo por quem você mais ama",
+    days: [
+      "Ore pela proteção de cada pessoa da sua casa, pelo nome, uma a uma.",
+      "Peça paz para o lar: onde houver tensão, que haja reconciliação.",
+      "Interceda pela saúde física e emocional da sua família.",
+      "Ore pelas gerações: avós, pais e filhos, unidos na mesma bênção.",
+      "Entregue a Deus uma preocupação que você carrega por alguém.",
+      "Peça união: que a distância e a rotina não apaguem o amor.",
+      "Agradeça em voz alta por cada membro da família, citando qualidades.",
+      "Consagre a sua casa a Deus e convida alguém para orar com você.",
+    ],
+  },
 ];
 
 const REELS_CONTENT_BY_TYPE = {
@@ -513,6 +617,7 @@ const REELS_CONTENT_BY_TYPE = {
   reflexao: REELS_REFLECTIONS,
   consolo: REELS_COMFORT,
   milagre: REELS_MIRACLES,
+  cura: REELS_CURA,
 };
 
 const REELS_USED_KEY = "alvorada_reels_used_v1";

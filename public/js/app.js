@@ -30,13 +30,10 @@
     captionEffect: DEFAULT_CAPTION.effect,
     captionColor2: DEFAULT_GRAD,
     captionOutline: DEFAULT_OUTLINE,
-    melody: "none",
     busy: false,
     lastBlob: null,
     composedBlob: null,
     lastEngine: null,
-    audioCtx: null,
-    audioDest: null,
     carousel: {
       busy: false,
       slides: [], // { dataURL, blob, quote, kind }
@@ -63,8 +60,6 @@
     styles: $("#style-chips"),
     formats: $("#format-chips"),
     formatSize: $("#format-size"),
-    melodyChips: $("#melody-chips"),
-    melodyLabel: $("#melody-label"),
     engines: $("#engine-chips"),
     textColor: $("#text-color"),
     textEffect: $("#text-effect"),
@@ -312,26 +307,6 @@
     }
     const isStory = state.format.key === "story" || state.format.key === "whatsapp" || state.format.key === "celular";
     if (el.downloadMp4) el.downloadMp4.hidden = !isStory;
-    if (el.melodyChips) el.melodyChips.hidden = !isStory;
-    if (el.melodyLabel) el.melodyLabel.hidden = !isStory;
-    if (isStory) renderMelodyChips();
-  }
-
-  function renderMelodyChips() {
-    if (!el.melodyChips) return;
-    el.melodyChips.innerHTML = "";
-    Object.entries(MELODIES).forEach(([k, m]) => {
-      const label = m.label + (m.desc ? ' <span class="v-tag">' + m.desc + "</span>" : "");
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "chip" + (k === state.melody ? " active" : "");
-      btn.innerHTML = label;
-      btn.addEventListener("click", () => {
-        state.melody = k;
-        renderMelodyChips();
-      });
-      el.melodyChips.appendChild(btn);
-    });
   }
 
   function applyStageFormat() {
@@ -787,67 +762,8 @@
     return { blob, engine: "reels-video" };
   }
 
-  /* ---------- melodia ambiente (story MP4) ---------- */
-  let melodyNodes = [];
-
-  async function ensureAudioCtx() {
-    if (!state.audioCtx) {
-      state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      state.audioDest = state.audioCtx.createMediaStreamDestination();
-    }
-    if (state.audioCtx.state === "suspended") {
-      try { await state.audioCtx.resume(); } catch (e) {}
-    }
-    return state.audioCtx;
-  }
-
-  function startMelody(duration) {
-    stopMelody();
-    const m = MELODIES[state.melody];
-    if (!m || state.melody === "none") return;
-    const ac = state.audioCtx;
-    if (!ac) return;
-
-    const masterGain = ac.createGain();
-    masterGain.gain.setValueAtTime(0, ac.currentTime);
-    masterGain.gain.linearRampToValueAtTime(m.gain, ac.currentTime + 1.5);
-    masterGain.gain.setValueAtTime(m.gain, ac.currentTime + Math.max(0, duration - 2));
-    masterGain.gain.linearRampToValueAtTime(0, ac.currentTime + duration);
-    masterGain.connect(ac.destination);
-    if (state.audioDest) masterGain.connect(state.audioDest);
-
-    const lfo = ac.createOscillator();
-    const lfoGain = ac.createGain();
-    lfo.frequency.value = m.lfoRate;
-    lfoGain.gain.value = m.lfoDepth;
-    lfo.connect(lfoGain);
-    lfo.start(ac.currentTime);
-    lfo.stop(ac.currentTime + duration);
-    melodyNodes.push(lfo, lfoGain);
-
-    m.overtones.forEach((ratio, i) => {
-      const osc = ac.createOscillator();
-      const oscGain = ac.createGain();
-      osc.type = i === 0 ? "sine" : "triangle";
-      osc.frequency.value = m.baseFreq * ratio;
-      oscGain.gain.value = i === 0 ? 0.5 : 0.25 / (i + 1);
-      lfoGain.connect(osc.frequency);
-      osc.connect(oscGain);
-      oscGain.connect(masterGain);
-      osc.start(ac.currentTime);
-      osc.stop(ac.currentTime + duration);
-      melodyNodes.push(osc, oscGain);
-    });
-  }
-
-  function stopMelody() {
-    melodyNodes.forEach((n) => { try { n.disconnect(); } catch (e) {} try { n.stop(); } catch (e) {} });
-    melodyNodes = [];
-  }
-
-  /* ---------- Story MP4 (3s Ken Burns + melodia) ---------- */
+  /* ---------- Story MP4 (3s Ken Burns) ---------- */
   async function generateStoryMp4() {
-    const ac = await ensureAudioCtx();
     const BW = state.format.w || 1080;
     const BH = state.format.h || 1920;
     const canvas = document.createElement("canvas");
@@ -879,12 +795,6 @@
     });
 
     const stream = canvas.captureStream(FPS);
-    const tracks = stream.getVideoTracks();
-    if (state.audioDest && state.audioDest.stream.getAudioTracks().length) {
-      tracks.push.apply(tracks, state.audioDest.stream.getAudioTracks());
-    }
-    const combined = new MediaStream(tracks);
-
     let selectedMime = "video/webm";
     if (typeof MediaRecorder !== "undefined") {
       if (MediaRecorder.isTypeSupported('video/mp4;codecs="avc1.64001f,mp4a.40.2"')) selectedMime = 'video/mp4;codecs="avc1.64001f,mp4a.40.2"';
@@ -895,12 +805,11 @@
       else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) selectedMime = "video/webm;codecs=vp9";
       else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) selectedMime = "video/webm;codecs=vp8";
     }
-    const recorder = new MediaRecorder(combined, { mimeType: selectedMime, videoBitsPerSecond: 5000000 });
+    const recorder = new MediaRecorder(stream, { mimeType: selectedMime, videoBitsPerSecond: 5000000 });
     const chunks = [];
     recorder.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
     const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
 
-    startMelody(videoDuration + 0.5);
     recorder.start();
 
     const q = state.quote;
@@ -973,7 +882,6 @@
 
     recorder.stop();
     await stopped;
-    stopMelody();
     const blob = new Blob(chunks, { type: selectedMime });
     const isMp4 = selectedMime.includes("mp4");
     return { blob, engine: "story-mp4", isMp4 };
@@ -1213,8 +1121,12 @@
     c.font = font;
     c.textAlign = "center";
     c.textBaseline = "middle";
-    const hasOutline = String(effect).includes("outline");
-    const hasGradient = String(effect).includes("gradient");
+    const eff = String(effect);
+    const isMetallic = eff.includes("metallic");
+    const hasOutline = eff.includes("outline");
+    const hasGradient = !isMetallic && eff.includes("gradient");
+    const hasGlow = eff.includes("glow") && !isMetallic;
+    const hasShadow = eff.includes("shadow") && !isMetallic;
 
     if (hasOutline) {
       c.save();
@@ -1224,7 +1136,44 @@
       c.strokeText(text, x, y);
       c.restore();
     }
-    if (hasGradient) {
+    if (isMetallic) {
+      /* halo dourado atrás do texto metálico */
+      c.save();
+      c.shadowColor = "rgba(212,175,55,0.55)";
+      c.shadowBlur = scale * 0.3;
+      c.fillStyle = "#d4af37";
+      c.fillText(text, x, y);
+      c.restore();
+    } else if (hasGlow) {
+      /* camada de brilho com a própria cor */
+      c.save();
+      c.shadowColor = color;
+      c.shadowBlur = scale * 0.38;
+      c.fillStyle = color;
+      c.fillText(text, x, y);
+      c.restore();
+    } else if (hasShadow) {
+      /* sombra projetada profunda */
+      c.save();
+      c.shadowColor = "rgba(4,3,10,0.88)";
+      c.shadowBlur = scale * 0.26;
+      c.shadowOffsetY = scale * 0.08;
+      c.fillStyle = color;
+      c.fillText(text, x, y);
+      c.restore();
+    }
+    if (isMetallic) {
+      const w = c.measureText(text).width;
+      const g = c.createLinearGradient(x - w / 2, y - scale * 0.62, x + w / 2, y + scale * 0.62);
+      g.addColorStop(0, "#8a6a1f");
+      g.addColorStop(0.16, "#d4af37");
+      g.addColorStop(0.36, "#fff3c4");
+      g.addColorStop(0.5, "#f4dc8e");
+      g.addColorStop(0.66, "#b78f2e");
+      g.addColorStop(0.85, "#ffd76a");
+      g.addColorStop(1, "#8a6a1f");
+      c.fillStyle = g;
+    } else if (hasGradient) {
       const w = c.measureText(text).width;
       const g = c.createLinearGradient(x - w / 2, 0, x + w / 2, 0);
       g.addColorStop(0, color2 || shade(color, -0.18));
@@ -2305,8 +2254,10 @@
 
   /* ---------- paleta de cores rápidas ---------- */
   const PALETTE_COLORS = [
-    "#ffffff", "#0d0c1a", "#ffd76a", "#ff5a5a", "#4d8dff", "#3ddc84",
-    "#ff9ec4", "#b19bf5", "#ffa94d", "#7ad7e0", "#f6ecd8", "#4fcfb2",
+    "#ffffff", "#0d0c1a", "#ffd76a", "#d4af37", "#8a6a1f", "#f6ecd8",
+    "#7a1f3d", "#b23a48", "#ff5a5a", "#ffa94d", "#e2725b", "#3ddc84",
+    "#0f5132", "#4fcfb2", "#7ad7e0", "#4d8dff", "#4169e1", "#14213d",
+    "#b19bf5", "#7c3aed", "#e6e0f8", "#ff9ec4", "#e8b4b8", "#c0c0c0",
   ];
 
   function buildPalettePop(pop, input) {

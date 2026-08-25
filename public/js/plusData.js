@@ -43,6 +43,27 @@ const PLUS_FORMATS = [
     multi: true,
   },
   {
+    id: "bomdia",
+    label: "☀️ Bom Dia Abençoado",
+    desc: "Saudação da manhã com bênção declarada — o post diário que cria hábito na audiência.",
+    hint: "Publique entre 6h e 8h: quem acorda rolando o feed encontra sua bênção primeiro. Cria rotina de retorno.",
+    multi: true,
+  },
+  {
+    id: "boanoite",
+    label: "🌙 Boa Noite de Paz",
+    desc: "Mensagem noturna de entrega e descanso em Deus para fechar o dia do seguidor com você.",
+    hint: "Publique entre 20h e 22h: é o horário em que o coração está mais sensível a palavras de paz.",
+    multi: true,
+  },
+  {
+    id: "cura",
+    label: "💗 Cura e Libertação",
+    desc: "Declarações de cura interior e liberdade em Cristo — conteúdo que gera comentários emocionantes.",
+    hint: "Responda os comentários com oração individual: esse cuidado transforma seguidores em comunidade fiel.",
+    multi: true,
+  },
+  {
     id: "carrossel",
     label: "🎠 Carrossel de Palavras",
     desc: "Série de 6 a 8 slides sobre um tema (paz, ansiedade, gratidão…): capa, versículos e slide final de CTA.",
@@ -148,10 +169,49 @@ const PLUS_CAROUSELS = [
 ];
 
 /* estilos visuais do versículo card */
+/* posts do dia — saudações que geram comentários diários */
+const PLUS_DAY_POSTS = {
+  bomdia: [
+    { e: "🌅", t: "Bom dia, Senhor", x: "Obrigado por este novo amanhecer. Que os meus primeiros passos sejam guiados por ti e a minha primeira palavra seja um louvor. Abençoa quem lê esta mensagem: hoje é dia de vitória." },
+    { e: "☀️", t: "Este dia já nasceu abençoado", x: "Antes das preocupações chegarem, chega a promessa: a misericórdia de Deus se renovou para ti nesta manhã. Caminha com fé — o melhor de hoje ainda vai acontecer." },
+    { e: "🌻", t: "Acorde com gratidão", x: "Abre os olhos e agradece: respirar é milagre, recomeçar é graça. Entrega este dia nas mãos do Pai e vê como tudo se encaixa no tempo dele." },
+    { e: "🕊️", t: "Paz para começar bem", x: "Que a paz de Deus guarde o teu coração desde cedo. Nada do que te preocupa agora é maior do que Aquele que caminha contigo. Bom dia e segue em frente com fé." },
+    { e: "✨", t: "Hoje tem propósito", x: "Este não é mais um dia qualquer: foi criado com propósito sobre a tua vida. Pede sabedoria, age com amor e colhe bênçãos. Um glorioso dia te espera." },
+    { e: "💪", t: "Forças renovadas", x: "Ontem pode ter sido pesado, mas hoje as forças se renovam como as da águia. Levanta, agradece e avança — Deus já preparou o caminho de hoje." },
+  ],
+  boanoite: [
+    { e: "🌙", t: "Entrega e dorme em paz", x: "Coloca nos braços do Pai tudo o que não conseguiu resolver hoje. Ele não dorme para que tu possas dormir. Boa noite e descanso abençoado." },
+    { e: "⭐", t: "Obrigado pelo dia de hoje", x: "Pelos acertos e pelos erros, pelas alegrias e pelas lições: tudo guardou valor. Perdoa o que falhou, agradece o que floresceu e descansa. Amanhã é nova chance." },
+    { e: "💛", t: "Durma sem medo", x: "Quem guarda Israel não cochila nem dorme. A tua casa, a tua família e os teus sonhos estão protegidos esta noite. Descansa em paz." },
+    { e: "🌌", t: "Silêncio que cura", x: "No silêncio da noite, Deus fala mais alto. Deita-te, respira fundo e permite que a paz dele envolva o teu coração até o amanhecer. Boa noite." },
+    { e: "🛏️", t: "Solta o peso antes de dormir", x: "Mágoa não combina com travesseiro. Perdoa rápido, entrega o resto e fecha os olhos leve. O cuidado de Deus trabalha enquanto tu descansas." },
+    { e: "🌠", t: "Confia: o amanhã já está guardado", x: "Não precisas saber tudo o que virá — apenas quem te conduz. Dorme tranquilo: o futuro está nas mãos que foram cravadas por amor." },
+  ],
+};
+
+/* posts de cura e libertação — declarações de restauração */
+const PLUS_CURA_POSTS = [
+  { e: "💗", t: "Deus cura o que ninguém vê", x: "Aquela ferida que você esconde por trás do sorriso também interessa a Deus. Traz a ele agora: onde a medicina alcança, ele abençoa; onde ninguém alcança, ele cura." },
+  { e: "🕊️", t: "Você está liberado(a)", x: "Em nome de Jesus, declara-se livre: livre do passado, da culpa e do medo que te prendia. Quem o Filho liberta é livre verdadeiramente. Recebe essa liberdade hoje." },
+  { e: "🌿", t: "O teu coração vai sarar", x: "Cicatriz não é sinal de derrota: é prova de que a ferida fechou. O tempo de Deus está costurando o teu interior com amor. Confia — a tua alma vai florescer de novo." },
+  { e: "⛓️‍💥", t: "Corrente quebrada", x: "Toda herança de dor termina em ti. Em Cristo, tu és geração de bênção. Quebra o ciclo, renuncia a mentira e anda na liberdade de filho de Deus." },
+  { e: "🤲", t: "Entrega a dor nas mãos do Pai", x: "Abre as mãos agora e entrega: as memórias, as perguntas sem resposta e o cansaço da alma. Cuidar de ti é trabalho dEle — e ele nunca falha." },
+  { e: "👑", t: "Nenhuma palavra te define", x: "Rejeição não define, fracasso não define, diagnóstico não define. Tu és obra-prima escrita pela mão de Deus. Levanta a cabeça: a tua identidade é eterna." },
+];
+
 const PLUS_CARD_STYLES = {
   dark: { label: "⬛ Preto", desc: "Fundo preto com texto branco — elegância máxima" },
   light: { label: "⬜ Claro", desc: "Fundo claro com texto escuro — o inverso, limpa o feed" },
-  biblepage: { label: "📜 Página da Bíblia", desc: "Página envelhecida desenhada, versículo tipografado" },
+  clean: { label: "⚪ Clean", desc: "Branco minimalista com linhas suaves — foco total na Palavra" },
+  navy: { label: "🔵 Marinho Elegante", desc: "Azul-marinho profundo com brilho dourado — serenidade nobre" },
+  verde: { label: "🟢 Verde Esperança", desc: "Verde-esmeralda elegante que remete à esperança e ao renovo" },
+  roxo: { label: "🟣 Roxo elegante", desc: "Gradiente roxo profundo com detalhes dourados — sofisticação espiritual" },
+  bordo: { label: "🍷 Bordô", desc: "Vinho bordô nobre com reflexos dourados — clima de reverência" },
+  vip: { label: "👑 VIP Dourado", desc: "Preto nobre, moldura ornamentada e brilho dourado premium" },
+  classico: { label: "🏛️ Clássico", desc: "Creme e sépia com textura de tela — clima de galeria de arte" },
+  marmore: { label: "🪨 Mármore", desc: "Mármore claro com veios elegantes — sofisticação atemporal" },
+  pergaminho: { label: "📜 Pergaminho", desc: "Rolo de pergaminho envelhecido com bordas enroladas" },
+  biblepage: { label: "📖 Página da Bíblia", desc: "Página envelhecida desenhada, versículo tipografado" },
   photo: { label: "🖼️ Foto/IA", desc: "Foto real ou arte de IA com o versículo sobreposto" },
 };
 
@@ -431,6 +491,31 @@ function plusCaptionFor(formatId, content) {
     lines.push("");
     lines.push("Se tocou o seu coração, era pra você mesmo.");
     lines.push("✨ Compartilhe — pode ser o recado de alguém");
+    lines.push(save);
+    lines.push(follow);
+  } else if (formatId === "bomdia") {
+    lines.push("☀️ " + (content.t || "Bom dia abençoado"));
+    lines.push("");
+    lines.push(content.x);
+    lines.push("");
+    lines.push("👇 Comente AMÉM para receber esta bênção hoje");
+    lines.push("🔔 Ative as notificações: toda manhã tem palavra nova aqui");
+    lines.push(follow);
+  } else if (formatId === "boanoite") {
+    lines.push("🌙 " + (content.t || "Boa noite abençoada"));
+    lines.push("");
+    lines.push(content.x);
+    lines.push("");
+    lines.push("👇 Comente AMÉM para entregar esta noite a Deus");
+    lines.push("✨ Envie para alguém que você quer ver descansando em paz");
+    lines.push(follow);
+  } else if (formatId === "cura") {
+    lines.push("💗 " + (content.t || "Cura e libertação"));
+    lines.push("");
+    lines.push(content.x);
+    lines.push("");
+    lines.push("👇 Comente EU RECEBO para declarar essa cura sobre a sua vida");
+    lines.push("✨ Marque alguém que precisa dessa palavra hoje");
     lines.push(save);
     lines.push(follow);
   } else if (formatId === "quiz") {

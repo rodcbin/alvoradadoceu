@@ -60,6 +60,8 @@
     fadeblack: { label: "Fade preto", desc: "Escurece até preto, depois revela a próxima imagem" },
     slideleft: { label: "Deslizar", desc: "A imagem desliza para a esquerda enquanto a nova entra pela direita" },
     zoomblur: { label: "Zoom", desc: "A imagem atual amplia e desfoca, a nova surge do centro" },
+    zoomsoft: { label: "Aproximar", desc: "Cruzamento suave com leve aproximação cinematográfica" },
+    wipeup: { label: "Revelar", desc: "A nova imagem é revelada de baixo para cima, como um amanhecer" },
   };
 
   const MODES = {
@@ -95,6 +97,11 @@
       desc: "Uma oração dividida em passos para rezar junto, deslizando cada slide.",
       hint: "Convida a pessoa a orar ali mesmo, slide por slide — engajamento emocional altíssimo.",
     },
+    plano: {
+      label: "🗓️ Desafio de oração",
+      desc: "Um plano espiritual em etapas diárias para salvar e acompanhar dia após dia.",
+      hint: "Formatos 'desafio' geram salvamentos em massa: a pessoa guarda o post para seguir o passo a passo.",
+    },
   };
 
   const IMAGE_SOURCES = {
@@ -120,6 +127,10 @@
     arvore: "ancient tree golden light branches",
     rosas: "white golden roses dew light",
     portao: "gate heavenly light path",
+    deserto: "desert dunes wildflowers sunset hope",
+    caminho: "path wheat field golden light horizon",
+    janela: "window light rustic warm cozy",
+    entardecer: "sunset hills orange violet sky",
   };
 
   const REELS_FORMATS = {
@@ -728,6 +739,31 @@
           drawKenBurnsVariant(inImg, inP, inIdx);
           ctx.restore();
         }
+      } else if (transitionType === "zoomsoft") {
+        /* cruzamento suave com leve aproximação */
+        ctx.save();
+        ctx.globalAlpha = 1 - blend;
+        drawKenBurnsVariant(outImg, outP, outIdx);
+        ctx.restore();
+        const z = 0.92 + blend * 0.08;
+        ctx.save();
+        ctx.globalAlpha = blend;
+        ctx.translate(W / 2, H / 2);
+        ctx.scale(z, z);
+        ctx.translate(-W / 2, -H / 2);
+        drawKenBurnsVariant(inImg, inP, inIdx);
+        ctx.restore();
+        ctx.globalAlpha = 1;
+      } else if (transitionType === "wipeup") {
+        /* revelação vertical de baixo para cima */
+        drawKenBurnsVariant(outImg, outP, outIdx);
+        ctx.save();
+        ctx.beginPath();
+        const eased = blend < 0.5 ? 2 * blend * blend : 1 - Math.pow(-2 * blend + 2, 2) / 2;
+        ctx.rect(0, H * (1 - eased), W, H * eased);
+        ctx.clip();
+        drawKenBurnsVariant(inImg, inP, inIdx);
+        ctx.restore();
       } else {
         /* crossfade — default */
         ctx.globalAlpha = 1 - blend;
@@ -1251,6 +1287,22 @@
         slides: [
           { type: "cover", emoji: deck.e, kicker: "Para guardar no coração", title: deck.t, sub: "Deslize para ver todos →" },
           ...items.map((it, i) => ({ type: "number", num: i + 1, emoji: "", text: it })),
+          { type: "cta", ctaKind: "salvar" },
+        ],
+      };
+    }
+
+    if (kind === "plano") {
+      const plan = randomItem(CAROUSEL_PRAYER_PLANS);
+      const days = plan.days.slice(0, inner);
+      return {
+        kind,
+        title: plan.t,
+        emoji: plan.e,
+        captionLead: plan.hook,
+        slides: [
+          { type: "cover", emoji: plan.e, kicker: "Comece hoje", title: plan.t, sub: plan.sub },
+          ...days.map((d, i) => ({ type: "number", num: i + 1, emoji: "", text: d })),
           { type: "cta", ctaKind: "salvar" },
         ],
       };

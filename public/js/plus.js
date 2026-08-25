@@ -144,7 +144,7 @@
     const needsPhoto =
       (isVerse && state.style === "photo") ||
       (isCarousel && state.style === "photo") ||
-      ["amem", "marque", "mensagem", "quiz", "story"].includes(state.fmt);
+      ["amem", "marque", "mensagem", "bomdia", "boanoite", "cura", "quiz", "story"].includes(state.fmt);
 
     el.styleOptions.hidden = !(isVerse || isCarousel);
     el.storyOptions.hidden = state.fmt !== "story";
@@ -165,7 +165,7 @@
       extra = " · " + (PLUS_CARD_STYLES[state.style] || {}).label.replace(/^[^\s]+\s/, "");
       const sz = PLUS_SIZES[state.size] || PLUS_SIZES.portrait;
       extra += " · carrossel de slides · " + sz.w + "×" + sz.h;
-    } else if (["amem", "marque", "mensagem", "quiz", "story"].includes(state.fmt)) {
+    } else if (["amem", "marque", "mensagem", "bomdia", "boanoite", "cura", "quiz", "story"].includes(state.fmt)) {
       extra = " · fundo " + (PLUS_SOURCES[state.source] || {}).label + " · tema " + (PLUS_THEMES.find((t) => t.id === state.theme) || {}).label;
     }
     if (!["story", "semana", "quiz"].includes(state.fmt)) {
@@ -224,6 +224,9 @@
     switch (state.fmt) {
       case "versiculo": return pickFresh(PLUS_VERSES, (v) => v.x);
       case "amem": return pickFresh(PLUS_AMEN_PRAYERS, (p) => p.x);
+      case "bomdia": return pickFresh(PLUS_DAY_POSTS.bomdia, (p) => p.t);
+      case "boanoite": return pickFresh(PLUS_DAY_POSTS.boanoite, (p) => p.t);
+      case "cura": return pickFresh(PLUS_CURA_POSTS, (p) => p.t);
       case "marque": {
         const line = pickFresh(PLUS_MARK_LINES, (l) => l.head);
         return { head: line.head, sub: line.sub, x: pickFresh(PLUS_MARK_TEXTS, (t) => t) };
@@ -657,6 +660,350 @@
     ctx.fillRect(0, 0, FW, FH);
   }
 
+  function paintRoxoBase(ctx, FW, FH) {
+    const g = ctx.createRadialGradient(FW / 2, FH * 0.38, 0, FW / 2, FH * 0.5, FH * 0.9);
+    g.addColorStop(0, "#2b1a4d");
+    g.addColorStop(0.55, "#1c1035");
+    g.addColorStop(1, "#0c0718");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, FW, FH);
+    for (let i = 0; i < 44; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * FW, Math.random() * FH, Math.random() * 1.7 + 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(238,228,255," + (Math.random() * 0.15 + 0.03) + ")";
+      ctx.fill();
+    }
+    const rg = ctx.createRadialGradient(FW / 2, FH * 0.42, 0, FW / 2, FH * 0.42, FW * 0.75);
+    rg.addColorStop(0, "rgba(168,124,255,0.14)");
+    rg.addColorStop(1, "rgba(168,124,255,0)");
+    ctx.fillStyle = rg;
+    ctx.fillRect(0, 0, FW, FH);
+    /* faixas de veludo nas bordas */
+    const vg = ctx.createLinearGradient(0, 0, 0, FH);
+    vg.addColorStop(0, "rgba(20,8,40,0.5)");
+    vg.addColorStop(0.12, "rgba(20,8,40,0)");
+    vg.addColorStop(0.88, "rgba(16,6,32,0)");
+    vg.addColorStop(1, "rgba(16,6,32,0.55)");
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, FW, FH);
+  }
+
+  function paintBordoBase(ctx, FW, FH) {
+    const g = ctx.createRadialGradient(FW / 2, FH * 0.38, 0, FW / 2, FH * 0.5, FH * 0.9);
+    g.addColorStop(0, "#4e1527");
+    g.addColorStop(0.55, "#340d1a");
+    g.addColorStop(1, "#150509");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, FW, FH);
+    for (let i = 0; i < 40; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * FW, Math.random() * FH, Math.random() * 1.6 + 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,232,232," + (Math.random() * 0.13 + 0.02) + ")";
+      ctx.fill();
+    }
+    const rg = ctx.createRadialGradient(FW / 2, FH * 0.42, 0, FW / 2, FH * 0.42, FW * 0.75);
+    rg.addColorStop(0, "rgba(255,140,160,0.11)");
+    rg.addColorStop(1, "rgba(255,140,160,0)");
+    ctx.fillStyle = rg;
+    ctx.fillRect(0, 0, FW, FH);
+    const vg = ctx.createLinearGradient(0, 0, 0, FH);
+    vg.addColorStop(0, "rgba(24,4,10,0.5)");
+    vg.addColorStop(0.12, "rgba(24,4,10,0)");
+    vg.addColorStop(0.88, "rgba(20,3,9,0)");
+    vg.addColorStop(1, "rgba(20,3,9,0.55)");
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, FW, FH);
+  }
+
+  function paintVipBase(ctx, FW, FH) {
+    const g = ctx.createLinearGradient(0, 0, 0, FH);
+    g.addColorStop(0, "#151006");
+    g.addColorStop(0.5, "#0a0805");
+    g.addColorStop(1, "#171106");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, FW, FH);
+    /* raios diagonais dourados sutis */
+    ctx.save();
+    for (let i = -2; i <= 2; i++) {
+      const x0 = FW * 0.5 + i * FW * 0.34;
+      const lg = ctx.createLinearGradient(x0 - FW * 0.08, 0, x0 + FW * 0.08, FH);
+      lg.addColorStop(0, "rgba(212,175,55,0)");
+      lg.addColorStop(0.5, "rgba(212,175,55,0.05)");
+      lg.addColorStop(1, "rgba(212,175,55,0)");
+      ctx.fillStyle = lg;
+      ctx.beginPath();
+      ctx.moveTo(x0 - FW * 0.07, 0);
+      ctx.lineTo(x0 + FW * 0.07, 0);
+      ctx.lineTo(x0 + FW * 0.24, FH);
+      ctx.lineTo(x0 + FW * 0.1, FH);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+    for (let i = 0; i < 30; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * FW, Math.random() * FH, Math.random() * 1.5 + 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,240,200," + (Math.random() * 0.12 + 0.02) + ")";
+      ctx.fill();
+    }
+    const rg = ctx.createRadialGradient(FW / 2, FH * 0.45, 0, FW / 2, FH * 0.45, FW * 0.8);
+    rg.addColorStop(0, "rgba(230,195,90,0.16)");
+    rg.addColorStop(1, "rgba(230,195,90,0)");
+    ctx.fillStyle = rg;
+    ctx.fillRect(0, 0, FW, FH);
+  }
+
+  function drawVipCorners(ctx, FW, FH, color) {
+    const inset = FW * 0.034;
+    const len = FW * 0.095;
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = Math.max(2.5, FW * 0.0028);
+    ctx.lineCap = "round";
+    [
+      [inset, inset, 1, 1],
+      [FW - inset, inset, -1, 1],
+      [inset, FH - inset, 1, -1],
+      [FW - inset, FH - inset, -1, -1],
+    ].forEach(([x, y, sx, sy]) => {
+      ctx.beginPath();
+      ctx.moveTo(x + sx * len, y);
+      ctx.lineTo(x, y);
+      ctx.lineTo(x, y + sy * len);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  const PLUS_LIGHT_STYLES = ["light", "biblepage", "clean", "marmore", "pergaminho", "classico"];
+  function isLightStyle(styleId) { return PLUS_LIGHT_STYLES.indexOf(styleId) !== -1; }
+
+  function paintNavyBase(ctx, FW, FH) {
+    const g = ctx.createRadialGradient(FW / 2, FH * 0.38, 0, FW / 2, FH * 0.5, FH * 0.9);
+    g.addColorStop(0, "#142a52");
+    g.addColorStop(0.55, "#0c1b3a");
+    g.addColorStop(1, "#050e20");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, FW, FH);
+    for (let i = 0; i < 42; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * FW, Math.random() * FH, Math.random() * 1.6 + 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(216,228,255," + (Math.random() * 0.13 + 0.02) + ")";
+      ctx.fill();
+    }
+    const rg = ctx.createRadialGradient(FW / 2, FH * 0.44, 0, FW / 2, FH * 0.44, FW * 0.75);
+    rg.addColorStop(0, "rgba(212,175,55,0.1)");
+    rg.addColorStop(1, "rgba(212,175,55,0)");
+    ctx.fillStyle = rg;
+    ctx.fillRect(0, 0, FW, FH);
+    const vg = ctx.createLinearGradient(0, 0, 0, FH);
+    vg.addColorStop(0, "rgba(3,8,20,0.5)");
+    vg.addColorStop(0.12, "rgba(3,8,20,0)");
+    vg.addColorStop(0.88, "rgba(3,8,20,0)");
+    vg.addColorStop(1, "rgba(3,8,20,0.55)");
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, FW, FH);
+  }
+
+  function paintVerdeBase(ctx, FW, FH) {
+    const g = ctx.createRadialGradient(FW / 2, FH * 0.38, 0, FW / 2, FH * 0.5, FH * 0.9);
+    g.addColorStop(0, "#174229");
+    g.addColorStop(0.55, "#0f2f1d");
+    g.addColorStop(1, "#06170e");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, FW, FH);
+    for (let i = 0; i < 40; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * FW, Math.random() * FH, Math.random() * 1.6 + 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(226,255,236," + (Math.random() * 0.12 + 0.02) + ")";
+      ctx.fill();
+    }
+    const rg = ctx.createRadialGradient(FW / 2, FH * 0.44, 0, FW / 2, FH * 0.44, FW * 0.75);
+    rg.addColorStop(0, "rgba(126,214,160,0.11)");
+    rg.addColorStop(1, "rgba(126,214,160,0)");
+    ctx.fillStyle = rg;
+    ctx.fillRect(0, 0, FW, FH);
+    const vg = ctx.createLinearGradient(0, 0, 0, FH);
+    vg.addColorStop(0, "rgba(4,14,8,0.5)");
+    vg.addColorStop(0.12, "rgba(4,14,8,0)");
+    vg.addColorStop(0.88, "rgba(4,14,8,0)");
+    vg.addColorStop(1, "rgba(4,14,8,0.55)");
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, FW, FH);
+  }
+
+  function paintCleanBase(ctx, FW, FH) {
+    const g = ctx.createLinearGradient(0, 0, 0, FH);
+    g.addColorStop(0, "#ffffff");
+    g.addColorStop(0.6, "#fafbfd");
+    g.addColorStop(1, "#f1f4f7");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, FW, FH);
+    /* círculos concêntricos muito sutis */
+    ctx.save();
+    ctx.strokeStyle = "rgba(145,155,170,0.08)";
+    ctx.lineWidth = Math.max(1, FW * 0.0018);
+    for (let i = 1; i <= 3; i++) {
+      ctx.beginPath();
+      ctx.arc(FW / 2, FH * 0.46, FW * (0.16 + i * 0.15), 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+    const rg = ctx.createRadialGradient(FW / 2, FH * 0.42, 0, FW / 2, FH * 0.42, FW * 0.7);
+    rg.addColorStop(0, "rgba(202,182,124,0.07)");
+    rg.addColorStop(1, "rgba(202,182,124,0)");
+    ctx.fillStyle = rg;
+    ctx.fillRect(0, 0, FW, FH);
+  }
+
+  function paintPergaminhoBase(ctx, FW, FH) {
+    /* papel do pergaminho */
+    const g = ctx.createLinearGradient(0, 0, FW, FH);
+    g.addColorStop(0, "#efe2bf");
+    g.addColorStop(0.5, "#f7edd2");
+    g.addColorStop(1, "#eadbb2");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, FW, FH);
+    /* fibras horizontais sutis */
+    ctx.fillStyle = "rgba(165,135,85,0.05)";
+    for (let y = FH * 0.02; y < FH; y += Math.max(3, FH * 0.004)) {
+      ctx.fillRect(0, y, FW, 1);
+    }
+    /* manchas de idade */
+    for (let i = 0; i < 12; i++) {
+      const x = Math.random() * FW;
+      const y = Math.random() * FH;
+      const r = Math.random() * FW * 0.08 + FW * 0.02;
+      const mg = ctx.createRadialGradient(x, y, 0, x, y, r);
+      mg.addColorStop(0, "rgba(150,112,55,0.07)");
+      mg.addColorStop(1, "rgba(150,112,55,0)");
+      ctx.fillStyle = mg;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    /* bordas escurecidas */
+    const eg = ctx.createLinearGradient(0, 0, 0, FH);
+    eg.addColorStop(0, "rgba(120,90,45,0.24)");
+    eg.addColorStop(0.09, "rgba(120,90,45,0)");
+    eg.addColorStop(0.91, "rgba(120,90,45,0)");
+    eg.addColorStop(1, "rgba(120,90,45,0.26)");
+    ctx.fillStyle = eg;
+    ctx.fillRect(0, 0, FW, FH);
+    /* rolos superior e inferior (cilindros com brilho) */
+    function drawRoll(cy) {
+      const rh = FH * 0.03;
+      const rg = ctx.createLinearGradient(0, cy - rh / 2, 0, cy + rh / 2);
+      rg.addColorStop(0, "#a97f45");
+      rg.addColorStop(0.35, "#e2c48c");
+      rg.addColorStop(0.65, "#d3b077");
+      rg.addColorStop(1, "#96703c");
+      ctx.fillStyle = rg;
+      ctx.fillRect(0, cy - rh / 2, FW, rh);
+      ctx.fillStyle = "rgba(80,55,25,0.35)";
+      ctx.fillRect(0, cy + rh / 2 - 1, FW, 2);
+      ctx.fillStyle = "rgba(255,246,220,0.4)";
+      ctx.fillRect(0, cy - rh / 2, FW, 1);
+    }
+    drawRoll(FH * 0.05);
+    drawRoll(FH * 0.938);
+  }
+
+  function paintClassicoBase(ctx, FW, FH) {
+    const g = ctx.createLinearGradient(0, 0, 0, FH);
+    g.addColorStop(0, "#f3e8d1");
+    g.addColorStop(0.55, "#e9dbbc");
+    g.addColorStop(1, "#dcc9a2");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, FW, FH);
+    /* textura de tela: traços curtos translúcidos */
+    ctx.save();
+    ctx.globalAlpha = 0.05;
+    for (let i = 0; i < 240; i++) {
+      const x = Math.random() * FW;
+      const y = Math.random() * FH;
+      ctx.strokeStyle = Math.random() > 0.5 ? "#8a6f3f" : "#fffaf0";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 6, y + 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+    /* vinheta quente nas bordas */
+    const vg = ctx.createRadialGradient(FW / 2, FH * 0.45, FH * 0.18, FW / 2, FH * 0.5, FH * 0.78);
+    vg.addColorStop(0, "rgba(90,60,25,0)");
+    vg.addColorStop(1, "rgba(90,60,25,0.16)");
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, FW, FH);
+  }
+
+  function paintMarmoreBase(ctx, FW, FH) {
+    const g = ctx.createLinearGradient(FW * 0.15, 0, FW * 0.85, FH);
+    g.addColorStop(0, "#fcfcfb");
+    g.addColorStop(0.5, "#f2f2ef");
+    g.addColorStop(1, "#e8e8e4");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, FW, FH);
+    /* veios principais */
+    ctx.save();
+    ctx.lineCap = "round";
+    for (let v = 0; v < 5; v++) {
+      let x = Math.random() * FW;
+      let y = -FH * 0.05;
+      ctx.strokeStyle = "rgba(125,130,140,0.17)";
+      ctx.lineWidth = Math.max(1.2, FW * 0.0022);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      while (y < FH * 1.05) {
+        const nx = x + (Math.random() - 0.5) * FW * 0.24;
+        const ny = y + FH * (0.08 + Math.random() * 0.12);
+        ctx.quadraticCurveTo(x + (nx - x) * 0.5 + (Math.random() - 0.5) * FW * 0.1, (y + ny) / 2, nx, ny);
+        x = nx;
+        y = ny;
+      }
+      ctx.stroke();
+    }
+    /* veios finos secundários */
+    for (let v = 0; v < 7; v++) {
+      let x = Math.random() * FW;
+      let y = -FH * 0.05;
+      ctx.strokeStyle = "rgba(150,155,165,0.1)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      while (y < FH * 1.05) {
+        const nx = x + (Math.random() - 0.5) * FW * 0.16;
+        const ny = y + FH * (0.06 + Math.random() * 0.1);
+        ctx.quadraticCurveTo(x + (nx - x) * 0.5, (y + ny) / 2, nx, ny);
+        x = nx;
+        y = ny;
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+    const rg = ctx.createRadialGradient(FW / 2, FH * 0.42, 0, FW / 2, FH * 0.42, FW * 0.7);
+    rg.addColorStop(0, "rgba(212,190,140,0.06)");
+    rg.addColorStop(1, "rgba(212,190,140,0)");
+    ctx.fillStyle = rg;
+    ctx.fillRect(0, 0, FW, FH);
+  }
+
+  function paintStyleBase(ctx, FW, FH, styleId) {
+    if (styleId === "roxo") paintRoxoBase(ctx, FW, FH);
+    else if (styleId === "bordo") paintBordoBase(ctx, FW, FH);
+    else if (styleId === "vip") paintVipBase(ctx, FW, FH);
+    else if (styleId === "navy") paintNavyBase(ctx, FW, FH);
+    else if (styleId === "verde") paintVerdeBase(ctx, FW, FH);
+    else if (styleId === "clean") paintCleanBase(ctx, FW, FH);
+    else if (styleId === "marmore") paintMarmoreBase(ctx, FW, FH);
+    else if (styleId === "pergaminho") paintPergaminhoBase(ctx, FW, FH);
+    else if (styleId === "classico") paintClassicoBase(ctx, FW, FH);
+    else if (styleId === "light") paintLightBase(ctx, FW, FH);
+    else if (styleId === "biblepage") paintBiblePage(ctx, FW, FH);
+    else paintDarkBase(ctx, FW, FH);
+  }
+
   function paintBiblePage(ctx, FW, FH) {
     /* papel envelhecido com colunas de texto simuladas */
     ctx.fillStyle = "#f2e8d0";
@@ -734,17 +1081,14 @@
   }
 
   function drawVerseCard(ctx, FW, FH, verse, styleId) {
-    const light = styleId === "light" || styleId === "biblepage";
+    const light = isLightStyle(styleId);
     const inkMain = light ? "#33270e" : "#fffdf6";
     const inkDim = light ? "rgba(70,56,24,0.72)" : "rgba(255,253,246,0.72)";
     const gold = light ? "rgba(158,124,34,0.95)" : "rgba(230,195,90,0.95)";
     const serif = "'Playfair Display','Cormorant Garamond',Georgia,serif";
     const sans = "'Poppins','Segoe UI',sans-serif";
 
-    if (styleId === "dark") paintDarkBase(ctx, FW, FH);
-    else if (styleId === "light") paintLightBase(ctx, FW, FH);
-    else if (styleId === "biblepage") paintBiblePage(ctx, FW, FH);
-    /* photo já foi pintada pelo chamador */
+    if (styleId !== "photo") paintStyleBase(ctx, FW, FH, styleId);
 
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -762,6 +1106,7 @@
       ctx.strokeRect(inset * 1.5, inset * 1.5, FW - inset * 3, FH - inset * 3);
       ctx.globalAlpha = 1;
     }
+    if (styleId === "vip") drawVipCorners(ctx, FW, FH, gold);
 
     /* kicker */
     const kicker = randomItem(PLUS_CARD_KICKERS);
@@ -1515,6 +1860,39 @@
           ["✨", "Envie para alguém", "que precisa orar hoje"],
         ],
       }),
+      bomdia: () => ({
+        kicker: randomItem(["Bom dia abençoado", "Amanhecer com Deus", "Comece o dia com fé"]),
+        emoji: (c.e || "☀️"),
+        title: c.t || "Bom dia, abençoado(a)",
+        body: c.x,
+        ctaRows: [
+          ["🙏", "Comente AMÉM", "para receber esta bênção hoje"],
+          ["✨", "Envie a um amigo", "que precisa de ânimo agora"],
+          ["🔔", "Ative as notificações", "para não perder a bênção de amanhã"],
+        ],
+      }),
+      boanoite: () => ({
+        kicker: randomItem(["Boa noite abençoada", "Descanse em Deus", "Entrega e descansa"]),
+        emoji: (c.e || "🌙"),
+        title: c.t || "Boa noite, Deus cuida de você",
+        body: c.x,
+        ctaRows: [
+          ["🙏", "Comente AMÉM", "para entregar esta noite a Deus"],
+          ["✨", "Envie a quem ama", "uma palavra de paz antes de dormir"],
+          ["📌", "Salve esta mensagem", "para reler em noites difíceis"],
+        ],
+      }),
+      cura: () => ({
+        kicker: randomItem(["Cura e libertação", "Palavra de cura", "Deus restaura"]),
+        emoji: (c.e || "💗"),
+        title: c.t || "Deus quer curar o seu coração",
+        body: c.x,
+        ctaRows: [
+          ["🙏", "Comente EU RECEBO", "para declarar a sua cura"],
+          ["✨", "Envie a quem precisa", "de uma palavra de restauração"],
+          ["📌", "Salve esta declaração", "e repita durante a semana"],
+        ],
+      }),
       marque: () => ({
         kicker: randomItem(["Abençoe alguém", "Espalhe luz", "Fé que contagia"]),
         emoji: "💌",
@@ -1562,7 +1940,7 @@
     const blob = await new Promise((resolve) => {
       el.canvas.toBlob((b) => resolve(b || new Blob([], { type: "image/png" })), "image/png", 1);
     });
-    finishWithSlides([{ blob, url: URL.createObjectURL(blob) }], plusCaptionFor(formatId, spec));
+    finishWithSlides([{ blob, url: URL.createObjectURL(blob) }], plusCaptionFor(formatId, c));
     setStatus("Post pronto! Baixe e publique. ✧", 1);
     showToast("Post \"" + formatId + "\" pronto. ✧", "ok");
   }
@@ -1640,7 +2018,7 @@
 
   /* ---------- carrossel de palavras 🎠 ---------- */
   function carouselPalette(styleId) {
-    const light = styleId === "light" || styleId === "biblepage";
+    const light = isLightStyle(styleId);
     return {
       light,
       inkMain: light ? "#33270e" : "#fffdf6",
@@ -1798,9 +2176,7 @@
       ctx.clearRect(0, 0, FW, FH);
       if (i === 0) {
         if (state.style === "photo") { drawCover(ctx, bgImg, FW, FH); drawScrim(ctx, FW, FH, 1.0); }
-        else if (state.style === "dark") paintDarkBase(ctx, FW, FH);
-        else if (state.style === "light") paintLightBase(ctx, FW, FH);
-        else paintBiblePage(ctx, FW, FH);
+        else paintStyleBase(ctx, FW, FH, state.style);
         drawCarouselCover(ctx, FW, FH, serie, totalSlides);
       } else if (i <= c.verses.length) {
         const verse = c.verses[i - 1];
@@ -1808,9 +2184,7 @@
         drawVerseCard(ctx, FW, FH, verse, state.style === "photo" ? "photo" : state.style);
       } else {
         if (state.style === "photo") { drawCover(ctx, bgImg, FW, FH); drawScrim(ctx, FW, FH, 1.1); }
-        else if (state.style === "dark") paintDarkBase(ctx, FW, FH);
-        else if (state.style === "light") paintLightBase(ctx, FW, FH);
-        else paintBiblePage(ctx, FW, FH);
+        else paintStyleBase(ctx, FW, FH, state.style);
         drawCarouselEnd(ctx, FW, FH, serie);
       }
       const blob = await new Promise((resolve) => {
@@ -1840,8 +2214,7 @@
     setStatus("Montando o story…", 0.6);
     await ensureCanvasFonts();
     ctx.clearRect(0, 0, FW, FH);
-    drawCover(ctx, img, FW, FH);
-    drawStorySticker(ctx, FW, FH, story, null);
+    drawStorySticker(ctx, FW, FH, story, img);
 
     const blob = await new Promise((resolve) => {
       el.canvas.toBlob((b) => resolve(b || new Blob([], { type: "image/png" })), "image/png", 1);
@@ -1890,6 +2263,9 @@
       else if (state.fmt === "amem") await generateEngagement("amem");
       else if (state.fmt === "marque") await generateEngagement("marque");
       else if (state.fmt === "mensagem") await generateEngagement("mensagem");
+      else if (state.fmt === "bomdia") await generateEngagement("bomdia");
+      else if (state.fmt === "boanoite") await generateEngagement("boanoite");
+      else if (state.fmt === "cura") await generateEngagement("cura");
       else if (state.fmt === "quiz") await generateQuiz();
       else if (state.fmt === "carrossel") await generateCarrossel();
       else if (state.fmt === "story") await generateStory();
@@ -1908,7 +2284,7 @@
     if (state.busy) return;
     state.fmt = randomItem(PLUS_FORMATS.map((f) => f.id));
     if (state.fmt === "versiculo" || state.fmt === "carrossel") state.style = randomItem(Object.keys(PLUS_CARD_STYLES));
-    if (["amem", "marque", "mensagem", "quiz", "story"].includes(state.fmt) || ((state.fmt === "versiculo" || state.fmt === "carrossel") && state.style === "photo")) {
+    if (["amem", "marque", "mensagem", "bomdia", "boanoite", "cura", "quiz", "story"].includes(state.fmt) || ((state.fmt === "versiculo" || state.fmt === "carrossel") && state.style === "photo")) {
       state.source = randomItem(Object.keys(PLUS_SOURCES));
       state.theme = randomItem(PLUS_THEMES).id;
     }
@@ -1916,7 +2292,7 @@
     if (state.fmt === "carrossel") {
       /* carrossel é post de feed: só resoluções de feed */
       state.size = randomItem(["square", "portrait"]);
-    } else if (["versiculo", "amem", "marque", "mensagem"].includes(state.fmt)) {
+    } else if (["versiculo", "amem", "marque", "mensagem", "bomdia", "boanoite", "cura"].includes(state.fmt)) {
       state.size = randomItem(Object.keys(PLUS_SIZES));
     }
     pickContent();
