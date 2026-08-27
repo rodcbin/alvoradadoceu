@@ -1,228 +1,51 @@
 /* =========================================================
    Alvorada do Céu — Aba Plus (Engajamento)
-   Banco de conteúdo: formatos de post, estilos de card,
-   quiz bíblico, orações AMÉM, ganchos, stories interativos
-   e o mix semanal de publicações.
+   3 formatos: Versículo Card, Mensagem de Deus, Cura e Libertação
    ========================================================= */
 
-/* formatos de post disponíveis na aba Plus */
 const PLUS_FORMATS = [
   {
     id: "versiculo",
     label: "📖 Versículo Card",
-    desc: "Versículo em fundo preto, claro ou página da bíblia. Salvamentos e compartilhamentos.",
-    hint: "O clássico do nicho: alterne fundo preto e claro durante a semana para criar identidade no feed.",
-    multi: false,
-  },
-  {
-    id: "amem",
-    label: "🙏 Diga AMÉM",
-    desc: "Oração curta com convite para comentar AMÉM — o comentário mais fácil de escalar.",
-    hint: "Responda todos os AMÉM com uma bênção: cada resposta empurra o post para mais pessoas.",
-    multi: true,
-  },
-  {
-    id: "marque",
-    label: "💌 Marque alguém",
-    desc: "\"Marque alguém que precisa ler isso\" — marcações trazem alcance novo sem depender do algoritmo.",
-    hint: "Cada amigo marcado é um visitante novo no perfil. Use 1 a 2 vezes por semana.",
-    multi: false,
+    desc: "Versículo em fundo escuro, claro ou página da bíblia. Salvamentos e compartilhamentos.",
+    hint: "Alterne fundo preto e claro durante a semana para criar identidade no feed.",
   },
   {
     id: "mensagem",
     label: "✉️ Mensagem de Deus",
     desc: "\"Deus me mandou te lembrar disso\" — o formato mais compartilhado no privado.",
     hint: "Frases em segunda pessoa geram identificação imediata e disparos de compartilhamento.",
-    multi: false,
-  },
-  {
-    id: "quiz",
-    label: "🧠 Quiz Bíblico",
-    desc: "Carrossel \"Complete o versículo\": pergunta, resposta e CTA. Enxurrada de respostas nos comentários.",
-    hint: "Publique 1x por semana: quem erra comenta de novo para conferir, e o engajamento dobra.",
-    multi: true,
-  },
-  {
-    id: "bomdia",
-    label: "☀️ Bom Dia Abençoado",
-    desc: "Saudação da manhã com bênção declarada — o post diário que cria hábito na audiência.",
-    hint: "Publique entre 6h e 8h: quem acorda rolando o feed encontra sua bênção primeiro. Cria rotina de retorno.",
-    multi: true,
-  },
-  {
-    id: "boanoite",
-    label: "🌙 Boa Noite de Paz",
-    desc: "Mensagem noturna de entrega e descanso em Deus para fechar o dia do seguidor com você.",
-    hint: "Publique entre 20h e 22h: é o horário em que o coração está mais sensível a palavras de paz.",
-    multi: true,
   },
   {
     id: "cura",
     label: "💗 Cura e Libertação",
     desc: "Declarações de cura interior e liberdade em Cristo — conteúdo que gera comentários emocionantes.",
-    hint: "Responda os comentários com oração individual: esse cuidado transforma seguidores em comunidade fiel.",
-    multi: true,
+    hint: "Responda os comentários com oração individual: transforma seguidores em comunidade fiel.",
   },
-  {
-    id: "carrossel",
-    label: "🎠 Carrossel de Palavras",
-    desc: "Série de 6 a 8 slides sobre um tema (paz, ansiedade, gratidão…): capa, versículos e slide final de CTA.",
-    hint: "Carrossel é o formato com mais salvamentos do Instagram. Cada slide é um versículo — arraste e salve.",
-    multi: true,
-  },
-  {
-    id: "story",
-    label: "📱 Story Interativo",
-    desc: "Enquete, caixinha de perguntas e escala emocional prontos para postar nos stories.",
-    hint: "Story interativo todo dia aquece o algoritmo do perfil inteiro — use antes do post principal.",
-    multi: true,
-  },
-  {
-    id: "semana",
-    label: "🗓️ Mix Semanal",
-    desc: "Planner com o mix de publicações da semana: dia, formato, horário e objetivo de cada post.",
-    hint: "Gere o plano, siga a ordem e marque o que já postou. Constância é o que cria seguidor fiel.",
-    multi: false,
-  },
-];
-
-/* séries de carrossel — um tema, vários versículos, capa + CTA */
-const PLUS_CAROUSELS = [
-  {
-    id: "paz",
-    title: "Paz em dias difíceis",
-    kicker: "Série de paz",
-    verses: [
-      { x: "Deixo-vos a paz, a minha paz vos dou.", ref: "João 14:27" },
-      { x: "E a paz de Deus guardará os vossos corações.", ref: "Filipenses 4:7" },
-      { x: "Em mim tendes paz no mundo.", ref: "João 16:33" },
-      { x: "O Senhor te abençoe e lhe dê a paz.", ref: "Números 6:26" },
-      { x: "Bem-aventurados os pacificadores.", ref: "Mateus 5:9" },
-      { x: "A paz lhes concedo; a minha paz vos dou.", ref: "João 14:27" },
-    ],
-  },
-  {
-    id: "ansiedade",
-    title: "Contra a ansiedade",
-    kicker: "Série de confiança",
-    verses: [
-      { x: "Lançai sobre ele toda a vossa ansiedade.", ref: "1 Pedro 5:7" },
-      { x: "Não andeis ansiosos por coisa alguma.", ref: "Filipenses 4:6" },
-      { x: "Não vos afanais pelo amanhã.", ref: "Mateus 6:34" },
-      { x: "Entrega o teu caminho ao Senhor; confia nele.", ref: "Salmos 37:5" },
-      { x: "Deixai que a paz de Cristo seja árbitro em vossos corações.", ref: "Colossenses 3:15" },
-      { x: "Amanhã fareis melhor, se o Senhor quiser.", ref: "Tiago 4:15" },
-    ],
-  },
-  {
-    id: "gratidao",
-    title: "Coração agradecido",
-    kicker: "Série de gratidão",
-    verses: [
-      { x: "Rendei graças em todas as coisas.", ref: "1 Tessalonicenses 5:18" },
-      { x: "Entrai pelas suas portas com ações de graças.", ref: "Salmos 100:4" },
-      { x: "Tudo o que existe, recebeu do Senhor.", ref: "Tiago 1:17" },
-      { x: "Bendize, ó minha alma, ao Senhor.", ref: "Salmos 103:2" },
-      { x: "Em tudo somos mais que vencedores.", ref: "Romanos 8:37" },
-      { x: "O Senhor é bom, eterna é a sua misericórdia.", ref: "Salmos 136:1" },
-    ],
-  },
-  {
-    id: "forca",
-    title: "Força para recomeçar",
-    kicker: "Série de coragem",
-    verses: [
-      { x: "Tudo posso naquele que me fortalece.", ref: "Filipenses 4:13" },
-      { x: "Esforça-te e tem bom ânimo!", ref: "Josué 1:9" },
-      { x: "O Senhor é a minha luz e a minha salvação.", ref: "Salmos 27:1" },
-      { x: "Vinde a mim todos os que estais cansados.", ref: "Mateus 11:28" },
-      { x: "As suas misericórdias se renovam a cada manhã.", ref: "Lamentações 3:22-23" },
-      { x: "Quando sou fraco, então sou forte.", ref: "2 Coríntios 12:10" },
-    ],
-  },
-  {
-    id: "amor",
-    title: "O amor de Deus por você",
-    kicker: "Série de amor",
-    verses: [
-      { x: "Deus amou o mundo de tal maneira que deu o seu Filho.", ref: "João 3:16" },
-      { x: "Ame uns aos outros como eu vos amei.", ref: "João 15:12" },
-      { x: "Com amor eterno eu te amei.", ref: "Jeremias 31:3" },
-      { x: "O amor jamais acaba.", ref: "1 Coríntios 13:8" },
-      { x: "Somos chamados filhos de Deus.", ref: "1 João 3:1" },
-      { x: "Acima de tudo, revesti-vos do amor.", ref: "Colossenses 3:14" },
-    ],
-  },
-  {
-    id: "proposito",
-    title: "Deus tem um propósito",
-    kicker: "Série de propósito",
-    verses: [
-      { x: "Eu sei os planos que tenho para vocês.", ref: "Jeremias 29:11" },
-      { x: "Todas as coisas cooperam para o bem.", ref: "Romanos 8:28" },
-      { x: "Antes de formar-te no ventre, te conheci.", ref: "Jeremias 1:5" },
-      { x: "Para tudo há a sua ocasião.", ref: "Eclesiastes 3:1" },
-      { x: "Os passos do homem são dirigidos pelo Senhor.", ref: "Salmos 37:23" },
-      { x: "Fiel é aquele que vos chama.", ref: "1 Tessalonicenses 5:24" },
-    ],
-  },
-];
-
-/* estilos visuais do versículo card */
-/* posts do dia — saudações que geram comentários diários */
-const PLUS_DAY_POSTS = {
-  bomdia: [
-    { e: "🌅", t: "Bom dia, Senhor", x: "Obrigado por este novo amanhecer. Que os meus primeiros passos sejam guiados por ti e a minha primeira palavra seja um louvor. Abençoa quem lê esta mensagem: hoje é dia de vitória." },
-    { e: "☀️", t: "Este dia já nasceu abençoado", x: "Antes das preocupações chegarem, chega a promessa: a misericórdia de Deus se renovou para ti nesta manhã. Caminha com fé — o melhor de hoje ainda vai acontecer." },
-    { e: "🌻", t: "Acorde com gratidão", x: "Abre os olhos e agradece: respirar é milagre, recomeçar é graça. Entrega este dia nas mãos do Pai e vê como tudo se encaixa no tempo dele." },
-    { e: "🕊️", t: "Paz para começar bem", x: "Que a paz de Deus guarde o teu coração desde cedo. Nada do que te preocupa agora é maior do que Aquele que caminha contigo. Bom dia e segue em frente com fé." },
-    { e: "✨", t: "Hoje tem propósito", x: "Este não é mais um dia qualquer: foi criado com propósito sobre a tua vida. Pede sabedoria, age com amor e colhe bênçãos. Um glorioso dia te espera." },
-    { e: "💪", t: "Forças renovadas", x: "Ontem pode ter sido pesado, mas hoje as forças se renovam como as da águia. Levanta, agradece e avança — Deus já preparou o caminho de hoje." },
-  ],
-  boanoite: [
-    { e: "🌙", t: "Entrega e dorme em paz", x: "Coloca nos braços do Pai tudo o que não conseguiu resolver hoje. Ele não dorme para que tu possas dormir. Boa noite e descanso abençoado." },
-    { e: "⭐", t: "Obrigado pelo dia de hoje", x: "Pelos acertos e pelos erros, pelas alegrias e pelas lições: tudo guardou valor. Perdoa o que falhou, agradece o que floresceu e descansa. Amanhã é nova chance." },
-    { e: "💛", t: "Durma sem medo", x: "Quem guarda Israel não cochila nem dorme. A tua casa, a tua família e os teus sonhos estão protegidos esta noite. Descansa em paz." },
-    { e: "🌌", t: "Silêncio que cura", x: "No silêncio da noite, Deus fala mais alto. Deita-te, respira fundo e permite que a paz dele envolva o teu coração até o amanhecer. Boa noite." },
-    { e: "🛏️", t: "Solta o peso antes de dormir", x: "Mágoa não combina com travesseiro. Perdoa rápido, entrega o resto e fecha os olhos leve. O cuidado de Deus trabalha enquanto tu descansas." },
-    { e: "🌠", t: "Confia: o amanhã já está guardado", x: "Não precisas saber tudo o que virá — apenas quem te conduz. Dorme tranquilo: o futuro está nas mãos que foram cravadas por amor." },
-  ],
-};
-
-/* posts de cura e libertação — declarações de restauração */
-const PLUS_CURA_POSTS = [
-  { e: "💗", t: "Deus cura o que ninguém vê", x: "Aquela ferida que você esconde por trás do sorriso também interessa a Deus. Traz a ele agora: onde a medicina alcança, ele abençoa; onde ninguém alcança, ele cura." },
-  { e: "🕊️", t: "Você está liberado(a)", x: "Em nome de Jesus, declara-se livre: livre do passado, da culpa e do medo que te prendia. Quem o Filho liberta é livre verdadeiramente. Recebe essa liberdade hoje." },
-  { e: "🌿", t: "O teu coração vai sarar", x: "Cicatriz não é sinal de derrota: é prova de que a ferida fechou. O tempo de Deus está costurando o teu interior com amor. Confia — a tua alma vai florescer de novo." },
-  { e: "⛓️‍💥", t: "Corrente quebrada", x: "Toda herança de dor termina em ti. Em Cristo, tu és geração de bênção. Quebra o ciclo, renuncia a mentira e anda na liberdade de filho de Deus." },
-  { e: "🤲", t: "Entrega a dor nas mãos do Pai", x: "Abre as mãos agora e entrega: as memórias, as perguntas sem resposta e o cansaço da alma. Cuidar de ti é trabalho dEle — e ele nunca falha." },
-  { e: "👑", t: "Nenhuma palavra te define", x: "Rejeição não define, fracasso não define, diagnóstico não define. Tu és obra-prima escrita pela mão de Deus. Levanta a cabeça: a tua identidade é eterna." },
 ];
 
 const PLUS_CARD_STYLES = {
   dark: { label: "⬛ Preto", desc: "Fundo preto com texto branco — elegância máxima" },
-  light: { label: "⬜ Claro", desc: "Fundo claro com texto escuro — o inverso, limpa o feed" },
-  clean: { label: "⚪ Clean", desc: "Branco minimalista com linhas suaves — foco total na Palavra" },
-  navy: { label: "🔵 Marinho Elegante", desc: "Azul-marinho profundo com brilho dourado — serenidade nobre" },
-  verde: { label: "🟢 Verde Esperança", desc: "Verde-esmeralda elegante que remete à esperança e ao renovo" },
-  roxo: { label: "🟣 Roxo elegante", desc: "Gradiente roxo profundo com detalhes dourados — sofisticação espiritual" },
-  bordo: { label: "🍷 Bordô", desc: "Vinho bordô nobre com reflexos dourados — clima de reverência" },
-  vip: { label: "👑 VIP Dourado", desc: "Preto nobre, moldura ornamentada e brilho dourado premium" },
-  classico: { label: "🏛️ Clássico", desc: "Creme e sépia com textura de tela — clima de galeria de arte" },
+  light: { label: "⬜ Claro", desc: "Fundo claro com texto escuro — limpa o feed" },
+  clean: { label: "⚪ Clean", desc: "Branco minimalista com linhas suaves — foco na Palavra" },
+  navy: { label: "🔵 Marinho", desc: "Azul-marinho profundo com brilho dourado — serenidade nobre" },
+  verde: { label: "🟢 Verde Esperança", desc: "Verde-esmeralda que remete à esperança e ao renovo" },
+  roxo: { label: "🟣 Roxo", desc: "Gradiente roxo profundo com detalhes dourados — sofisticação" },
+  bordo: { label: "🍷 Bordô", desc: "Vinho bordô nobre com reflexos dourados — reverência" },
+  vip: { label: "👑 VIP Dourado", desc: "Preto nobre, moldura ornamentada e brilho premium" },
+  classico: { label: "🏛️ Clássico", desc: "Creme e sépia com textura de tela — galeria de arte" },
   marmore: { label: "🪨 Mármore", desc: "Mármore claro com veios elegantes — sofisticação atemporal" },
   pergaminho: { label: "📜 Pergaminho", desc: "Rolo de pergaminho envelhecido com bordas enroladas" },
   biblepage: { label: "📖 Página da Bíblia", desc: "Página envelhecida desenhada, versículo tipografado" },
   photo: { label: "🖼️ Foto/IA", desc: "Foto real ou arte de IA com o versículo sobreposto" },
 };
 
-/* formatos/tamanhos exportados — resoluções oficiais do Instagram */
 const PLUS_SIZES = {
   square: { label: "Post 1:1 · 1080×1080", w: 1080, h: 1080, desc: "Feed quadrado — clássico" },
   portrait: { label: "Post 4:5 · 1080×1350", w: 1080, h: 1350, desc: "Feed vertical — ocupa mais tela, alcance maior" },
   story: { label: "Story/Reels 9:16 · 1080×1920", w: 1080, h: 1920, desc: "Stories e capa de Reels — tela cheia" },
 };
 
-/* temas de fundo (mesma linguagem da aba Reels) */
 const PLUS_THEMES = [
   { id: "ceu", label: "Céu dourado", emoji: "☁️", query: "golden sky clouds sunrise rays", scene: "vast golden sky with dramatic glowing clouds at sunrise, soft god rays breaking through, heavenly peaceful atmosphere, vertical composition, no text" },
   { id: "natureza", label: "Natureza", emoji: "🌿", query: "forest morning mist sunbeams", scene: "lush green forest with soft morning mist, gentle sunbeams through the leaves, tranquil sacred nature, vertical composition, no text" },
@@ -232,9 +55,10 @@ const PLUS_THEMES = [
   { id: "estrelas", label: "Céu estrelado", emoji: "🌌", query: "starry night sky milky way", scene: "starry night sky with the milky way over a peaceful valley, deep blues with warm golden horizon glow, vertical composition, no text" },
   { id: "pomba", label: "Pomba da paz", emoji: "🕊️", query: "white dove flying sky", scene: "a white dove flying in soft heavenly light, calm radiant sky, purity and peace, vertical composition, no text" },
   { id: "maos", label: "Mãos em oração", emoji: "🤲", query: "praying hands warm light", scene: "hands clasped in prayer bathed in warm heavenly light rays, sacred reverent mood, vertical composition, no text" },
+  { id: "sunset", label: "Pôr do sol", emoji: "🌅", query: "golden sunset sky clouds", scene: "breathtaking golden sunset sky with warm orange and purple clouds, peaceful horizon, vertical composition, no text" },
+  { id: "lavanda", label: "Lavanda", emoji: "💜", query: "lavender field purple golden light", scene: "endless purple lavender field in soft golden light, serene divine beauty, vertical composition, no text" },
 ];
 
-/* fontes de imagem (com fallback automático entre elas) */
 const PLUS_SOURCES = {
   cloudflare: { label: "Cloudflare IA", desc: "Arte exclusiva gerada por IA (FLUX)" },
   pollinations: { label: "Pollinations IA", desc: "Arte exclusiva gerada por IA gratuita" },
@@ -242,7 +66,6 @@ const PLUS_SOURCES = {
   pixabay: { label: "Pixabay", desc: "Fotos reais gratuitas" },
 };
 
-/* versículos completos do card (reuso do acervo + extras) */
 const PLUS_VERSES = [
   { x: "Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus.", ref: "Isaías 41:10" },
   { x: "O Senhor é o meu pastor; nada me faltará.", ref: "Salmos 23:1" },
@@ -260,42 +83,25 @@ const PLUS_VERSES = [
   { x: "Sabemos que todas as coisas contribuem juntamente para o bem daqueles que amam a Deus.", ref: "Romanos 8:28" },
   { x: "No mundo tereis aflições, mas tende bom ânimo: eu venci o mundo.", ref: "João 16:33" },
   { x: "Ela está sentada à sombra do Onipotente; nada alcança quem mora no esconderijo do Altíssimo.", ref: "Salmos 91:1" },
+  { x: "Deus é o nosso refúgio e a nossa fortaleza, sempre pronto para ajudar.", ref: "Salmos 46:1" },
+  { x: "A paz de Deus excede todo entendimento.", ref: "Filipenses 4:7" },
 ];
 
-/* kickers do versículo card */
 const PLUS_CARD_KICKERS = ["Versículo do dia", "Palavra para hoje", "Guarda no coração", "A Palavra diz", "Para o seu momento"];
 
-/* quiz bíblico — complete o versículo */
-const PLUS_QUIZ = [
-  { q: "Tudo posso naquele que me ___.", answer: "fortalece", verse: "Tudo posso naquele que me fortalece.", ref: "Filipenses 4:13" },
-  { q: "O Senhor é o meu ___; nada me faltará.", answer: "pastor", verse: "O Senhor é o meu pastor; nada me faltará.", ref: "Salmos 23:1" },
-  { q: "Aquietai-vos e sabei que eu sou ___.", answer: "Deus", verse: "Aquietai-vos e sabei que eu sou Deus.", ref: "Salmos 46:10" },
-  { q: "Lâmpada para os meus pés é a tua ___.", answer: "palavra", verse: "Lâmpada para os meus pés é a tua palavra e luz para o meu caminho.", ref: "Salmos 119:105" },
-  { q: "Entrega o teu caminho ao Senhor; ___ nele, e ele tudo fará.", answer: "confia", verse: "Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.", ref: "Salmos 37:5" },
-  { q: "Vinde a mim, todos os que estais cansados e ___.", answer: "sobrecarregados", verse: "Vinde a mim, todos os que estais cansados e sobrecarregados, e eu vos aliviarei.", ref: "Mateus 11:28" },
-  { q: "Não temas, porque eu sou ___.", answer: "contigo", verse: "Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus.", ref: "Isaías 41:10" },
-  { q: "O choro pode durar uma noite, mas a ___ vem ao amanhecer.", answer: "alegria", verse: "O choro pode durar uma noite, mas a alegria vem ao amanhecer.", ref: "Salmos 30:5" },
-  { q: "Confia no Senhor de todo o teu ___.", answer: "coração", verse: "Confia no Senhor de todo o teu coração.", ref: "Provérbios 3:5" },
-  { q: "Em paz me deito e logo pego no ___.", answer: "sono", verse: "Em paz me deito e logo pego no sono, porque só tu, Senhor, me fazes repousar seguro.", ref: "Salmos 4:8" },
-  { q: "Pedi, e dar-se-vos-á; buscai, e ___.", answer: "encontrareis", verse: "Pedi, e dar-se-vos-á; buscai, e encontrareis; batei, e abrir-se-vos-á.", ref: "Mateus 7:7" },
-  { q: "O amor é paciente, o amor é ___.", answer: "bondoso", verse: "O amor é paciente, o amor é bondoso. O amor nunca falha.", ref: "1 Coríntios 13:4,8" },
+const PLUS_MESSAGES = [
+  { x: "Aquela batalha que você trava em silêncio? Deus já viu, e a vitória já tem data marcada. Aguenta firme.", ref: "" },
+  { x: "A porta que fechou para você estava te protegendo. Deus preparou outra maior — espere e verás.", ref: "" },
+  { x: "Você não precisa ser forte hoje. Só precisa entregar. Deus sustenta o que você não consegue carregar.", ref: "Salmos 55:22" },
+  { x: "O tempo de Deus não atrasa. O que você pediu com lágrimas vai chegar como resposta com alegria.", ref: "" },
+  { x: "Deus viu cada lágrima escondida. Nenhuma foi desperdiçada: elas viraram sementes da sua próxima alegria.", ref: "" },
+  { x: "Pare de correr atrás do que Deus já garantiu. Descansa: a promessa não depende só dos seus esforços.", ref: "" },
+  { x: "Você recomeçou tantas vezes... desta vez Deus recomeça com você. E essa história vai ser diferente.", ref: "" },
+  { x: "A ansiedade mente sobre o seu futuro. Deus escreveu dias de paz nele — confie até chegar lá.", ref: "" },
+  { x: "Você está vendo isto não é por acaso. Deus tem um recado para o seu coração agora.", ref: "" },
+  { x: "Enquanto você lê isso, Deus está preparando algo que vai compensar todo o tempo de espera.", ref: "" },
 ];
 
-/* orações curtas para o formato "Diga AMÉM" */
-const PLUS_AMEN_PRAYERS = [
-  { t: "Oração de gratidão", x: "Senhor, obrigado pelo dia de hoje: pelo pão, pela saúde e pelas pessoas que amo. Que eu nunca me acostume com as tuas bênçãos pequenas. Amém." },
-  { t: "Oração de proteção", x: "Deus, guarda a minha casa esta noite. Protege quem eu amo, acalma o meu coração e renova as minhas forças para amanhã. Amém." },
-  { t: "Oração de entrega", x: "Pai, eu entrego nas tuas mãos aquilo que não consigo resolver sozinho(a). Toma conta de tudo enquanto eu descanso. Amém." },
-  { t: "Oração pela família", x: "Senhor, abençoa a minha família: une o que andou distante, cura o que dói e enche a nossa casa da tua paz. Amém." },
-  { t: "Oração do trabalho", x: "Deus, ilumina o meu trabalho. Que as minhas mãos sejam abençoadas e o meu esforço abra portas. Eu confio em ti. Amém." },
-  { t: "Oração de cura", x: "Jesus, toca agora o lugar que dói dentro de mim. Cura o corpo, acalma a mente e restaura o coração. Amém." },
-  { t: "Oração de fé", x: "Senhor, aumenta a minha fé. Onde há medo, planta coragem; onde há dúvida, planta certeza. Eu creio em ti. Amém." },
-  { t: "Oração pelo perdão", x: "Pai, livra-me de toda mágoa. Ensina-me a perdoar como sou perdoado(a) e a recomeçar leve. Amém." },
-  { t: "Oração de boa noite", x: "Boa noite, meu Deus. Obrigado pelo dia que passou; entrego a ti o dia que vem. Em paz eu durmo, porque tu velas por mim. Amém." },
-  { t: "Oração de bom dia", x: "Bom dia, Senhor! Obrigado por mais um amanhecer. Guia os meus passos e faz de mim canal da tua paz. Amém." },
-];
-
-/* ganchos do formato "Mensagem de Deus" (share-bait) */
 const PLUS_MESSAGE_HOOKS = [
   "Deus me mandou lembrar você disso",
   "Se você está vendo isto, não é por acaso",
@@ -307,154 +113,24 @@ const PLUS_MESSAGE_HOOKS = [
   "Deus preparou este recado para o seu dia",
 ];
 
-/* mensagens do share-bait */
-const PLUS_MESSAGES = [
-  { x: "Aquela batalha que você trava em silêncio? Deus já viu, e a vitória já tem data marcada. Aguenta firme.", ref: "" },
-  { x: "A porta que fechou para você estava te protegendo. Deus preparou outra maior — espere e verás.", ref: "" },
-  { x: "Você não precisa ser forte hoje. Só precisa entregar. Deus sustenta o que você não consegue carregar.", ref: "Salmos 55:22" },
-  { x: "O tempo de Deus não atrasa. O que você pediu com lágrimas vai chegar como resposta com alegria.", ref: "" },
-  { x: "Deus viu cada lágrima escondida. Nenhuma foi desperdiçada: elas viraram sementes da sua próxima alegria.", ref: "" },
-  { x: "Pare de correr atrás do que Deus já garantiu. Descansa: a promessa não depende só dos seus esforços.", ref: "" },
-  { x: "Você recomeçou tantas vezes... desta vez Deus recomeça com você. E essa história vai ser diferente.", ref: "" },
-  { x: "A ansiedade mente sobre o seu futuro. Deus escreveu dias de paz nele — confie até chegar lá.", ref: "" },
-];
-
-/* linhas do formato "Marque alguém" */
-const PLUS_MARK_LINES = [
-  { head: "Marque alguém que precisa ler isso", sub: "pode ser exatamente a palavra do dia dessa pessoa 💛" },
-  { head: "Envie para alguém que você ama", sub: "abençoe alguém hoje com esta palavra ✨" },
-  { head: "Marque alguém que é luz na sua vida", sub: "e diga o quanto essa pessoa faz diferença 🌟" },
-  { head: "Compartilhe com quem está lutando", sub: "essa pessoa precisa saber: ela não está sozinha 🤝" },
-  { head: "Marque alguém que Deus colocou no seu caminho", sub: "amizade abençoada também é bênção de Deus 💫" },
-];
-
-/* textos curtos que acompanham o marquee */
-const PLUS_MARK_TEXTS = [
-  "Deus usa pequenos gestos para transformar grandes histórias. A sua marcação pode ser a resposta da oração de alguém.",
-  "Antes de rolar a tela, pense: quem precisa ouvir isso hoje? Marque e abençoe.",
-  "Uma simples marcação pode virar a virada da semana de alguém. Faça acontecer.",
-  "Se lembrou de alguém enquanto lia, não é coincidência. Marque agora.",
-];
-
-/* stories interativos — templates de sticker */
-const PLUS_STORIES = [
-  {
-    id: "poll",
-    label: "Enquete Sim/Não",
-    question: "Você está entregando tudo nas mãos de Deus?",
-    options: ["Sim, todo dia 🙏", "Estou aprendendo 💭"],
-    hint: "Enquete de 2 opções: todo mundo vota sem pensar — engajamento garantido.",
-  },
-  {
-    id: "choice",
-    label: "Qual dos dois?",
-    question: "O que sua alma mais precisa hoje?",
-    options: ["Paz 🕊️", "Força 💪"],
-    hint: "Escolhas binárias geram respostas em cadeia — responda quem votar com um versículo.",
-  },
-  {
-    id: "ask",
-    label: "Caixinha de perguntas",
-    question: "Qual versículo te sustentou esse ano?",
-    options: [],
-    hint: "As respostas da caixinha rendem conteúdo pronto por semanas: repost as melhores.",
-  },
-  {
-    id: "scale",
-    label: "Escala emocional",
-    question: "Quanta paz você sente neste momento?",
-    options: ["Nenhuma 😔", "Um pouco 🌤️", "Muita 🌈"],
-    hint: "Escalas revelam como o público está — e dão ideia de conteúdo para o próximo post.",
-  },
-  {
-    id: "quizstory",
-    label: "Mini quiz",
-    question: "\"Tudo posso naquele que me fortalece\" está em qual livro?",
-    options: ["Filipenses 📖", "Salmos 📜"],
-    hint: "Quiz nos stories treina o público para o quiz do feed — poste no dia anterior.",
-  },
-  {
-    id: "pray",
-    label: "Pedido de oração",
-    question: "Posso orar por você hoje?",
-    options: ["Sim 🙌", "Só responde AMÉM"],
-    hint: "Responda cada pedido com uma bênção personalizada: cria vínculo profundo.",
-  },
-];
-
-/* =========================================================
-   MIX SEMANAL — planner de publicações
-   Cada slot lista opções; o gerador sorteia 1 por dia
-   garantindo variedade de objetivos.
-   ========================================================= */
-
-const PLUS_WEEK_GOALS = {
-  comentario: { label: "Comentários", emoji: "💬" },
-  salvar: { label: "Salvamentos", emoji: "📌" },
-  compartilhar: { label: "Compartilhamentos", emoji: "✨" },
-  seguir: { label: "Seguidores", emoji: "🔔" },
-  alcance: { label: "Alcance", emoji: "📈" },
-};
-
-/* tool indica onde gerar: plus (esta aba), reels (aba Reels), frase (aba Frases) */
-const PLUS_WEEK_POOL = {
-  seg: [
-    { e: "🌅", label: "Oração da manhã", detail: "Reels narrado ou card AMÉM", hour: "06h–08h", goal: "comentario", tool: "plus" },
-    { e: "📖", label: "Versículo Card preto", detail: "Abrir a semana com a Palavra", hour: "07h–09h", goal: "salvar", tool: "plus" },
-    { e: "🙏", label: "Diga AMÉM", detail: "Oração curta + pedido de comentário", hour: "06h–08h", goal: "comentario", tool: "plus" },
-  ],
-  ter: [
-    { e: "🧠", label: "Quiz Bíblico", detail: "Complete o versículo (carrossel)", hour: "12h–13h", goal: "comentario", tool: "plus" },
-    { e: "📱", label: "Story enquete", detail: "Aquecer o público antes do quiz", hour: "09h–10h", goal: "alcance", tool: "plus" },
-    { e: "💬", label: "Frases do dia", detail: "Carrossel clássico do acervo", hour: "18h–20h", goal: "salvar", tool: "reels" },
-  ],
-  qua: [
-    { e: "✉️", label: "Mensagem de Deus", detail: "Share-bait em segunda pessoa", hour: "20h–22h", goal: "compartilhar", tool: "plus" },
-    { e: "💛", label: "Versículos para a ansiedade", detail: "Lista numerada para salvar", hour: "19h–21h", goal: "salvar", tool: "reels" },
-    { e: "📜", label: "Página da Bíblia", detail: "Versículo estilo página antiga", hour: "12h–13h", goal: "salvar", tool: "plus" },
-  ],
-  qui: [
-    { e: "💌", label: "Marque alguém", detail: "\"Marque quem precisa ler isso\"", hour: "18h–20h", goal: "alcance", tool: "plus" },
-    { e: "✨", label: "Testemunho", detail: "História de fé narrada", hour: "20h–22h", goal: "compartilhar", tool: "reels" },
-    { e: "🕊️", label: "Story caixinha", detail: "Pergunte algo aos seguidores", hour: "12h–14h", goal: "comentario", tool: "plus" },
-  ],
-  sex: [
-    { e: "🌙", label: "Oração da noite", detail: "Fechar a semana em oração", hour: "21h–22h", goal: "comentario", tool: "reels" },
-    { e: "🙏", label: "Diga AMÉM", detail: "Oração de gratidão pela semana", hour: "20h–21h", goal: "comentario", tool: "plus" },
-    { e: "🌟", label: "Milagre do dia", detail: "Palavra de fé e expectativa", hour: "18h–19h", goal: "compartilhar", tool: "frase" },
-  ],
-  sab: [
-    { e: "🎲", label: "Escolha um número", detail: "O rei do engajamento", hour: "11h–13h", goal: "comentario", tool: "reels" },
-    { e: "💌", label: "Marque alguém", detail: "Edição fim de semana", hour: "15h–17h", goal: "alcance", tool: "plus" },
-    { e: "🖼️", label: "Imagem com frase", detail: "Frase bonita com foto real", hour: "12h–14h", goal: "salvar", tool: "frase" },
-  ],
-  dom: [
-    { e: "👑", label: "Versículo dominical", detail: "Card claro + série semanal", hour: "08h–10h", goal: "seguir", tool: "plus" },
-    { e: "🙌", label: "Louvor e agradecimento", detail: "Reels de louvor", hour: "09h–11h", goal: "seguir", tool: "reels" },
-    { e: "🔔", label: "Recap da semana", detail: "Melhores momentos + convite a seguir", hour: "18h–20h", goal: "seguir", tool: "plus" },
-  ],
-};
-
-const PLUS_WEEK_DAYS = [
-  { id: "seg", label: "Segunda" },
-  { id: "ter", label: "Terça" },
-  { id: "qua", label: "Quarta" },
-  { id: "qui", label: "Quinta" },
-  { id: "sex", label: "Sexta" },
-  { id: "sab", label: "Sábado" },
-  { id: "dom", label: "Domingo" },
-];
-
-/* hashtags base da aba Plus (mistura com as das outras abas) */
-const PLUS_HASHTAGS = [
-  "#versiculododia", "#palavradeDeus", "#biblia", "#fe", "#deus", "#jesus",
-  "#oracao", "#gratidao", "#esperanca", "#amor", "#paz", "#espiritualidade",
-  "#palavradodia", "#devocional", "#cristao", "#bendita", "#evangelho",
+const PLUS_CURA_POSTS = [
+  { t: "Deus cura o que ninguém vê", x: "Aquela ferida que você esconde por trás do sorriso também interessa a Deus. Traz a ele agora: onde a medicina alcança, ele abençoa; onde ninguém alcança, ele cura." },
+  { t: "Você está liberado(a)", x: "Em nome de Jesus, declara-se livre: livre do passado, da culpa e do medo que te prendia. Quem o Filho liberta é livre verdadeiramente. Recebe essa liberdade hoje." },
+  { t: "O teu coração vai sarar", x: "Cicatriz não é sinal de derrota: é prova de que a ferida fechou. O tempo de Deus está costurando o teu interior com amor. Confia — a tua alma vai florescer de novo." },
+  { t: "Corrente quebrada", x: "Toda herança de dor termina em ti. Em Cristo, tu és geração de bênção. Quebra o ciclo, renuncia a mentira e anda na liberdade de filho de Deus." },
+  { t: "Entrega a dor nas mãos do Pai", x: "Abre as mãos agora e entrega: as memórias, as perguntas sem resposta e o cansaço da alma. Cuidar de ti é trabalho dEle — e ele nunca falha." },
+  { t: "Nenhuma palavra te define", x: "Rejeição não define, fracasso não define, diagnóstico não define. Tu és obra-prima escrita pela mão de Deus. Levanta a cabeça: a tua identidade é eterna." },
+  { t: "A cura começa agora", x: "Você não precisa esperar amanhã para começar a sarar. Deus está operando neste exato momento. Abre o coração e receba a restauração que já foi escrita sobre a sua vida." },
+  { t: "Liberto(a) para viver", x: "Deus não te libertou para viver com medo. Caminhe na liberdade: sorria sem culpa, ame sem medo, viva sem correntes. A graça já fez o trabalho." },
 ];
 
 /* legendas prontas por formato */
 function plusCaptionFor(formatId, content) {
-  const tags = PLUS_HASHTAGS.slice().sort(() => Math.random() - 0.5).slice(0, 12);
+  const tags = [
+    "#versiculododia","#palavradeDeus","#biblia","#fe","#deus","#jesus",
+    "#oracao","#gratidao","#esperanca","#amor","#paz","#espiritualidade",
+    "#palavradodia","#devocional","#cristao","#bendita","#evangelho",
+  ].sort(() => Math.random() - 0.5).slice(0, 12);
   const follow = "🔔 Siga @alvoradadoceu para receber uma palavra todos os dias";
   const save = "📌 Salve para reler quando precisar";
   const lines = [];
@@ -464,25 +140,9 @@ function plusCaptionFor(formatId, content) {
     lines.push("");
     lines.push(content.x);
     lines.push("");
-    lines.push("\"Lâmpada para os meus pés é a tua palavra.\" Guarde esta promessa no coração.");
+    lines.push("Guarde esta promessa no coração.");
     lines.push(save);
     lines.push("✨ Compartilhe com alguém que ama a Palavra");
-    lines.push(follow);
-  } else if (formatId === "amem") {
-    lines.push("🙏 " + (content.t || "Oração do dia"));
-    lines.push("");
-    lines.push(content.x);
-    lines.push("");
-    lines.push("👇 Comente AMÉM para declarar esta oração");
-    lines.push("Eu respondo cada AMÉM com uma bênção!");
-    lines.push(follow);
-  } else if (formatId === "marque") {
-    lines.push("💌 " + content.head);
-    lines.push("");
-    lines.push(content.x || content.sub);
-    lines.push("");
-    lines.push("👇 Marque nos comentários quem precisa ler isso");
-    lines.push(save);
     lines.push(follow);
   } else if (formatId === "mensagem") {
     lines.push("✉️ " + (content.hook || "Deus tem um recado para você"));
@@ -493,22 +153,6 @@ function plusCaptionFor(formatId, content) {
     lines.push("✨ Compartilhe — pode ser o recado de alguém");
     lines.push(save);
     lines.push(follow);
-  } else if (formatId === "bomdia") {
-    lines.push("☀️ " + (content.t || "Bom dia abençoado"));
-    lines.push("");
-    lines.push(content.x);
-    lines.push("");
-    lines.push("👇 Comente AMÉM para receber esta bênção hoje");
-    lines.push("🔔 Ative as notificações: toda manhã tem palavra nova aqui");
-    lines.push(follow);
-  } else if (formatId === "boanoite") {
-    lines.push("🌙 " + (content.t || "Boa noite abençoada"));
-    lines.push("");
-    lines.push(content.x);
-    lines.push("");
-    lines.push("👇 Comente AMÉM para entregar esta noite a Deus");
-    lines.push("✨ Envie para alguém que você quer ver descansando em paz");
-    lines.push(follow);
   } else if (formatId === "cura") {
     lines.push("💗 " + (content.t || "Cura e libertação"));
     lines.push("");
@@ -518,38 +162,6 @@ function plusCaptionFor(formatId, content) {
     lines.push("✨ Marque alguém que precisa dessa palavra hoje");
     lines.push(save);
     lines.push(follow);
-  } else if (formatId === "quiz") {
-    lines.push("🧠 Quiz Bíblico: complete o versículo!");
-    lines.push("");
-    lines.push(content.q);
-    lines.push("");
-    lines.push("👇 Comenta a resposta antes de deslizar para conferir!");
-    lines.push("Acertou? Comenta \"ACERTEI\" 🙌");
-    lines.push(save);
-    lines.push(follow);
-  } else if (formatId === "carrossel") {
-    const title = content.title || "Palavras para o seu coração";
-    lines.push("🎠 " + title + " — um carrossel para guardar no coração");
-    lines.push("");
-    (content.verses || []).forEach((v) => {
-      lines.push("📖 " + v.x + " (" + v.ref + ")");
-    });
-    lines.push("");
-    lines.push("➡️ Arraste para o lado e deixe a Palavra te alcançar.");
-    lines.push("📌 Salve este carrossel para reler nos dias difíceis");
-    lines.push("✨ Marque alguém que precisa dessas palavras");
-    lines.push(follow);
-  } else if (formatId === "story") {
-    lines.push("📱 Story interativo pronto:");
-    lines.push("");
-    lines.push(content.question);
-    if (content.options && content.options.length) {
-      lines.push("Opções: " + content.options.join("  ·  "));
-    }
-    lines.push("");
-    lines.push("Cole nos stories e responda todo mundo que interagir.");
-  } else if (formatId === "semana") {
-    return content.text || "";
   }
 
   lines.push("");

@@ -41,6 +41,25 @@ body {
 img { max-width: 100%; display: block; }
 button { font-family: inherit; }
 
+textarea, input[type="text"] {
+  background: rgba(6, 5, 14, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+textarea:focus, input[type="text"]:focus {
+  border-color: rgba(230, 195, 90, 0.5);
+  box-shadow: 0 0 0 2px rgba(230, 195, 90, 0.12);
+}
+textarea::placeholder, input[type="text"]::placeholder {
+  color: var(--ink-faint);
+}
+
 /* ============ header ============ */
 .site-header { position: sticky; top: 0; z-index: 50; background: rgba(11, 10, 18, 0.82); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
 .site-header .wrap { display: flex; align-items: center; justify-content: space-between; height: 66px; }
