@@ -57,6 +57,16 @@ const PLUS_THEMES = [
   { id: "maos", label: "Mãos em oração", emoji: "🤲", query: "praying hands warm light", scene: "hands clasped in prayer bathed in warm heavenly light rays, sacred reverent mood, vertical composition, no text" },
   { id: "sunset", label: "Pôr do sol", emoji: "🌅", query: "golden sunset sky clouds", scene: "breathtaking golden sunset sky with warm orange and purple clouds, peaceful horizon, vertical composition, no text" },
   { id: "lavanda", label: "Lavanda", emoji: "💜", query: "lavender field purple golden light", scene: "endless purple lavender field in soft golden light, serene divine beauty, vertical composition, no text" },
+  { id: "minimal", label: "Minimalista", emoji: "🖤", query: "golden light beam dark background minimal", scene: "single golden light beam on pure dark background, elegant minimalism, premium sacred atmosphere, vertical composition, no text" },
+  { id: "roses", label: "Rosas", emoji: "🌹", query: "white golden roses dew light sacred", scene: "luminous white and golden roses in full bloom, soft heavenly light, dew drops, vertical composition, no text" },
+  { id: "aurora", label: "Aurora Boreal", emoji: "🌌", query: "aurora borealis northern lights night sky", scene: "magnificent aurora borealis in deep night sky, vibrant green and purple lights, sacred cosmic wonder, vertical composition, no text" },
+  { id: "galaxy", label: "Via Láctea", emoji: "🪐", query: "milky way galaxy stars night sky cosmic", scene: "stunning milky way galaxy stretching across night sky, cosmic divine vastness, stars and nebula, vertical composition, no text" },
+  { id: "cherry", label: "Cherry Blossom", emoji: "🌸", query: "cherry blossom petals pink light", scene: "delicate pink cherry blossom petals falling in soft golden light, ethereal sacred beauty, spring renewal, vertical composition, no text" },
+  { id: "cachoeira", label: "Cachoeira", emoji: "💧", query: "waterfall tropical forest misty peaceful", scene: "majestic waterfall cascading into crystal pool, lush green tropical forest, misty sacred atmosphere, vertical composition, no text" },
+  { id: "vitral", label: "Vitral", emoji: "⛪", query: "stained glass window church light sacred", scene: "stunning stained glass window with divine light streaming through, sacred church interior, colorful spiritual radiance, vertical composition, no text" },
+  { id: "trigo", label: "Campo de Trigo", emoji: "🌾", query: "golden wheat field sunset peaceful", scene: "golden wheat field swaying in gentle wind under warm sunset light, peaceful harvest, divine abundance, vertical composition, no text" },
+  { id: "fogueira", label: "Fogueira", emoji: "🔥", query: "campfire night stars warm peaceful", scene: "warm glowing campfire under starry night sky, intimate sacred gathering atmosphere, warmth and reflection, vertical composition, no text" },
+  { id: "nuvens", label: "Nuvens Douradas", emoji: "☁️", query: "golden clouds divine light heaven sky", scene: "dramatic golden clouds parting to reveal divine light from above, heavenly atmosphere, sacred sky, vertical composition, no text" },
 ];
 
 const PLUS_SOURCES = {

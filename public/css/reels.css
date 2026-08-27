@@ -134,6 +134,7 @@ textarea::placeholder, input[type="text"]::placeholder {
 .script-box .script-head .hint { margin-bottom: 0; }
 .script-actions { display: flex; gap: 8px; }
 #rv-script-text { width: 100%; min-height: 130px; resize: vertical; background: rgba(6, 5, 14, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; color: var(--ink); font-family: var(--serif); font-size: 1.05rem; line-height: 1.55; padding: 14px 16px; }
+#script-text { width: 100%; min-height: 220px; max-height: 420px; resize: vertical; background: rgba(6, 5, 14, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; color: var(--ink); font-family: var(--serif); font-size: 1.05rem; line-height: 1.55; padding: 14px 16px; }
 #rv-script-text:focus { outline: none; border-color: rgba(230, 195, 90, 0.5); box-shadow: 0 0 0 2px rgba(230, 195, 90, 0.15); }
 .script-meta { font-size: 0.76rem; color: var(--ink-faint); margin-top: 6px; }
 

@@ -703,20 +703,9 @@
     ctx.strokeStyle = "rgba(230,195,90,0.5)"; ctx.lineWidth = Math.max(2, FW * 0.0022);
     ctx.strokeRect(inset, inset, FW - inset * 2, FH - inset * 2);
 
-    ctx.save();
-    try { ctx.letterSpacing = Math.round(FW * 0.009) + "px"; } catch (e) {}
-    const kFont = fitFont(ctx, spec.kicker.toUpperCase(), "600", FW * 0.028, sans, FW * 0.76, FW * 0.02);
-    ctx.shadowColor = "rgba(0,0,0,0.7)"; ctx.shadowBlur = FW * 0.012;
-    ctx.fillStyle = "rgba(230,195,90,0.95)"; ctx.font = kFont;
-    ctx.fillText(spec.kicker.toUpperCase(), FW / 2, FH * 0.125);
-    try { ctx.letterSpacing = "0px"; } catch (e) {}
-    ctx.restore();
-
-    if (spec.emoji) { ctx.font = Math.round(FW * 0.095) + "px 'Segoe UI Emoji','Noto Color Emoji',sans-serif"; ctx.fillText(spec.emoji, FW / 2, FH * 0.212); }
-
     let tSize = Math.min(FW * 0.088, 96);
     let bSize = Math.min(FW * 0.041, 46);
-    const titleTop = FH * (spec.emoji ? 0.295 : 0.265);
+    const titleTop = FH * 0.18;
     const maxTitleW = FW * 0.8; const maxBodyW = FW * 0.76;
 
     function measureBlocks() {
@@ -730,7 +719,7 @@
     }
     let m = measureBlocks();
     let guard = 44;
-    while (m.bottom > FH * 0.55 && guard-- > 0 && (tSize > FW * 0.042 || bSize > FW * 0.028)) {
+    while (m.bottom > FH * 0.64 && guard-- > 0 && (tSize > FW * 0.042 || bSize > FW * 0.028)) {
       if (tSize > FW * 0.042) tSize = Math.max(FW * 0.042, tSize * 0.955);
       if (bSize > FW * 0.028) bSize = Math.max(FW * 0.028, bSize * 0.955);
       m = measureBlocks();
@@ -742,8 +731,6 @@
     ctx.fillStyle = "#fffdf6"; ctx.font = "700 " + Math.round(tSize) + "px " + serif;
     for (const ln of m.tLines) { ctx.fillText(ln, FW / 2, ty); ty += m.tlh; }
     ctx.restore();
-
-    drawDivider(ctx, FW / 2, ty - m.tlh + m.tlh * 0.62, FW * 0.13, "rgba(230,195,90,0.92)", FW * 0.042);
 
     let bodyBottom = ty - m.tlh;
     if (m.bLines.length) {
@@ -798,7 +785,7 @@
   }
 
   /* =========================================================
-     KEN BURNS VIDEO
+     KEN BURNS VIDEO (Canva-style smooth)
      ========================================================= */
   function pickMime() {
     const cands = [
@@ -814,18 +801,26 @@
     return "";
   }
 
-  const KB_DIRS = [
-    { zoomStart: 1.0, zoomEnd: 1.15, dx: 0.02, dy: 0.01 },
-    { zoomStart: 1.15, zoomEnd: 1.0, dx: -0.015, dy: 0.008 },
-    { zoomStart: 1.02, zoomEnd: 1.12, dx: -0.02, dy: -0.01 },
+  const KB_SEGS = [
+    { zoomA: 1.00, zoomB: 1.08, panX:  0.02, panY:  0.01 },
+    { zoomA: 1.08, zoomB: 1.14, panX: -0.01, panY:  0.015 },
+    { zoomA: 1.14, zoomB: 1.04, panX: -0.02, panY: -0.01 },
+    { zoomA: 1.04, zoomB: 1.10, panX:  0.015, panY: -0.015 },
+    { zoomA: 1.10, zoomB: 1.00, panX: -0.005, panY:  0.005 },
   ];
 
-  function drawKenBurns(ctx, img, FW, FH, p, dirIdx) {
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function drawKenBurns(ctx, img, FW, FH, p, segIdx) {
     if (!img || !img.width) { ctx.fillStyle = "#05040c"; ctx.fillRect(0, 0, FW, FH); return; }
-    const dir = KB_DIRS[dirIdx % KB_DIRS.length];
-    const zoom = dir.zoomStart + (dir.zoomEnd - dir.zoomStart) * p;
-    const ox = (p - 0.5) * FW * dir.dx;
-    const oy = (p - 0.5) * FH * dir.dy;
+    const seg = KB_SEGS[segIdx % KB_SEGS.length];
+    const local = (p * KB_SEGS.length) % 1;
+    const t = easeInOutCubic(local);
+    const zoom = seg.zoomA + (seg.zoomB - seg.zoomA) * t;
+    const ox = (local - 0.5) * FW * seg.panX * 2;
+    const oy = (local - 0.5) * FH * seg.panY * 2;
     const iw = FW * zoom; const ih = FH * zoom;
     const ir = img.width / img.height; const cr = FW / FH;
     let sx, sy, sw, sh;
@@ -869,8 +864,6 @@
         drawVerseCard(ctx, sz.w, sz.h, content, state.style);
       } else {
         const spec = {
-          kicker: state.fmt === "mensagem" ? (content.hook || "Mensagem de Deus") : "Cura e Libertação",
-          emoji: state.fmt === "mensagem" ? "✉️" : "💗",
           title: content.t || content.x.split("\n")[0],
           body: state.fmt === "cura" ? content.x : "",
           ctaRows: state.fmt === "mensagem"
@@ -921,7 +914,7 @@
       if (!text) { showToast("Escreva a frase primeiro. ✧", "warn"); state.busy = false; el.btnGenerate.disabled = false; return; }
 
       const content = contentFromInputs();
-      const totalDur = 7;
+      const totalDur = 10;
 
       let bgImg = null;
       if (state.style === "photo") {
@@ -956,8 +949,8 @@
 
           ctx.save();
           if (bgImg) {
-            const kbIdx = Math.floor(p * 3);
-            drawKenBurns(ctx, bgImg, sz.w, sz.h, p, kbIdx);
+            const segIdx = Math.min(Math.floor(p * KB_SEGS.length), KB_SEGS.length - 1);
+            drawKenBurns(ctx, bgImg, sz.w, sz.h, p, segIdx);
             drawScrim(ctx, sz.w, sz.h, 1);
           } else {
             if (state.fmt === "versiculo") {
@@ -967,12 +960,12 @@
             }
           }
 
+          const textAlpha = clamp(elapsed / 1.5, 0, 1);
+          ctx.globalAlpha = textAlpha;
           if (state.fmt === "versiculo") {
             drawVerseCard(ctx, sz.w, sz.h, content, state.style);
           } else {
             const spec = {
-              kicker: state.fmt === "mensagem" ? (content.hook || "Mensagem de Deus") : "Cura e Libertação",
-              emoji: state.fmt === "mensagem" ? "✉️" : "💗",
               title: content.t || content.x.split("\n")[0],
               body: state.fmt === "cura" ? content.x : "",
               ctaRows: state.fmt === "mensagem"

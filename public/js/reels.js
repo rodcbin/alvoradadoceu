@@ -348,27 +348,84 @@
     drawWatermark(ctx);
   }
 
-  /* ---------- Ken Burns ---------- */
-  const KB_DIRS = [
-    { zoomStart: 1.0, zoomEnd: 1.15, dx: 0.02, dy: 0.01 },
-    { zoomStart: 1.15, zoomEnd: 1.0, dx: -0.015, dy: 0.008 },
-    { zoomStart: 1.02, zoomEnd: 1.12, dx: -0.02, dy: -0.01 },
+  /* ---------- Ken Burns (Canva-style smooth) ---------- */
+  const KB_SEGS = [
+    { zoomA: 1.00, zoomB: 1.08, panX:  0.02, panY:  0.01 },
+    { zoomA: 1.08, zoomB: 1.14, panX: -0.01, panY:  0.015 },
+    { zoomA: 1.14, zoomB: 1.04, panX: -0.02, panY: -0.01 },
+    { zoomA: 1.04, zoomB: 1.10, panX:  0.015, panY: -0.015 },
+    { zoomA: 1.10, zoomB: 1.00, panX: -0.005, panY:  0.005 },
   ];
 
-  function drawKenBurns(ctx, img, p, dirIdx) {
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function drawKenBurns(ctx, img, p, segIdx) {
     if (!img || !img.width) { ctx.fillStyle = "#05040c"; ctx.fillRect(0, 0, W, H); return; }
-    const dir = KB_DIRS[dirIdx % KB_DIRS.length];
-    const zoom = dir.zoomStart + (dir.zoomEnd - dir.zoomStart) * p;
-    const ox = (p - 0.5) * W * dir.dx;
-    const oy = (p - 0.5) * H * dir.dy;
-    const iw = W * zoom;
-    const ih = H * zoom;
-    const ir = img.width / img.height;
-    const cr = W / H;
+    const seg = KB_SEGS[segIdx % KB_SEGS.length];
+    const local = (p * KB_SEGS.length) % 1;
+    const t = easeInOutCubic(local);
+    const zoom = seg.zoomA + (seg.zoomB - seg.zoomA) * t;
+    const ox = (local - 0.5) * W * seg.panX * 2;
+    const oy = (local - 0.5) * H * seg.panY * 2;
+    const iw = W * zoom; const ih = H * zoom;
+    const ir = img.width / img.height; const cr = W / H;
     let sx, sy, sw, sh;
     if (ir > cr) { sw = img.height * cr; sh = img.height; sx = (img.width - sw) / 2; sy = 0; }
     else { sw = img.width; sh = img.width / cr; sx = 0; sy = (img.height - sh) / 2; }
     ctx.drawImage(img, sx, sy, sw, sh, ox, oy, iw, ih);
+  }
+
+  function drawTextOverlay(ctx, text, textAlpha) {
+    const tFamily = "'Playfair Display','Cormorant Garamond',Georgia,serif";
+    ctx.save();
+    ctx.globalAlpha = textAlpha;
+    ctx.strokeStyle = "rgba(230,195,90,0.3)";
+    ctx.lineWidth = Math.max(2, W * 0.002);
+    const lineY = H * 0.32;
+    ctx.beginPath();
+    ctx.moveTo(W * 0.25, lineY);
+    ctx.lineTo(W * 0.75, lineY);
+    ctx.stroke();
+    ctx.restore();
+
+    const lines = wrapLines(ctx, text, "600 " + Math.min(W * 0.065, 76) + "px " + tFamily, W * 0.82, 10);
+    const fontSize = Math.min(W * 0.065, 76);
+    const lh = fontSize * 1.4;
+    const blockH = lines.length * lh;
+    const topY = H * 0.5 - blockH / 2;
+
+    ctx.save();
+    ctx.globalAlpha = textAlpha;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.shadowColor = "rgba(0,0,0,0.9)";
+    ctx.shadowBlur = fontSize * 0.2;
+    ctx.shadowOffsetY = fontSize * 0.06;
+    ctx.fillStyle = "#fffdf6";
+    ctx.font = "600 " + fontSize + "px " + tFamily;
+    let y = topY;
+    for (const line of lines) { ctx.fillText(line, W / 2, y); y += lh; }
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = textAlpha;
+    ctx.strokeStyle = "rgba(230,195,90,0.3)";
+    ctx.lineWidth = Math.max(2, W * 0.002);
+    const lineY2 = H * 0.5 + blockH / 2 + H * 0.03;
+    ctx.beginPath();
+    ctx.moveTo(W * 0.25, lineY2);
+    ctx.lineTo(W * 0.75, lineY2);
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = textAlpha;
+    drawWatermark(ctx);
+    ctx.restore();
   }
 
   /* ---------- status ---------- */
@@ -494,7 +551,7 @@
       const text = el.scriptText.value.trim();
       if (!text) { showToast("Escreva a frase primeiro. ✧", "warn"); state.busy = false; el.btnGenerate.disabled = false; return; }
 
-      const totalDur = 7;
+      const totalDur = 10;
 
       setStatus("Buscando cenário…", 0.05);
       const bg = await generateBackground();
@@ -534,15 +591,18 @@
           elapsed += dt;
           const p = clamp(elapsed / totalDur, 0, 1);
 
-          /* Ken Burns background */
-          const kbIdx = Math.floor(p * 3);
+          /* Ken Burns background — smooth segments */
+          const segIdx = Math.floor(p * KB_SEGS.length);
           ctx.save();
-          drawKenBurns(ctx, img, p, kbIdx);
+          drawKenBurns(ctx, img, p, Math.min(segIdx, KB_SEGS.length - 1));
           ctx.restore();
 
-          /* scrim + text overlay */
+          /* Scrim */
           drawScrim(ctx, 0.7);
-          drawFrame(ctx, img, text);
+
+          /* Text fade-in: 0→1 over first 1.5s, hold at 1 */
+          const textAlpha = clamp(elapsed / 1.5, 0, 1);
+          drawTextOverlay(ctx, text, textAlpha);
 
           el.progressFill.style.width = Math.round(p * 100) + "%";
           el.progressStatus.textContent = "Gravando… " + Math.round(p * 100) + "%";
