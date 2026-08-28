@@ -1,8 +1,8 @@
 {
-  "name": "alvorada-do-ceu-espiritualidade",
-  "version": "1.0.0",
+  "name": "alvorada-do-ceu-frases",
+  "version": "2.0.0",
   "private": true,
-  "description": "Alvorada do Céu — frases espirituais com imagens geradas gratuitamente por IA (Cloudflare Workers AI + Pollinations).",
+  "description": "Gerador de frases espirituais para Reels: frase, legenda e palavra-chave (Cloudflare Workers AI + Pollinations + DuckDuckGo AI).",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -11,10 +11,5 @@
   "engines": {
     "node": ">=18"
   },
-  "license": "MIT",
-  "keywords": [],
-  "author": "",
-  "dependencies": {
-    "@andresaya/edge-tts": "^1.8.0"
-  }
+  "license": "MIT"
 }

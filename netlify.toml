@@ -1,17 +1,23 @@
 # =========================================================
-# Alvorada do Céu — configuração Netlify
+# Alvorada do Céu — Gerador de Frases Espirituais (Netlify)
 # =========================================================
 
 [build]
-  # apenas os estáticos são publicados; código e segredos ficam fora do ar
   publish = "public"
   functions = "netlify/functions"
 
 [functions]
   node_bundler = "esbuild"
 
+# Rota padrão usada pelo front-end -> função serverless
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
+
 # ---------------------------------------------------------
-# Headers de segurança (todas as páginas)
+# Headers de segurança
 # ---------------------------------------------------------
 [[headers]]
   for = "/*"
@@ -20,11 +26,8 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https://image.pollinations.ai https://api.cloudflare.com https://api.pexels.com https://pixabay.com; object-src 'none'; base-uri 'self'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
 
-# ---------------------------------------------------------
-# Caching
-# ---------------------------------------------------------
 [[headers]]
   for = "/js/*"
   [headers.values]
@@ -36,8 +39,7 @@
     Cache-Control = "public, max-age=3600, must-revalidate"
 
 # ---------------------------------------------------------
-# Bloqueio de caminhos sensíveis (defesa extra — a raiz
-# já não é publicada, mas garantimos o 403/404)
+# Bloqueio de caminhos sensíveis (defesa extra)
 # ---------------------------------------------------------
 [[redirects]]
   from = "/.env"
@@ -46,6 +48,11 @@
 
 [[redirects]]
   from = "/server.js"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/core-ai.js"
   to = "/404.html"
   status = 404
 
