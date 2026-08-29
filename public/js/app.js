@@ -53,6 +53,14 @@
 
   var QUANTIDADES = [1, 5, 10, 20, 30];
 
+  var IAs = [
+    { id: "auto", label: "Automático (tenta em ordem)" },
+    { id: "cloudflare", label: "Cloudflare Workers AI" },
+    { id: "pollinations", label: "Pollinations" },
+    { id: "chatgptoss", label: "ChatGptOss" },
+    { id: "local", label: "Banco local (offline)" }
+  ];
+
   var LS_BANCO = "alvorada_banco";
   var LS_HIST = "alvorada_historico";
   var LS_CFG = "alvorada_config";
@@ -73,10 +81,11 @@
         tamanho: cfg.tamanho || "curto",
         altoImpacto: cfg.altoImpacto !== false,
         paraCompartilhar: !!cfg.paraCompartilhar,
+        provider: cfg.provider || "auto",
         quantidade: cfg.quantidade || 1
       };
     } catch (e) {
-      return { categoria: "todas", tipo: "curta", tamanho: "curto", altoImpacto: true, paraCompartilhar: false, quantidade: 1 };
+      return { categoria: "todas", tipo: "curta", tamanho: "curto", altoImpacto: true, paraCompartilhar: false, provider: "auto", quantidade: 1 };
     }
   }
 
@@ -239,6 +248,7 @@
         tamanho: state.tamanho,
         altoImpacto: state.altoImpacto,
         paraCompartilhar: state.paraCompartilhar,
+        provider: state.provider,
         quantidade: state.quantidade,
         evitar: evitar
       })
@@ -251,8 +261,12 @@
         registrarHistorico(data.itens.map(function (i) { return i.frase; }));
         renderizarResultados(data);
         if (data.provider === "local") {
-          statusMsg("Geradas pelo banco local (as IAs não responderam agora).", "ok");
-          mostrarAvisoIA();
+          if (data.manual) {
+            statusMsg("Frases do banco local (" + data.quantidade + " gerada" + (data.quantidade > 1 ? "s" : "") + ").", "ok");
+          } else {
+            statusMsg("Geradas pelo banco local (as IAs não responderam agora).", "ok");
+            mostrarAvisoIA();
+          }
         } else {
           statusMsg(String(data.quantidade) + " frase" + (data.quantidade > 1 ? "s" : "") + " gerada" + (data.quantidade > 1 ? "s" : "") + " por " + data.providerLabel + ".", "ok");
         }
@@ -580,6 +594,7 @@
         tamanho: state.tamanho,
         altoImpacto: state.altoImpacto,
         paraCompartilhar: state.paraCompartilhar,
+        provider: state.provider,
         quantidade: 1,
         evitar: [item.frase]
       })
@@ -734,6 +749,7 @@
   montarChips();
   montarSelecao("selTipo", TIPOS, state.tipo);
   montarSelecao("selTamanho", TAMANHOS, state.tamanho);
+  montarSelecao("selIA", IAs, state.provider);
   montarSegmentos();
 
   $("selTipo").addEventListener("change", function () {
@@ -742,6 +758,10 @@
   });
   $("selTamanho").addEventListener("change", function () {
     state.tamanho = this.value;
+    salvarConfig();
+  });
+  $("selIA").addEventListener("change", function () {
+    state.provider = this.value;
     salvarConfig();
   });
 

@@ -109,157 +109,209 @@ const CURATED = {
     "Deus conhece o seu amanhã. Tudo o que Ele permite tem um propósito.",
     "Você pode não entender o caminho, mas quem segura a sua mão já viu o fim.",
     "Deus não está em silêncio por indiferença; Ele está trabalhando nos bastidores.",
-    "Entregue a Deus o que pesa e veja o cuidado dEle chegar."
+    "Entregue a Deus o que pesa e veja o cuidado dEle chegar.",
+    "Se Deus te trouxe até aqui, Ele não vai te soltar no meio do caminho.",
+    "Você pode não ver a resposta, mas o tempo de Deus nunca chega fora de hora."
   ],
   jesus: [
     "Jesus acolhe quem está cansado. Leve a Ele o que ninguém mais segura.",
     "Em Cristo, o seu recomeço não é uma segunda chance: é uma nova vida.",
     "Se o mundo não te entende, lembre-se de quem te escolheu antes de você existir.",
-    "A presença de Jesus transforma o dia mais cinza em amanhecer."
+    "A presença de Jesus transforma o dia mais cinza em amanhecer.",
+    "Jesus carrega o que você não consegue. Solta, Ele cuida do resto.",
+    "Não importa o tamanho da sua bagagem, o colo de Jesus sempre comporta você."
   ],
   fe: [
     "A fé não é ver a saída. É confiar em quem mostra o caminho.",
     "Mesmo quando você não sente, a sua fé continua cuidando do amanhã.",
     "Deus não pede que você resolva tudo hoje; pede apenas que confie.",
-    "A fé abre portas que nem a sua lógica consegue ver."
+    "A fé abre portas que nem a sua lógica consegue ver.",
+    "Sua fé não precisa ser grande, ela só precisa estar no lugar certo.",
+    "Quando a fé assume o volante, a ansiedade perde o controle da direção."
   ],
   oracao: [
     "Senhor, acalma o coração de quem lê esta mensagem agora. Renova a esperança e lembra que ninguém caminha só.",
     "Ora, mesmo sem palavras: Deus entende o que o seu coração tenta dizer.",
     "Antes de dormir, entregue a Deus o que você não consegue resolver.",
-    "A oração não muda a opinião de Deus; ela muda quem ora."
+    "A oração não muda a opinião de Deus; ela muda quem ora.",
+    "Sempre que o mundo apertar, separe um minuto pra falar com Deus.",
+    "A oração é o colo que a gente encontra sentado em qualquer lugar."
   ],
   esperanca: [
     "O choro pode durar uma noite, mas a alegria vem pela manhã.",
     "Amanhã nasce um novo dia, e com ele uma nova chance de recomeçar.",
     "Não desista: o melhor de Deus está logo além da curva.",
-    "Esperança é acreditar que Deus ainda está escrevendo o capítulo final."
+    "Esperança é acreditar que Deus ainda está escrevendo o capítulo final.",
+    "A luz que você procura já está acesa no fim do teu caminho.",
+    "Deus não tem pressa, mas nunca se atrasa pra quem espera n'Ele."
   ],
   paz: [
     "A paz que Deus dá não depende do que acontece lá fora.",
     "Pare de carregar amanhã hoje. Deus já cuidou do amanhã.",
     "Respira fundo. O mundo gira, mas Deus não se move nem falha.",
-    "No meio da tempestade, há uma voz que sussurra: aquieta-te."
+    "No meio da tempestade, há uma voz que sussurra: aquieta-te.",
+    "Troca o barulho do mundo pela paz que Deus oferece em silêncio.",
+    "Sua alma precisa de silêncio, não de mais problemas."
   ],
   reflexao: [
     "Talvez o que Deus esteja te tirando seja justamente o que te prendia.",
     "O silêncio também é resposta. E às vezes a resposta é esperar.",
     "Observe: os dias difíceis ensinam mais que os dias fáceis.",
-    "Quem decide enxergar com o coração nunca anda completamente no escuro."
+    "Quem decide enxergar com o coração nunca anda completamente no escuro.",
+    "Nem toda porta fechada é um fracasso; às vezes é Deus te protegendo.",
+    "O que você recusa aprender hoje, a vida insiste em te ensinar até você aprender."
   ],
   recomeco: [
     "Recomeçar não é voltar ao início: é seguir com o que aprendeu.",
     "Deus não desperdiça a sua história. Cada recomeço tem um propósito.",
     "Hoje é o primeiro dia do que Deus ainda quer fazer com você.",
-    "Não importa quantas vezes você caiu: importa que você ainda está de pé."
+    "Não importa quantas vezes você caiu: importa que você ainda está de pé.",
+    "Todo recomeço nasce de uma escolha: a de não desistir de você.",
+    "O passado não define quem você vai ser a partir de hoje."
   ],
   gratidao: [
     "O que você agradece hoje, você multiplica amanhã.",
     "Comece reconhecendo as pequenas bênçãos: Deus mora nos detalhes.",
     "A gratidão é a porta que abre espaço para o que ainda virá.",
-    "Seus problemas são grandes, mas suas bênçãos também. Não esqueça disso."
+    "Seus problemas são grandes, mas suas bênçãos também. Não esqueça disso.",
+    "Quem sabe dizer obrigado, sabe reconhecer o cuidado de Deus por toda parte.",
+    "Agradeça pelo que você tem enquanto constrói o que deseja."
   ],
   familia: [
     "Que Deus proteja a sua família hoje, esteja você perto ou longe.",
     "Quem tem uma família unida na oração, carrega um tesouro invisível.",
     "O amor de casa é a primeira imagem que temos do amor de Deus.",
-    "Não esqueça de quem orou por você desde o começo."
+    "Não esqueça de quem orou por você desde o começo.",
+    "A melhor herança que deixo aos meus é a fé que caminha com eles.",
+    "Lar é onde a família ora junto e o amor cabe inteiro."
   ],
   protecao: [
     "O anjo do Senhor acampa ao redor de quem O ama.",
     "Você não precisa ver pra saber: tem alguém cuidando de você lá de cima.",
     "Debaixo das asas de Deus, nenhum mal te alcança.",
-    "Durma tranquilo: a noite também está sob a guarda dEle."
+    "Durma tranquilo: a noite também está sob a guarda dEle.",
+    "Enquanto você dorme, Deus vela por você e pelos seus.",
+    "Não há perigo capaz de assustar quem caminha protegido por Deus."
   ],
   ansiedade: [
     "A ansiedade olha para o amanhã; a fé descansa nas mãos de Deus.",
     "O que você mais teme, Deus já viu. E já preparou a resposta.",
     "Não resolva hoje o que ainda nem aconteceu. Confie e respire.",
-    "Você carrega peso demais nas costas. Deus se ofereceu a levar por você."
+    "Você carrega peso demais nas costas. Deus se ofereceu a levar por você.",
+    "Solte o controle que você nunca teve e abrace a paz que já é sua.",
+    "Um dia de cada vez: Deus cuida do amanhã como cuidou do hoje."
   ],
   "momentos-dificeis": [
     "A dor não indica que Deus esqueceu você. Às vezes Ele está construindo.",
     "Os dias difíceis revelam a força que a gente nem sabia que tinha.",
     "Você não está sendo ignorado. Você está sendo preparado.",
-    "Essa fase não é o fim da sua história; é o meio dela."
+    "Essa fase não é o fim da sua história; é o meio dela.",
+    "A noite parece longa, mas o amanhecer de Deus não falha.",
+    "Deus conhece a sua luta, e já está trabalhando nela."
   ],
   "amor-de-deus": [
     "O amor de Deus por você não depende do que você fez.",
     "Você é amado por quem você é, não pelo que você conquista.",
     "Mesmo quando você se sente invisível, Deus te carrega no olhar.",
-    "Não há amor mais certo do que aquele que nunca desiste de você."
+    "Não há amor mais certo do que aquele que nunca desiste de você.",
+    "Deus te ama num nível que nem o seu erro consegue alcançar.",
+    "Nenhum começo é tarde demais para quem é amado por Deus."
   ],
   confianca: [
     "Confia no Senhor de todo o teu coração; Ele mostra o caminho.",
     "Sua parte é dar um passo; a parte de Deus é abrir o caminho.",
     "Não precisa entender a rota inteira. Basta confiar em quem te guia.",
-    "O controle que você solta, Deus segura com firmeza."
+    "O controle que você solta, Deus segura com firmeza.",
+    "O que começa com fé, termina com testemunho.",
+    "Confie no processo: Deus está trabalhando mesmo quando você não vê."
   ],
   superacao: [
     "A sua história de dor vai virar testemunho de vitória.",
     "Levanta, sacode a poeira e continua: Deus não te abandonou no meio.",
     "Você chegou até aqui. Isso já prova a força que carrega.",
-    "O tamanho do seu problema não se compara ao tamanho do seu Deus."
+    "O tamanho do seu problema não se compara ao tamanho do seu Deus.",
+    "Toda luta vencida com Deus vira alicerce de uma vitória maior.",
+    "Você não é o que aconteceu com você; você é o que Deus fará com você."
   ],
   manha: [
     "Bom dia! Este privilégio de acordar é mais uma chance de Deus para você.",
     "Comece o dia com fé: o que você não controla, Deus cuida.",
     "Que nesta manhã Deus renove suas forças e paz.",
-    "Hoje também é um dia do Senhor. Agradeça e viva com propósito."
+    "Hoje também é um dia do Senhor. Agradeça e viva com propósito.",
+    "Bom dia! Que hoje você enxergue o cuidado de Deus em cada detalhe.",
+    "Acordar já é uma prova do amor de Deus por você."
   ],
   noite: [
     "Que sua noite seja leve: você fez o que pôde e Deus cuida do resto.",
     "O dia terminou, mas o cuidado de Deus continua.",
     "Descansa: a noite também está no calendário de Deus.",
-    "Reveja o dia com gratidão e solte o que não deu certo."
+    "Reveja o dia com gratidão e solte o que não deu certo.",
+    "Boa noite! Amanhã Deus te espera com um novo capítulo.",
+    "Solte o dia nas mãos de Deus e deixe a paz te abraçar."
   ],
   dormir: [
     "Antes de dormir, entregue a Deus aquilo que você não pode carregar.",
     "Durma em paz: o amanhã já está nas mãos de quem não dorme.",
     "Sua parte é descansar; a parte de Deus é guardar você.",
-    "Amanhã é um novo dia. Hoje, apenas descanse no cuidado dEle."
+    "Amanhã é um novo dia. Hoje, apenas descanse no cuidado dEle.",
+    "Dé um descanso à sua mente: Deus já está trabalhando.",
+    "Fecha os olhos em paz, porque quem te guarda não fecha os seus."
   ],
   domingo: [
     "Que o domingo renove seu espírito e aproxime você de Deus.",
     "Dia de descanso e fé: deixe a alma ouvir o que o corpo nem percebe.",
     "Hoje é dia de virar o olhar para o alto e agradecer.",
-    "Receba o domingo como um presente de Deus para a sua alma."
+    "Receba o domingo como um presente de Deus para a sua alma.",
+    "Domingo é o dia de recarregar a alma na presença de Deus.",
+    "Aproveite o descanso: até Deus descansou depois da obra pronta."
   ],
   segunda: [
     "Segunda-feira: novo dia, novas chances, mesma fé.",
     "Comece a semana com quem nunca falha: Deus vai à sua frente.",
     "Não comece o dia ansioso; comece agradecido.",
-    "Essa semana também pertence a Deus. Caminhe nela com confiança."
+    "Essa semana também pertence a Deus. Caminhe nela com confiança.",
+    "Que sua semana comece com Deus em primeiro lugar.",
+    "Segunda é o dia de confiar de novo no cuidado de Deus pra semana toda."
   ],
   "fim-de-semana": [
     "Descanse de verdade: Deus validou o descanso antes do trabalho.",
     "Aproveite os seus: família e fé enchem o fim de semana de sentido.",
     "Final de semana é tempo de recarregar a alma.",
-    "Que seu fim de semana tenha paz, sorrisos e a presença de Deus."
+    "Que seu fim de semana tenha paz, sorrisos e a presença de Deus.",
+    "Desliga o mundo por um instante e ouve Deus em silêncio.",
+    "O fim de semana é um convite pra renovar o coração na fé."
   ],
   hoje: [
     "Hoje também é um capítulo que Deus está escrevendo com você.",
     "Não perca a esperança: o dia ainda pode surpreender você.",
     "Hoje, decida confiar mais um pouquinho em Deus.",
-    "Tudo o que você precisa para hoje, Deus já providenciou."
+    "Tudo o que você precisa para hoje, Deus já providenciou.",
+    "Não gaste o hoje se preocupando com um amanhã que ainda é de Deus.",
+    "Hoje é o único dia que você tem: viva-o na paz de Deus."
   ],
   "frase-impacto": [
     "Você não está lendo isso por acaso.",
     "O que você está passando, já passou pelas mãos de Deus.",
     "Não desista justamente agora: a virada está mais perto do que parece.",
-    "Deus sabe o que você não contou a ninguém."
+    "Deus sabe o que você não contou a ninguém.",
+    "A sua luta tem data pra terminar, e o nome dela é vitória.",
+    "Você foi escolhido pra vencer, não pra sofrer calado."
   ],
   "reflexao-espiritual": [
     "A alma também precisa de silêncio para ouvir a voz de Deus.",
     "Espiritualidade não é fugir da vida; é atravessar a vida com sentido.",
     "Deus fala baixo. Quem parar um pouco, ouve.",
-    "Luz, fé e esperança: o essencial da alma não ocupa espaço na mala."
+    "Luz, fé e esperança: o essencial da alma não ocupa espaço na mala.",
+    "Espiritualidade é saber que você não é só corpo: você é casa de Deus.",
+    "Quando a alma está em paz, até o silêncio vira oração."
   ],
   sofrendo: [
     "Se dói muito, chore. Deus recolhe cada lágrima e não ignora nenhuma.",
     "Você não está sozinho nesta dor. Alguém já orou por você hoje.",
     "Essa dor não é o fim. Deus ainda tem consolo e renovo para você.",
-    "Respira. Ele está contigo, mesmo quando você não sente."
+    "Respira. Ele está contigo, mesmo quando você não sente.",
+    "Você não precisa ser forte hoje. Deus é forte por você.",
+    "Deixe Deus segurar você enquanto você não consegue se segurar."
   ]
 };
 
@@ -284,7 +336,20 @@ const GENERIC_POOL = [
   "Não compare a sua fase com a fase de ninguém: Deus é especialista em tempo.",
   "A fé faz o impossível caber na espera.",
   "Você não foi esquecido. Está apenas sendo preparado.",
-  "O lugar mais seguro é onde a mão de Deus te alcança."
+  "O lugar mais seguro é onde a mão de Deus te alcança.",
+  "O que começa em oração não termina em tragédia.",
+  "Nasce da fé a força que você busca lá fora.",
+  "Sua história ainda vai ter um final que louva a Deus.",
+  "Antes de desistir, lembre que o autor do teu fim ainda está escrevendo.",
+  "Quem caminha com Deus nunca caminha sem destino.",
+  "Perto de Deus, até a espera tem propósito.",
+  "Não há madrugada longa demais pra quem confia no amanhecer de Deus.",
+  "O silêncio de Deus também é resposta que prepara a sua vitória.",
+  "Descanse na promessa: o que Deus começou, Ele termina.",
+  "Recomece hoje com a certeza de que Deus ainda não acabou com você.",
+  "A tua bênção já está a caminho; não pare no meio da estrada.",
+  "O cuidado de Deus não é barulhento, mas nunca falta.",
+  "Não temas: quem faz as estrelas brilhar, cuida de você."
 ];
 
 function rand(arr) {
@@ -625,14 +690,38 @@ async function generate(optsRaw) {
   const categoria = sanitizeCategoria(opts.categoria);
   const altoImpacto = opts.altoImpacto !== false;
   const paraCompartilhar = opts.paraCompartilhar === true;
+  const escolha = String(opts.provider || "auto").toLowerCase().trim();
   const evitar = Array.isArray(opts.evitar)
     ? opts.evitar.map((s) => String(s).slice(0, 300)).filter((s) => s.trim())
     : [];
 
+  /* Banco local escolhido manualmente: garante resposta imediata e offline */
+  if (escolha === "local") {
+    const locales = localFrases(quantidade, categoria);
+    const itens = normalizeItems(locales, categoria, kwFor(categoria));
+    return {
+      ok: true,
+      itens,
+      categoria,
+      categoriaLabel: categoria === "todas" ? "Todas as categorias" : catLabel(categoria),
+      tipo,
+      tamanho,
+      quantidade: itens.length,
+      provider: "local",
+      providerLabel: PROVIDER_LABELS.local,
+      manual: true
+    };
+  }
+
+  /* Limita a ordem de tentativa conforme a escolha do usuário */
+  const ordem =
+    escolha === "auto" ? PROVIDER_ORDER
+    : PROVIDER_ORDER.filter((p) => p.id === escolha);
+
   const messages = buildMessages({ categoria, tipo, tamanho, altoImpacto, paraCompartilhar, quantidade, evitar });
   const erros = [];
 
-  for (const provider of PROVIDER_ORDER) {
+  for (const provider of ordem) {
     try {
       const raw = await provider.fn(messages);
       let itens = extractItems(raw, quantidade);
