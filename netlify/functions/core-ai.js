@@ -3,7 +3,9 @@
  *
  * Provedores (em ordem de tentativa):
  *   1. Cloudflare Workers AI     (usa CF_ACCOUNT_ID + CF_API_TOKEN)
- *   2. Banco local               (garantia offline)
+ *   2. OpenRouter                (usa OPENROUTER_API_KEY)
+ *   3. Mistral AI                (usa MISTRAL_API_KEY)
+ *   4. Banco local               (garantia offline)
  * ============================================================ */
 "use strict";
 
@@ -13,6 +15,8 @@ const crypto = require("crypto");
 
 const PROVIDER_LABELS = {
   cloudflare: "Cloudflare Workers AI",
+  openrouter: "OpenRouter (IA grátis)",
+  mistral: "Mistral AI (IA grátis)",
   local: "Frases locais (offline)",
 };
 
@@ -452,13 +456,66 @@ async function cloudflare(messages) {
   return text;
 }
 
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || "";
+const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free";
+
+async function openrouter(messages) {
+  if (!OPENROUTER_KEY) throw new Error("OpenRouter não configurado (OPENROUTER_API_KEY).");
+  const url = "https://openrouter.ai/api/v1/chat/completions";
+  const res = await request(url, {
+    method: "POST",
+    timeout: 30000,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + OPENROUTER_KEY,
+      "HTTP-Referer": "https://alvoradadoceu.com",
+      "X-Title": "Alvorada do Ceu"
+    }
+  }, { model: OPENROUTER_MODEL, messages, temperature: 0.9, max_tokens: 2600 });
+  if (res.status !== 200) throw new Error("OpenRouter HTTP " + res.status + ": " + res.body.slice(0, 160));
+  let data;
+  try { data = JSON.parse(res.body); } catch { throw new Error("OpenRouter: resposta inválida"); }
+  if (!data || !data.choices || !data.choices.length) {
+    throw new Error("OpenRouter: " + (data && data.error ? JSON.stringify(data.error).slice(0, 160) : "erro desconhecido"));
+  }
+  const text = ((data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "").trim();
+  if (!text) throw new Error("OpenRouter: resposta vazia");
+  return text;
+}
+
+const MISTRAL_KEY = process.env.MISTRAL_API_KEY || "";
+const MISTRAL_MODEL = process.env.MISTRAL_MODEL || "mistral-small-latest";
+
+async function mistral(messages) {
+  if (!MISTRAL_KEY) throw new Error("Mistral não configurado (MISTRAL_API_KEY).");
+  const url = "https://api.mistral.ai/v1/chat/completions";
+  const res = await request(url, {
+    method: "POST",
+    timeout: 30000,
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + MISTRAL_KEY }
+  }, { model: MISTRAL_MODEL, messages, temperature: 0.9, max_tokens: 2600 });
+  if (res.status !== 200) throw new Error("Mistral HTTP " + res.status + ": " + res.body.slice(0, 160));
+  let data;
+  try { data = JSON.parse(res.body); } catch { throw new Error("Mistral: resposta inválida"); }
+  if (!data || !data.choices || !data.choices.length) {
+    throw new Error("Mistral: " + (data && data.message ? data.message : "erro desconhecido"));
+  }
+  const text = ((data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "").trim();
+  if (!text) throw new Error("Mistral: resposta vazia");
+  return text;
+}
+
 const PROVIDER_ORDER = [
-  { id: "cloudflare", fn: cloudflare }
+  { id: "cloudflare", fn: cloudflare },
+  { id: "openrouter", fn: openrouter },
+  { id: "mistral", fn: mistral }
 ];
 
 function configuredProviders() {
   return [
     { id: "cloudflare", label: PROVIDER_LABELS.cloudflare, ativo: !!(CF_ACCOUNT && CF_TOKEN) },
+    { id: "openrouter", label: PROVIDER_LABELS.openrouter, ativo: !!OPENROUTER_KEY },
+    { id: "mistral", label: PROVIDER_LABELS.mistral, ativo: !!MISTRAL_KEY },
     { id: "local", label: PROVIDER_LABELS.local, ativo: true }
   ];
 }

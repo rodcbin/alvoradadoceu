@@ -54,8 +54,10 @@
   var QUANTIDADES = [1, 5, 10, 20, 30];
 
   var IAs = [
-    { id: "auto", label: "Automático (Cloudflare → banco local)" },
+    { id: "auto", label: "Automático (Cloudflare → OpenRouter → Mistral → banco local)" },
     { id: "cloudflare", label: "Cloudflare Workers AI" },
+    { id: "openrouter", label: "OpenRouter (IA grátis)" },
+    { id: "mistral", label: "Mistral AI (IA grátis)" },
     { id: "local", label: "Banco local (offline)" }
   ];
 

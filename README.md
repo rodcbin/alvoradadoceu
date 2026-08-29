@@ -24,15 +24,18 @@ Sem imagens, sem vídeos, sem complicação: texto puro gerado por IA.
 
 ## Como funciona a IA
 
-O texto é gerado pela **Cloudflare Workers AI**. Como última garantia (se ela não responder), o app usa um **banco local de frases** — o botão sempre responde.
+O texto é gerado por IA em cascata: **Cloudflare Workers AI** (principal) → **OpenRouter** (backup grátis) → **Mistral AI** (backup grátis) → banco local de frases. Assim, se um provedor gratuito falhar ou estiver instável, o próximo entra na fila; o botão sempre responde.
 
 | Prioridade | Provedor | Chave de API? | Observação |
 |---|---|---|---|
 | 1 | **Cloudflare Workers AI** | Sim — `CF_ACCOUNT_ID` + `CF_API_TOKEN` | Motor principal, configurado no `.env` |
+| 2 | **OpenRouter** | Sim — `OPENROUTER_API_KEY` | Backup grátis (~50 req/dia, 20 req/min; +1.000/dia com top-up de $10). Muitos modelos `:free` |
+| 3 | **Mistral AI** | Sim — `MISTRAL_API_KEY` | Backup grátis (~1B tokens/mês, sem cartão; verificação por telefone). Ótimo em português |
+| 4 | **Banco local** | Não | Garantia offline — sempre há resposta |
 
 > As chaves ficam só no servidor/`.env` — o navegador do visitante nunca as vê.
 
-> ⚠️ Atenção: se a página mostrar "banco local", significa que a Cloudflare não respondeu neste momento — a experiência continua completa com o banco local. Para usar a IA de rede, **gere um token novo no painel da Cloudflare** (dash.cloudflare.com → API Tokens → Create Token) e coloque em `CF_API_TOKEN`. O token precisa da permissão **Workers AI: Edit** para a sua conta.
+> &#9888;&#65039; Atenção: se a página mostrar "banco local", significa que nenhuma das IAs de rede respondeu neste momento — a experiência continua completa com o banco local. Para usar a IA de rede, gere tokens válidos: Cloudflare (dash.cloudflare.com → API Tokens → Create Token, permissão **Workers AI: Edit**), OpenRouter (openrouter.ai → Keys) e/ou Mistral (console.mistral.ai → API Keys).
 
 ## Categorias
 
@@ -78,11 +81,15 @@ curl http://localhost:8001/api/status
 
 | Variável | Obrigatória? | Para quê |
 |---|---|---|
-| `CF_ACCOUNT_ID` | Não* | Cloudflare Workers AI (sem ela cai para as IAs gratuitas) |
+| `CF_ACCOUNT_ID` | Não* | Cloudflare Workers AI (sem ela cai para OpenRouter/Mistral/banco) |
 | `CF_API_TOKEN` | Não* | Token da Cloudflare (permissão Workers AI: Edit) |
-| `CF_TEXT_MODEL` | Não | Modelo de texto (padrão `@cf/meta/llama-3.3-70b-instruct-fp8-fast`) |
+| `CF_TEXT_MODEL` | Não | Modelo Cloudflare (padrão `@cf/meta/llama-3.3-70b-instruct-fp8-fast`) |
+| `OPENROUTER_API_KEY` | Não* | Backup grátis do OpenRouter |
+| `OPENROUTER_MODEL` | Não | Modelo (padrão `meta-llama/llama-3.3-70b-instruct:free`) |
+| `MISTRAL_API_KEY` | Não* | Backup grátis do Mistral AI |
+| `MISTRAL_MODEL` | Não | Modelo (padrão `mistral-small-latest`) |
 
-\* Não obrigatória: sem Cloudflare o app continua funcionando com o banco local.
+\* Nenhuma é obrigatória: sem nenhuma chave o app continua funcionando com o banco local.
 
 ## API
 
@@ -124,5 +131,5 @@ Resposta:
 
 ## Observações (agosto/2026)
 
-- O gerador usa apenas **Cloudflare Workers AI** + **banco local** (Pollinations e ChatGptOss foram removidos por instabilidade/pagamento).
+- O gerador usa **Cloudflare Workers AI** → **OpenRouter** → **Mistral AI** → **banco local** (Pollinations e ChatGptOss foram removidos por instabilidade/pagamento; GitHub Models foi desativado pela Microsoft em 30/07/2026, e a Cerebras deixou de ter faixa gratuita permanente).
 - Sempre haverá resposta por causa do **banco local**. Para a melhor qualidade, use o **Cloudflare Workers AI** com token válido.
