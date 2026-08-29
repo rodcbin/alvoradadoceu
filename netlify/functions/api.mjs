@@ -35,7 +35,9 @@ export async function handler(event) {
   }
 
   try {
-    const result = await core.generatePhrase(body);
+    const result = event.path && event.path.endsWith("/api/legenda")
+      ? await core.gerarLegenda(body)
+      : await core.generatePhrase(body);
     return {
       statusCode: 200,
       headers: JSON_HEADERS,

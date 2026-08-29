@@ -406,7 +406,9 @@ textarea.legenda-input {
   margin-top: 6px;
 }
 
-input.palavra-input {
+input.palavra-input,
+input.hashtags-input,
+input.palavras-key-input {
   flex: 1;
   border: 1px solid var(--borda);
   border-radius: 10px;
@@ -417,6 +419,40 @@ input.palavra-input {
   outline: none;
   font-weight: 600;
 }
+
+input.hashtags-input { color: #1e88a8; }
+input.palavras-key-input { color: #6d4fa0; }
+
+.grade-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.linha-legenda {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.botao-secundario {
+  margin: 0;
+  background: linear-gradient(140deg, #e4d8f5, #f0e7fa);
+  color: #5b3c94;
+  border: 1px solid #cbb7e8;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(91, 60, 148, 0.14);
+  transition: transform 0.12s ease, box-shadow 0.15s ease;
+}
+
+.botao-secundario:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(91, 60, 148, 0.22); }
 
 .botoes-busca { display: flex; gap: 8px; margin-top: 8px; }
 

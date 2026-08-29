@@ -1,11 +1,12 @@
 # Alvorada do Céu — Gerador de Frases Espirituais
 
 Um gerador de frases espirituais para **Instagram Reels** (e postagens em geral).
-Cada geração entrega **três coisas prontas para usar**:
+Cada geração entrega **quatro coisas prontas para usar**:
 
-1. **Frase** — curta e de alto impacto, feita para prender a atenção, gerar comentário, compartilhamento e inscrição na página.
-2. **Legenda** — pronta para colar na descrição do Reels (com emojis, CTA e hashtags).
-3. **Palavra-chave** — para pesquisar o vídeo de fundo no **Pexels** ou **Pixabay**, com links diretos de busca.
+1. **Frase** — de alto impacto, feita para prender a atenção, gerar identificação, compartilhamento e inscrição na página.
+2. **Legenda** — com estrutura **conexão → mensagem → acolhimento → (reflexão/pergunta)** + convite natural para seguir @alvoradadoceu.
+3. **Hashtags** — máximo 5, relevantes ao tema (sem #viral/#fyp/#reels), derivadas de um banco inteligente por categoria.
+4. **Palavras-chave** — 5 a 8 termos de SEO, conectados ao conteúdo; além do termo para buscar o vídeo de fundo no **Pexels** ou **Pixabay**, com links diretos.
 
 Sem imagens, sem vídeos, sem complicação: texto puro gerado por IA.
 
@@ -14,10 +15,16 @@ Sem imagens, sem vídeos, sem complicação: texto puro gerado por IA.
 - **27 opções de categoria** (26 temas + "Todas"), com chip rápido de seleção.
 - **10 formatos**: frase curta, muito curta, impacto, emocional, reflexão, oração, para imagem, para Stories, para Reel e sequência para Reel.
 - **4 tamanhos**: muito curto (5–12 palavras), curto (12–25), médio (25–45) e Reel em blocos (2–4).
+- **12 abordagens de frase**: reflexão, pergunta, alerta, consolo, promessa, contraste, identificação, oração, ensinamento, mensagem direta, esperança e tom de testemunho (ou automático).
+- **5 estilos de legenda**: automático, emocional, curta, com pergunta e em forma de oração.
+- **Intenção de engajamento**: identificação, compartilhamento, salvamento, comentário (ou automático) — usada internamente para a IA orientar o texto.
+- **Pipeline semântico**: TEMA → EMOÇÃO → DOR/DESEJO → INTENÇÃO → FRASE → LEGENDA → HASHTAGS → PALAVRAS-CHAVE, tudo conectado.
 - **Modo 🔥 Alto Impacto** (padrão) e **💌 Para Compartilhar**.
 - **Lote de 1, 5, 10, 20 ou 30 frases** de uma vez.
-- **Antirrepetição**: as últimas frases geradas são enviadas à IA para que ela não se repita.
-- **⭐ Favoritos e banco de frases** (localStorage): salvar, marcar como utilizada, excluir, anotar observações e abrir de novo no gerador.
+- **✨ Gerar outra legenda**: botão em cada cartão que cria uma nova versão da legenda mantendo a mesma frase (rota `POST /api/legenda`).
+- **Copy de tudo**: botão 📑 que copia frase + legenda + hashtags + palavras-chave no formato final.
+- **Antirrepetição**: o histórico (frase + hashtags) é enviado à IA para que ela não repita conteúdo.
+- **⭐ Favoritos e banco de frases** (localStorage): salvar, marcar como utilizada, excluir, anotar observações e abrir de novo no gerador — incluindo hashtags e palavras-chave.
 - Sempre **responde**: se nenhuma IA responder, usa o banco local de frases.
 
 > Seus dados ficam apenas no navegador do visitante — não há servidor de banco de dados.
@@ -67,7 +74,7 @@ curl http://localhost:8001/api/status
 │   └── functions/
 │       ├── api.mjs            # API serverless (espelho do server.js)
 │       └── core-ai.js         # motor de IA (Cloudflare + banco local)
-├── server.js                  # servidor local + POST /api/frase + GET /api/status
+├── server.js                  # servidor local + POST /api/frase + POST /api/legenda + GET /api/status
 ├── netlify.toml               # configuração de deploy Netlify
 ├── .env                       # segredos locais (NUNCA suba no git)
 └── .env.example
@@ -103,6 +110,9 @@ curl http://localhost:8001/api/status
   "altoImpacto": true,
   "paraCompartilhar": false,
   "quantidade": 5,
+  "estilo": "auto",
+  "abordagem": "auto",
+  "intencao": "auto",
   "evitar": ["frase já vista pelo usuário, para a IA não repetir"]
 }
 ```
@@ -115,17 +125,21 @@ Resposta:
   "itens": [
     {
       "frase": "A fé não é ver a saída. É confiar em quem mostra o caminho.",
-      "legenda": "A fé não é ver a saída. É confiar em quem mostra o caminho.\n\nSalve para guardar e compartilhe com quem precisa. 💛\n\nSiga @alvoradadoceu para reflexões diárias 🙏\n\n#fé #deus #oração #esperança #alvoradadoceu",
+      "legenda": "Sabe aquele peso que você tenta esconder até de si mesmo? Deus já viu.\n\nA fé não elimina as perguntas; ela ensina a confiar mesmo sem respostas completas.\n\nVocê não está sozinho(a): Deus conhece a sua história até o fim.\n\nSiga @alvoradadoceu para mais mensagens que tocam o coração. 🙏",
+      "hashtags": ["#Fé", "#Deus", "#FéEmDeus", "#ConfiançaNoProcesso", "#alvoradadoceu"],
+      "palavras_chave": ["fé", "confiança em Deus", "esperança", "oração", "Deus", "paz", "entrega"],
       "palavra_chave": "mãos orando céu nuvens, faith praying hands sky"
     }
   ],
   "categoria": "fe",
   "categoriaLabel": "Fé",
-  "quantidade": 5,
+  "quantidade": 1,
   "provider": "cloudflare",
   "providerLabel": "Cloudflare Workers AI"
 }
 ```
+
+`POST /api/legenda` — gera outra versão da legenda mantendo a frase (`frase` obrigatória; opcionais `legenda`, `categoria`, `estilo`, `intencao`, `provider`, `evitar`).
 
 `GET /api/status` — diagnóstico dos provedores configurados.
 

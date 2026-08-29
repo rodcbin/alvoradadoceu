@@ -25,7 +25,7 @@ function loadEnv() {
 }
 loadEnv();
 
-const { generatePhrase, configuredProviders } = require("./netlify/functions/core-ai");
+const { generatePhrase, gerarLegenda, configuredProviders } = require("./netlify/functions/core-ai");
 
 const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, "public");
@@ -114,7 +114,9 @@ async function handleApi(req, res) {
     return;
   }
   try {
-    const result = await generatePhrase(body);
+    const result = req.url.endsWith("/api/legenda")
+      ? await gerarLegenda(body)
+      : await generatePhrase(body);
     send(res, 200, "application/json; charset=utf-8", JSON.stringify({ ok: true, ...result }));
   } catch (e) {
     send(res, 500, "application/json; charset=utf-8", JSON.stringify({ ok: false, error: e && e.message ? e.message : "Erro interno." }));

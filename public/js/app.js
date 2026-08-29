@@ -51,6 +51,38 @@
     { id: "reel", label: "Reel (2–4 blocos)" }
   ];
 
+  var ESTILOS = [
+    { id: "auto", label: "Automático (recomendado)" },
+    { id: "emocional", label: "Emocional e acolhedora" },
+    { id: "curto", label: "Curta e direta" },
+    { id: "pergunta", label: "Reflexão com pergunta" },
+    { id: "oracao", label: "Em forma de oração" }
+  ];
+
+  var ABORDAGENS = [
+    { id: "auto", label: "Automático (variado)" },
+    { id: "reflexao", label: "Reflexão" },
+    { id: "pergunta", label: "Pergunta" },
+    { id: "alerta", label: "Alerta" },
+    { id: "consolo", label: "Consolo" },
+    { id: "promessa", label: "Promessa" },
+    { id: "contraste", label: "Contraste" },
+    { id: "identificacao", label: "Identificação" },
+    { id: "oracao", label: "Oração" },
+    { id: "ensinamento", label: "Ensinamento" },
+    { id: "mensagem-direta", label: "Mensagem direta" },
+    { id: "esperanca", label: "Esperança" },
+    { id: "testemunho", label: "Tom de testemunho" }
+  ];
+
+  var INTENCOES = [
+    { id: "auto", label: "Automático" },
+    { id: "identification", label: "Identificação (isso sou eu)" },
+    { id: "share", label: "Compartilhamento" },
+    { id: "save", label: "Salvamento" },
+    { id: "comment", label: "Comentário" }
+  ];
+
   var QUANTIDADES = [1, 5, 10, 20, 30];
 
   var IAs = [
@@ -82,10 +114,13 @@
         altoImpacto: cfg.altoImpacto !== false,
         paraCompartilhar: !!cfg.paraCompartilhar,
         provider: cfg.provider || "auto",
-        quantidade: cfg.quantidade || 1
+        quantidade: cfg.quantidade || 1,
+        estilo: cfg.estilo || "auto",
+        abordagem: cfg.abordagem || "auto",
+        intencao: cfg.intencao || "auto"
       };
     } catch (e) {
-      return { categoria: "todas", tipo: "curta", tamanho: "curto", altoImpacto: true, paraCompartilhar: false, provider: "auto", quantidade: 1 };
+      return { categoria: "todas", tipo: "curta", tamanho: "curto", altoImpacto: true, paraCompartilhar: false, provider: "auto", quantidade: 1, estilo: "auto", abordagem: "auto", intencao: "auto" };
     }
   }
 
@@ -114,15 +149,17 @@
     } catch (e) { return []; }
   }
 
-  function registrarHistorico(frases) {
+  function registrarHistorico(itens) {
     var h = lerHistorico();
-    frases.forEach(function (f) {
-      h.push(f);
+    (itens || []).filter(Boolean).forEach(function (f) {
+      var reg = typeof f === "string" ? { frase: f, hashtags: [] } : f;
+      if (!reg || !reg.frase) return;
+      h.push({ frase: reg.frase, hashtags: Array.isArray(reg.hashtags) ? reg.hashtags : [] });
     });
     var unico = [];
     h.filter(Boolean).forEach(function (f) {
-      var cf = f.replace(/\s+/g, " ").toLowerCase().slice(0, 80);
-      if (unico.indexOf(cf) === -1) unico.push(cf);
+      var cf = String(f.frase).replace(/\s+/g, " ").toLowerCase().slice(0, 80);
+      if (unico.indexOf(cf) === -1) unico.push(f);
     });
     var cortado = unico.slice(-40);
     try { localStorage.setItem(LS_HIST, JSON.stringify(cortado)); } catch (e) { /* vazio */ }
@@ -250,6 +287,9 @@
         paraCompartilhar: state.paraCompartilhar,
         provider: state.provider,
         quantidade: state.quantidade,
+        estilo: state.estilo,
+        abordagem: state.abordagem,
+        intencao: state.intencao,
         evitar: evitar
       })
     })
@@ -312,6 +352,7 @@
           '<div class="frase-acoes">' +
             '<button type="button" class="btn-icone" data-acao="favoritar" data-salva="' + (salva ? "1" : "0") + '" title="' + (salva && item.favorita ? "Remover dos favoritos" : "Salvar nos favoritos") + '">' + (salva && item.favorita ? "★" : "☆") + '</button>' +
             '<button type="button" class="btn-icone' + (item.utilizada ? " on" : "") + '" data-acao="utilizada" title="Marcar como utilizada">✔</button>' +
+            '<button type="button" class="btn-icone" data-acao="copiar-tudo" title="Copiar tudo (frase + legenda + hashtags + palavras-chave)">📑</button>' +
             '<button type="button" class="btn-icone" data-acao="copiar" title="Copiar frase">📋</button>' +
             '<button type="button" class="btn-icone" data-acao="gerar-outra" title="Gerar outra frase" style="' + (state.quantidade !== 1 ? "display:none" : "") + '">🔄</button>' +
             '<button type="button" class="btn-icone" data-acao="abrir" title="Abrir no gerador" style="' + (salva ? "" : "display:none") + '">↩</button>' +
@@ -319,14 +360,27 @@
           '</div>' +
         '</div>' +
         '<textarea class="frase-texto" rows="3" spellcheck="false" placeholder="Sua frase…"></textarea>' +
-        '<button type="button" class="det-alterno" data-acao="detalhes">Legenda + palavra-chave ▾</button>' +
+        '<button type="button" class="det-alterno" data-acao="detalhes">Legenda + hashtags + palavras-chave ▾</button>' +
         '<div class="detalhes">' +
-          '<span class="rotulo rotulo-det">Legenda</span>' +
-          '<textarea class="legenda-input" rows="3" spellcheck="false" placeholder="Legenda pronta para o post…"></textarea>' +
-          '<span class="rotulo rotulo-det">Palavra-chave (vídeo de fundo)</span>' +
+          '<div class="linha-legenda">' +
+            '<span class="rotulo rotulo-det">Legenda</span>' +
+            '<button type="button" class="botao-secundario" data-acao="outra-legenda" title="Gerar outra versão desta legenda">✨ Gerar outra legenda</button>' +
+          '</div>' +
+          '<textarea class="legenda-input" rows="4" spellcheck="false" placeholder="Legenda pronta para o post…"></textarea>' +
+          '<span class="rotulo rotulo-det">Hashtags (máx. 5, relevantes ao tema)</span>' +
+          '<div class="campo-palavra">' +
+            '<input class="hashtags-input" spellcheck="false" placeholder="#Deus #Fé #Oração…" />' +
+            '<button type="button" class="btn-icone" data-acao="copiar-hashtags" title="Copiar hashtags">📋</button>' +
+          '</div>' +
+          '<span class="rotulo rotulo-det">Palavras-chave (SEO)</span>' +
+          '<div class="campo-palavra">' +
+            '<input class="palavras-key-input" spellcheck="false" placeholder="Deus, fé, esperança…" />' +
+            '<button type="button" class="btn-icone" data-acao="copiar-palavras" title="Copiar palavras-chave">📋</button>' +
+          '</div>' +
+          '<span class="rotulo rotulo-det">Vídeo de fundo (Pexels/Pixabay)</span>' +
           '<div class="campo-palavra">' +
             '<input class="palavra-input" spellcheck="false" />' +
-            '<button type="button" class="btn-icone" data-acao="copiar-palavra" title="Copiar palavra-chave">📋</button>' +
+            '<button type="button" class="btn-icone" data-acao="copiar-palavra" title="Copiar termos do vídeo">📋</button>' +
           '</div>' +
           '<div class="botoes-busca">' +
             '<a class="botao-busca botao-pexels" href="#" target="_blank" rel="noopener noreferrer">Pesquisar no Pexels</a>' +
@@ -346,10 +400,39 @@
   function preencherCard(article, item) {
     article.querySelector(".frase-texto").value = item.frase || "";
     article.querySelector(".legenda-input").value = item.legenda || "";
+    article.querySelector(".hashtags-input").value = hashtagsParaTexto(item.hashtags) || "";
+    article.querySelector(".palavras-key-input").value = palavrasParaTexto(item.palavras_chave) || "";
     article.querySelector(".palavra-input").value = item.palavra_chave || "";
     article.querySelector(".obs-input").value = item.observacao || "";
     article.querySelector(".data-reg").textContent = item.data || "";
     atualizarLinks(article, item.palavra_chave || "");
+  }
+
+  function hashtagsParaTexto(arr) {
+    return (Array.isArray(arr) ? arr : []).join(" ");
+  }
+
+  function palavrasParaTexto(arr) {
+    return (Array.isArray(arr) ? arr : []).join(", ");
+  }
+
+  function parsearHashtags(texto) {
+    var tokens = String(texto || "").split(/[\s,;]+/).map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 5);
+    var out = [];
+    var visto = {};
+    tokens.forEach(function (t) {
+      var nome = t.replace(/^#+/, "").trim();
+      if (!nome) return;
+      var chave = nome.toLowerCase().replace(/[\s_]/g, "");
+      if (visto[chave]) return;
+      visto[chave] = 1;
+      out.push("#" + nome);
+    });
+    return out;
+  }
+
+  function parsearPalavras(texto) {
+    return String(texto || "").split(/[,\n;]+/).map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 8);
   }
 
   function atualizarLinks(article, palavra) {
@@ -368,13 +451,17 @@
         id: "",
         frase: it.frase,
         legenda: it.legenda,
+        hashtags: it.hashtags,
+        palavras_chave: it.palavras_chave,
         palavra_chave: it.palavra_chave,
         categoria: data.categoria,
         utilizada: false,
         favorita: false
       });
       preencherCard(article, {
-        frase: it.frase, legenda: it.legenda, palavra_chave: it.palavra_chave,
+        frase: it.frase, legenda: it.legenda,
+        hashtags: it.hashtags, palavras_chave: it.palavras_chave,
+        palavra_chave: it.palavra_chave,
         data: new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
       });
       lista.appendChild(article);
@@ -415,6 +502,8 @@
       id: article.getAttribute("data-id") || "",
       frase: article.querySelector(".frase-texto").value,
       legenda: article.querySelector(".legenda-input").value,
+      hashtags: parsearHashtags(article.querySelector(".hashtags-input").value),
+      palavras_chave: parsearPalavras(article.querySelector(".palavras-key-input").value),
       palavra_chave: article.querySelector(".palavra-input").value,
       observacao: article.querySelector(".obs-input").value
     };
@@ -437,8 +526,20 @@
       case "copiar":
         copiarTexto(item.frase);
         break;
+      case "copiar-tudo":
+        copiarTudo(item);
+        break;
+      case "copiar-hashtags":
+        copiarTexto((item.hashtags || []).join(" "));
+        break;
+      case "copiar-palavras":
+        copiarTexto((item.palavras_chave || []).join(", "));
+        break;
       case "copiar-palavra":
         copiarTexto(item.palavra_chave);
+        break;
+      case "outra-legenda":
+        gerarOutraLegenda(article, item);
         break;
       case "gerar-outra":
         gerarOutra(article, item);
@@ -455,10 +556,19 @@
   function btnDecor(article, name) {
     var btn = article.querySelector('[data-acao="' + name + '"]');
     if (btn && name === "detalhes" && article.querySelector(".detalhes").classList.contains("aberto")) {
-      btn.textContent = "Legenda + palavra-chave ▴";
+      btn.textContent = "Legenda + hashtags + palavras-chave ▴";
     } else if (btn && name === "detalhes") {
-      btn.textContent = "Legenda + palavra-chave ▾";
+      btn.textContent = "Legenda + hashtags + palavras-chave ▾";
     }
+  }
+
+  function copiarTudo(item) {
+    var texto =
+      "Frase de impacto:\n" + (item.frase || "") +
+      "\n\nLegenda:\n" + (item.legenda || "") +
+      "\n\nHashtags:\n" + (item.hashtags || []).join(" ") +
+      "\n\nPalavras-chave:\n" + (item.palavras_chave || []).join(", ");
+    copiarTexto(texto.trim());
   }
 
   function toggleFavoritar(article, item) {
@@ -472,6 +582,8 @@
         id: uid(),
         frase: item.frase,
         legenda: item.legenda,
+        hashtags: item.hashtags,
+        palavras_chave: item.palavras_chave,
         palavra_chave: item.palavra_chave,
         observacao: item.observacao,
         categoria: state.categoria,
@@ -569,6 +681,8 @@
     banco[idx].frase = article.querySelector(".frase-texto").value;
     banco[idx].legenda = article.querySelector(".legenda-input").value;
     banco[idx].palavra_chave = article.querySelector(".palavra-input").value;
+    banco[idx].hashtags = parsearHashtags(article.querySelector(".hashtags-input").value);
+    banco[idx].palavras_chave = parsearPalavras(article.querySelector(".palavras-key-input").value);
     banco[idx].observacao = article.querySelector(".obs-input").value;
     gravarBanco(banco);
     article.querySelector(".prova").textContent = "Salva e atualizada ✓";
@@ -596,14 +710,17 @@
         paraCompartilhar: state.paraCompartilhar,
         provider: state.provider,
         quantidade: 1,
-        evitar: [item.frase]
+        estilo: state.estilo,
+        abordagem: state.abordagem,
+        intencao: state.intencao,
+        evitar: [item]
       })
     })
       .then(function (res) { return res.json(); })
       .then(function (data) {
         if (!data || !data.ok) throw new Error("erro");
         var it = data.itens[0];
-        registrarHistorico([it.frase]);
+        registrarHistorico([it]);
         preencherCard(article, it);
         btnDecor(article, "detalhes");
         article.querySelector(".prova").textContent = "Gerada por " + data.providerLabel;
@@ -617,16 +734,58 @@
       });
   }
 
+  function gerarOutraLegenda(article, item) {
+    gerando = true;
+    var btn = $("btnGerar");
+    var original = btn.disabled;
+    btn.disabled = true;
+    article.querySelector(".prova").textContent = "Gerando nova legenda…";
+    fetch("/api/legenda", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        categoria: state.categoria,
+        frase: item.frase,
+        legenda: item.legenda,
+        estilo: state.estilo,
+        intencao: state.intencao,
+        provider: state.provider,
+        evitar: [item]
+      })
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (!data || !data.ok) throw new Error("erro");
+        var it = data.itens[0];
+        it.frase = item.frase;
+        preencherCard(article, it);
+        article.querySelector(".prova").textContent = "Nova legenda pronta (" + data.providerLabel + ") ✨";
+      })
+      .catch(function () {
+        article.querySelector(".prova").textContent = "Não consegui gerar outra legenda agora 😔";
+      })
+      .then(function () {
+        gerando = false;
+        btn.disabled = original;
+      });
+  }
+
   function abrirNoGerador(item) {
     /* copia o registro como um cartão novo editável no gerador */
     irParaAba("gerador");
     var lista = $("listaResultados");
     var article = document.createElement("div");
     article.innerHTML = cardHTML({
-      id: "", frase: item.frase, legenda: item.legenda, palavra_chave: item.palavra_chave,
+      id: "", frase: item.frase, legenda: item.legenda,
+      hashtags: item.hashtags, palavras_chave: item.palavras_chave,
+      palavra_chave: item.palavra_chave,
       categoria: state.categoria, utilizada: false, favorita: false
     });
-    preencherCard(article, { frase: item.frase, legenda: item.legenda, palavra_chave: item.palavra_chave, data: "" });
+    preencherCard(article, {
+      frase: item.frase, legenda: item.legenda,
+      hashtags: item.hashtags, palavras_chave: item.palavras_chave,
+      palavra_chave: item.palavra_chave, data: ""
+    });
     lista.innerHTML = "";
     lista.appendChild(article);
     toast("Cartão aberto no gerador. Edite e salve se quiser.");
@@ -720,12 +879,16 @@
     filtrados.forEach(function (r) {
       var article = document.createElement("div");
       article.innerHTML = cardHTML({
-        id: r.id, frase: r.frase, legenda: r.legenda, palavra_chave: r.palavra_chave,
+        id: r.id, frase: r.frase, legenda: r.legenda,
+        hashtags: r.hashtags, palavras_chave: r.palavras_chave,
+        palavra_chave: r.palavra_chave,
         categoria: r.categoria, utilizada: r.utilizada, favorita: r.favorita,
         badge: r.badge, observacao: r.observacao, data: r.data
       });
       preencherCard(article, {
-        frase: r.frase, legenda: r.legenda, palavra_chave: r.palavra_chave,
+        frase: r.frase, legenda: r.legenda,
+        hashtags: r.hashtags, palavras_chave: r.palavras_chave,
+        palavra_chave: r.palavra_chave,
         observacao: r.observacao,
         data: formatarData(r.data)
       });
@@ -750,6 +913,9 @@
   montarSelecao("selTipo", TIPOS, state.tipo);
   montarSelecao("selTamanho", TAMANHOS, state.tamanho);
   montarSelecao("selIA", IAs, state.provider);
+  montarSelecao("selEstilo", ESTILOS, state.estilo);
+  montarSelecao("selAbordagem", ABORDAGENS, state.abordagem);
+  montarSelecao("selIntencao", INTENCOES, state.intencao);
   montarSegmentos();
 
   $("selTipo").addEventListener("change", function () {
@@ -762,6 +928,18 @@
   });
   $("selIA").addEventListener("change", function () {
     state.provider = this.value;
+    salvarConfig();
+  });
+  $("selEstilo").addEventListener("change", function () {
+    state.estilo = this.value;
+    salvarConfig();
+  });
+  $("selAbordagem").addEventListener("change", function () {
+    state.abordagem = this.value;
+    salvarConfig();
+  });
+  $("selIntencao").addEventListener("change", function () {
+    state.intencao = this.value;
     salvarConfig();
   });
 
