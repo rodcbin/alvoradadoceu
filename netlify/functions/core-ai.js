@@ -457,7 +457,7 @@ async function cloudflare(messages) {
 }
 
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || "";
-const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free";
+const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
 
 async function openrouter(messages) {
   if (!OPENROUTER_KEY) throw new Error("OpenRouter não configurado (OPENROUTER_API_KEY).");
@@ -633,10 +633,20 @@ function extractItems(text, quantidade) {
   return items;
 }
 
+function limparFrase(t) {
+  return String(t || "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/`/g, "")
+    .replace(/#{1,6}\s*/g, "")
+    .replace(/^\s*[-•]\s*/gm, "")
+    .trim();
+}
+
 function normalizeItems(items, categoria, keywordHint) {
   const catId = categoria === "todas" ? "fe" : sanitizeCategoria(categoria);
   return items.map((it) => {
-    const frase = (it.frase || "").trim();
+    const frase = limparFrase(it.frase);
     const legenda = (it.legenda || "").trim();
     const kw = (it.palavra_chave || "").trim();
     return {

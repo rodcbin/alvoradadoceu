@@ -85,7 +85,7 @@ curl http://localhost:8001/api/status
 | `CF_API_TOKEN` | Não* | Token da Cloudflare (permissão Workers AI: Edit) |
 | `CF_TEXT_MODEL` | Não | Modelo Cloudflare (padrão `@cf/meta/llama-3.3-70b-instruct-fp8-fast`) |
 | `OPENROUTER_API_KEY` | Não* | Backup grátis do OpenRouter |
-| `OPENROUTER_MODEL` | Não | Modelo (padrão `meta-llama/llama-3.3-70b-instruct:free`) |
+| `OPENROUTER_MODEL` | Não | Modelo (padrão `nvidia/nemotron-3-ultra-550b-a55b:free`) |
 | `MISTRAL_API_KEY` | Não* | Backup grátis do Mistral AI |
 | `MISTRAL_MODEL` | Não | Modelo (padrão `mistral-small-latest`) |
 
