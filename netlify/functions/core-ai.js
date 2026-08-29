@@ -455,7 +455,7 @@ async function cloudflare(messages) {
 }
 
 async function pollinations(messages) {
-  const res = await request("https://text.pollinations.ai/v1/chat/completions", {
+  const res = await request("https://gen.pollinations.ai/v1/chat/completions", {
     method: "POST",
     timeout: 45000,
     headers: { "Content-Type": "application/json", Origin: "https://pollinations.ai", Referer: "https://pollinations.ai/" },
