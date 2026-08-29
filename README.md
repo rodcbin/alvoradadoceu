@@ -65,8 +65,9 @@ curl http://localhost:8001/api/status
 │   ├── css/style.css
 │   └── js/app.js
 ├── netlify/
-│   └── functions/api.mjs      # API serverless (espelho do server.js)
-├── core-ai.js                 # motor de IA (Cloudflare + Pollinations + ChatGptOss + banco local)
+│   └── functions/
+│       ├── api.mjs            # API serverless (espelho do server.js)
+│       └── core-ai.js         # motor de IA (Cloudflare + Pollinations + ChatGptOss + banco local)
 ├── server.js                  # servidor local + POST /api/frase + GET /api/status
 ├── netlify.toml               # configuração de deploy Netlify
 ├── .env                       # segredos locais (NUNCA suba no git)

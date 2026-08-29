@@ -25,7 +25,7 @@ function loadEnv() {
 }
 loadEnv();
 
-const { generatePhrase, configuredProviders } = require("./core-ai");
+const { generatePhrase, configuredProviders } = require("./netlify/functions/core-ai");
 
 const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, "public");
@@ -95,7 +95,7 @@ async function handleApi(req, res) {
     send(res, 200, "application/json; charset=utf-8", JSON.stringify({
       ok: true,
       nome: "Alvorada do Céu",
-      categorias: require("./core-ai").CATEGORIAS.length,
+      categorias: require("./netlify/functions/core-ai").CATEGORIAS.length,
       provedores: procs,
       integracaoExtra: label ? "minimax-imagem" : "nada"
     }));

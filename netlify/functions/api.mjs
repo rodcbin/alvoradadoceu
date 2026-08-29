@@ -2,7 +2,7 @@
  * Reaproveita o mesmo motor do servidor local (core-ai.js).
  * No Netlify as variáveis CF_ACCOUNT_ID / CF_API_TOKEN vêm do
  * painel (Site configuration > Environment variables). */
-import core from "../core-ai.js";
+import core from "./core-ai.js";
 
 const JSON_HEADERS = {
   "Content-Type": "application/json; charset=utf-8",
