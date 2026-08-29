@@ -431,21 +431,23 @@ const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 /* ------------------------------------------------------------------ */
 const CF_ACCOUNT = process.env.CF_ACCOUNT_ID || "";
 const CF_TOKEN = process.env.CF_API_TOKEN || "";
-const CF_TEXT_MODEL = process.env.CF_TEXT_MODEL || "@cf/meta/llama-3.1-8b-instruct";
+const CF_TEXT_MODEL = process.env.CF_TEXT_MODEL || "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
 async function cloudflare(messages) {
   if (!CF_ACCOUNT || !CF_TOKEN) throw new Error("Cloudflare não configurada (CF_ACCOUNT_ID / CF_API_TOKEN).");
-  const url = "https://api.cloudflare.com/client/v4/accounts/" + encodeURIComponent(CF_ACCOUNT) + "/ai/run/" + encodeURIComponent(CF_TEXT_MODEL);
+  const url = "https://api.cloudflare.com/client/v4/accounts/" + encodeURIComponent(CF_ACCOUNT) + "/ai/v1/chat/completions";
   const res = await request(url, {
     method: "POST",
     timeout: 30000,
     headers: { "Content-Type": "application/json", Authorization: "Bearer " + CF_TOKEN }
-  }, { messages, temperature: 0.9, max_tokens: 2600 });
+  }, { model: CF_TEXT_MODEL, messages, temperature: 0.9, max_tokens: 2600 });
   if (res.status !== 200) throw new Error("Cloudflare HTTP " + res.status + ": " + res.body.slice(0, 160));
   let data;
   try { data = JSON.parse(res.body); } catch { throw new Error("Cloudflare: resposta inválida"); }
-  if (!data.success || !data.result) throw new Error("Cloudflare: " + (data.errors ? JSON.stringify(data.errors).slice(0, 160) : "erro desconhecido"));
-  const text = (data.result.response || "").trim();
+  if (!data || !data.choices || !data.choices.length) {
+    throw new Error("Cloudflare: " + (data && data.errors ? JSON.stringify(data.errors).slice(0, 160) : "erro desconhecido"));
+  }
+  const text = ((data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "").trim();
   if (!text) throw new Error("Cloudflare: resposta vazia");
   return text;
 }

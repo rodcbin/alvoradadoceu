@@ -80,7 +80,7 @@ curl http://localhost:8001/api/status
 |---|---|---|
 | `CF_ACCOUNT_ID` | Não* | Cloudflare Workers AI (sem ela cai para as IAs gratuitas) |
 | `CF_API_TOKEN` | Não* | Token da Cloudflare (permissão Workers AI: Edit) |
-| `CF_TEXT_MODEL` | Não | Modelo de texto (padrão `@cf/meta/llama-3.1-8b-instruct`) |
+| `CF_TEXT_MODEL` | Não | Modelo de texto (padrão `@cf/meta/llama-3.3-70b-instruct-fp8-fast`) |
 
 \* Não obrigatória: sem Cloudflare o app continua funcionando com o banco local.
 
