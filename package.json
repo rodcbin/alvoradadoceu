@@ -2,7 +2,7 @@
   "name": "alvorada-do-ceu-frases",
   "version": "2.0.0",
   "private": true,
-  "description": "Gerador de frases espirituais para Reels: frase, legenda e palavra-chave (Cloudflare Workers AI + Pollinations + DuckDuckGo AI).",
+  "description": "Gerador de frases espirituais para Reels: frase, legenda e palavra-chave (Cloudflare Workers AI + banco local).",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -3,9 +3,7 @@
  *
  * Provedores (em ordem de tentativa):
  *   1. Cloudflare Workers AI     (usa CF_ACCOUNT_ID + CF_API_TOKEN)
- *   2. Pollinations              (gratuito, sem chave)
- *   3. ChatGptOss                (gratuito, sem chave)
- *   4. Banco local               (garantia offline)
+ *   2. Banco local               (garantia offline)
  * ============================================================ */
 "use strict";
 
@@ -15,8 +13,6 @@ const crypto = require("crypto");
 
 const PROVIDER_LABELS = {
   cloudflare: "Cloudflare Workers AI",
-  pollinations: "Pollinations",
-  chatgptoss: "ChatGptOss",
   local: "Frases locais (offline)",
 };
 
@@ -454,96 +450,13 @@ async function cloudflare(messages) {
   return text;
 }
 
-async function pollinations(messages) {
-  const res = await request("https://gen.pollinations.ai/v1/chat/completions", {
-    method: "POST",
-    timeout: 45000,
-    headers: { "Content-Type": "application/json", Origin: "https://pollinations.ai", Referer: "https://pollinations.ai/" },
-    rejectUnauthorized: false
-  }, {
-    model: "openai",
-    messages,
-    temperature: 0.9,
-    max_tokens: 2600,
-    seed: crypto.randomInt(0, 999999999),
-    private: true
-  });
-  if (res.status !== 200) throw new Error("Pollinations HTTP " + res.status + ": " + res.body.slice(0, 160));
-  try {
-    const j = JSON.parse(res.body);
-    if (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) {
-      return String(j.choices[0].message.content).trim();
-    }
-    if (j.error) throw new Error("Pollinations: " + j.error);
-  } catch (e) {
-    if (e.message && e.message.startsWith("Pollinations")) throw e;
-  }
-  const t = res.body.trim();
-  if (!t) throw new Error("Pollinations: resposta vazia");
-  return t;
-}
-
-async function chatgptoss(messages) {
-  const prompt = messages
-    .map((m) => (m.role === "system" ? "System: " + m.content : m.content))
-    .join("\n\n");
-  const fp = crypto.createHash("md5").update(String(Date.now()) + "-" + String(Math.random())).digest("hex");
-  const res = await request("https://chat-gpt-oss.com/api/message", {
-    method: "POST",
-    timeout: 45000,
-    headers: {
-      "accept": "text/event-stream",
-      "accept-language": "en-US,en;q=0.9",
-      "cache-control": "no-cache",
-      "content-type": "application/json",
-      "origin": "https://chat-gpt-oss.com",
-      "pragma": "no-cache",
-      "referer": "https://chat-gpt-oss.com/",
-      "sec-fetch-dest": "empty",
-      "sec-fetch-mode": "cors",
-      "sec-fetch-site": "same-origin",
-      "x-fingerprint": fp
-    },
-    rejectUnauthorized: false
-  }, {
-    conversation_id: null,
-    model: "gpt-oss-120b",
-    content: prompt,
-    reasoning_effort: "low"
-  });
-  if (res.status !== 200) throw new Error("ChatGptOss HTTP " + res.status + ": " + res.body.slice(0, 160));
-  const ct = (res.headers["content-type"] || "").toLowerCase();
-  if (ct.indexOf("html") !== -1 && !res.body.trim()) throw new Error("ChatGptOss: bloqueado (HTML vazio)");
-  let out = "";
-  let event = null;
-  for (const raw of res.body.split(/\r?\n/)) {
-    const line = raw.trim();
-    if (!line) { event = null; continue; }
-    if (line.startsWith("event:")) { event = line.slice(6).trim(); continue; }
-    if (line.startsWith("data:") && event === "message") {
-      const payload = line.slice(5).trim();
-      try {
-        const chunk = JSON.parse(payload);
-        if (chunk.content) out += chunk.content;
-      } catch {}
-    }
-    if (event === "summary") break;
-  }
-  if (!out.trim()) throw new Error("ChatGptOss: resposta vazia");
-  return out.trim();
-}
-
 const PROVIDER_ORDER = [
-  { id: "cloudflare", fn: cloudflare },
-  { id: "pollinations", fn: pollinations },
-  { id: "chatgptoss", fn: chatgptoss }
+  { id: "cloudflare", fn: cloudflare }
 ];
 
 function configuredProviders() {
   return [
     { id: "cloudflare", label: PROVIDER_LABELS.cloudflare, ativo: !!(CF_ACCOUNT && CF_TOKEN) },
-    { id: "pollinations", label: PROVIDER_LABELS.pollinations, ativo: true },
-    { id: "chatgptoss", label: PROVIDER_LABELS.chatgptoss, ativo: true },
     { id: "local", label: PROVIDER_LABELS.local, ativo: true }
   ];
 }

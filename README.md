@@ -24,19 +24,15 @@ Sem imagens, sem vídeos, sem complicação: texto puro gerado por IA.
 
 ## Como funciona a IA
 
-O texto é gerado por até **3 IAs**, nesta ordem (a primeira que funcionar vence):
+O texto é gerado pela **Cloudflare Workers AI**. Como última garantia (se ela não responder), o app usa um **banco local de frases** — o botão sempre responde.
 
 | Prioridade | Provedor | Chave de API? | Observação |
 |---|---|---|---|
-| 1 | **Cloudflare Workers AI** (padrão) | Sim — `CF_ACCOUNT_ID` + `CF_API_TOKEN` | Motor principal, configurado no `.env` |
-| 2 | **Pollinations** | Não | Gratuito e sem chave |
-| 3 | **ChatGptOss** | Não | Gratuito e sem chave |
-
-Como última garantia (se nenhuma delas responder), o app usa um **banco local de frases** — o botão sempre responde.
+| 1 | **Cloudflare Workers AI** | Sim — `CF_ACCOUNT_ID` + `CF_API_TOKEN` | Motor principal, configurado no `.env` |
 
 > As chaves ficam só no servidor/`.env` — o navegador do visitante nunca as vê.
 
-> ⚠️ Atenção: alguns provedores gratuitos (Pollinations, ChatGptOss) estão instáveis ou bloqueados por redes/firewalls. Se a página mostrar "banco local", significa que as IAs não responderam neste momento — a experiência continua completa, mas para ter as IAs de rede no total, **gere um token novo no painel da Cloudflare** (dash.cloudflare.com → API Tokens → Create Token) e coloque em `CF_API_TOKEN`. O token precisa da permissão **Workers AI: Edit** para a sua conta.
+> ⚠️ Atenção: se a página mostrar "banco local", significa que a Cloudflare não respondeu neste momento — a experiência continua completa com o banco local. Para usar a IA de rede, **gere um token novo no painel da Cloudflare** (dash.cloudflare.com → API Tokens → Create Token) e coloque em `CF_API_TOKEN`. O token precisa da permissão **Workers AI: Edit** para a sua conta.
 
 ## Categorias
 
@@ -67,7 +63,7 @@ curl http://localhost:8001/api/status
 ├── netlify/
 │   └── functions/
 │       ├── api.mjs            # API serverless (espelho do server.js)
-│       └── core-ai.js         # motor de IA (Cloudflare + Pollinations + ChatGptOss + banco local)
+│       └── core-ai.js         # motor de IA (Cloudflare + banco local)
 ├── server.js                  # servidor local + POST /api/frase + GET /api/status
 ├── netlify.toml               # configuração de deploy Netlify
 ├── .env                       # segredos locais (NUNCA suba no git)
@@ -86,7 +82,7 @@ curl http://localhost:8001/api/status
 | `CF_API_TOKEN` | Não* | Token da Cloudflare (permissão Workers AI: Edit) |
 | `CF_TEXT_MODEL` | Não | Modelo de texto (padrão `@cf/meta/llama-3.1-8b-instruct`) |
 
-\* Não obrigatória: sem Cloudflare o app continua funcionando com Pollinations, ChatGptOss e o banco local.
+\* Não obrigatória: sem Cloudflare o app continua funcionando com o banco local.
 
 ## API
 
@@ -126,8 +122,7 @@ Resposta:
 
 `GET /api/status` — diagnóstico dos provedores configurados.
 
-## Observações sobre provedores gratuitos (agosto/2026)
+## Observações (agosto/2026)
 
-- **Pollinations** passou a exigir pagamento para o endpoint de texto (`402 Payment Required`) em algumas contas/IPs; o código tenta assim mesmo e cai para o próximo.
-- **ChatGptOss** bloqueia por "impressão digital" de TLS em algumas redes corporativas; funciona em outros ambientes.
+- O gerador usa apenas **Cloudflare Workers AI** + **banco local** (Pollinations e ChatGptOss foram removidos por instabilidade/pagamento).
 - Sempre haverá resposta por causa do **banco local**. Para a melhor qualidade, use o **Cloudflare Workers AI** com token válido.

@@ -54,10 +54,8 @@
   var QUANTIDADES = [1, 5, 10, 20, 30];
 
   var IAs = [
-    { id: "auto", label: "Automático (tenta em ordem)" },
+    { id: "auto", label: "Automático (Cloudflare → banco local)" },
     { id: "cloudflare", label: "Cloudflare Workers AI" },
-    { id: "pollinations", label: "Pollinations" },
-    { id: "chatgptoss", label: "ChatGptOss" },
     { id: "local", label: "Banco local (offline)" }
   ];
 
