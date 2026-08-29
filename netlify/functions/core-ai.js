@@ -558,7 +558,7 @@ function buildMessages(opts) {
   linhas.push("RESPONDA APENAS com blocos. Para cada frase, escreva um bloco separado por uma linha contendo somente: ---\n" +
     "Formato exato de cada bloco:\n" +
     "FRASE: <a frase, por extenso>\n" +
-    "LEGENDA: <legenda curta p/ postar (1 a 3 linhas), com emojis e convite \u201CSiga @alvoradadoceu\u201D no fim>\n" +
+    "LEGENDA: <legenda curta p/ postar (1 a 3 linhas), com emojis, convite \u201CSiga @alvoradadoceu\u201D no fim e 5 hashtags relacionadas>\n" +
     "PALAVRA-CHAVE: <palavra-chave para buscar vídeo de fundo no Pixabay/Pexels, termos em português e inglês separados por vírgula, sem hashtags>");
 
   return [
@@ -643,11 +643,17 @@ function limparFrase(t) {
     .trim();
 }
 
+function garantirHashtags(legenda, catId) {
+  if (!legenda) return legenda;
+  if (/#\w/.test(legenda)) return legenda;
+  return legenda.replace(/\s*$/, "") + "\n\n" + tagsFor(catId);
+}
+
 function normalizeItems(items, categoria, keywordHint) {
   const catId = categoria === "todas" ? "fe" : sanitizeCategoria(categoria);
   return items.map((it) => {
     const frase = limparFrase(it.frase);
-    const legenda = (it.legenda || "").trim();
+    const legenda = garantirHashtags((it.legenda || "").trim(), catId);
     const kw = (it.palavra_chave || "").trim();
     return {
       frase,
