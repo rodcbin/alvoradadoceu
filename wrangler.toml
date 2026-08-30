@@ -1,13 +1,14 @@
 name = "alvorada-do-ceu"
+pages_build_output_dir = "public"
 compatibility_date = "2026-01-01"
 compatibility_flags = ["nodejs_compat"]
 
 # Nota Cloudflare Pages:
-# - As config de build (Build command / Build output directory) ficam no painel do
-#   Cloudflare (Workers & Pages > projeto > Settings > Builds & deployments).
-#   Recomendado: Build command "true", Build output directory "public".
+# - O nome acima (name) precisa coincidir com o nome do projeto Pages no dashboard.
+# - pages_build_output_dir aponta para a pasta de arquivos estáticos a publicar.
 # - As secrets/variáveis (CF_ACCOUNT_ID, CF_API_TOKEN, OPENROUTER_API_KEY,
 #   MISTRAL_API_KEY, ...) ficam em Settings > Variables and Secrets.
 #   Com o flag nodejs_compat elas ficam disponíveis via process.env dentro da função.
-# - Este arquivo é usado principalmente para deploy via CLI:
-#   npx wrangler pages deploy public
+# - Para deploy via Git (Pages conectado), o ideal é deixar o "Deploy command"
+#   VAZIO no painel: o Cloudflare publica o output directory e empacota functions/
+#   automaticamente. Caso queira deploy explícito: npx wrangler pages deploy public
