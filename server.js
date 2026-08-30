@@ -25,7 +25,7 @@ function loadEnv() {
 }
 loadEnv();
 
-const { generatePhrase, gerarLegenda, configuredProviders } = require("./netlify/functions/core-ai");
+const { generatePhrase, gerarLegenda, configuredProviders } = require("./functions/_lib/core-ai");
 
 const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, "public");
@@ -91,13 +91,11 @@ function readBody(req, limit = 1e5) {
 async function handleApi(req, res) {
   if (req.method === "GET" && req.url.endsWith("/api/status")) {
     const procs = configuredProviders();
-    const label = process.env.MINIMAX_API_KEY && process.env.MINIMAX_GROUP_ID;
     send(res, 200, "application/json; charset=utf-8", JSON.stringify({
       ok: true,
       nome: "Alvorada do Céu",
-      categorias: require("./netlify/functions/core-ai").CATEGORIAS.length,
-      provedores: procs,
-      integracaoExtra: label ? "minimax-imagem" : "nada"
+      categorias: require("./functions/_lib/core-ai").CATEGORIAS.length,
+      provedores: procs
     }));
     return;
   }

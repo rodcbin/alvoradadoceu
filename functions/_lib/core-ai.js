@@ -9,10 +9,6 @@
  * ============================================================ */
 "use strict";
 
-const https = require("https");
-const http = require("http");
-const crypto = require("crypto");
-
 const PROVIDER_LABELS = {
   cloudflare: "Cloudflare Workers AI",
   openrouter: "OpenRouter (IA grátis)",
@@ -1081,37 +1077,31 @@ function localFrases(quantidade, categoria, evitar) {
 /* ------------------------------------------------------------------ */
 /* HTTP helpers                                                        */
 /* ------------------------------------------------------------------ */
-function request(url, options, body) {
-  return new Promise((resolve, reject) => {
-    const u = new URL(url);
-    const isHttps = u.protocol === "https:";
-    const lib = isHttps ? https : http;
-    const timeout = options.timeout || 20000;
-    const req = lib.request(
-      {
-        hostname: u.hostname,
-        port: u.port || (isHttps ? 443 : 80),
-        path: u.pathname + u.search,
-        method: options.method || "GET",
-        headers: Object.assign({ "User-Agent": UA }, options.headers || {}),
-        rejectUnauthorized: options.rejectUnauthorized !== false
-      },
-      (res) => {
-        const chunks = [];
-        res.on("data", (c) => chunks.push(c));
-        res.on("end", () => {
-          const raw = Buffer.concat(chunks);
-          let bodyStr = raw.toString("utf8");
-          if (bodyStr.charCodeAt(0) === 0xfeff) bodyStr = bodyStr.slice(1);
-          resolve({ status: res.statusCode || 0, headers: res.headers || {}, body: bodyStr });
-        });
-      }
-    );
-    req.setTimeout(timeout, () => req.destroy(new Error("Timeout após " + timeout + "ms")));
-    req.on("error", (e) => reject(e));
-    if (body) req.write(typeof body === "string" ? body : JSON.stringify(body));
-    req.end();
-  });
+async function request(url, options, body) {
+  const timeout = options.timeout || 20000;
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const signal = controller ? controller.signal : undefined;
+  const timer = controller ? setTimeout(() => controller.abort(), timeout) : null;
+  let res;
+  try {
+    res = await fetch(url, {
+      method: options.method || "GET",
+      headers: Object.assign({ "User-Agent": UA }, options.headers || {}),
+      body: body ? (typeof body === "string" ? body : JSON.stringify(body)) : undefined,
+      signal,
+    });
+    const text = await res.text();
+    let bodyStr = text;
+    if (bodyStr.charCodeAt(0) === 0xfeff) bodyStr = bodyStr.slice(1);
+    return { status: res.status || 0, headers: res.headers || {}, body: bodyStr };
+  } catch (e) {
+    if (e && (e.name === "AbortError" || e.message === "Timeout após " + timeout + "ms")) {
+      throw new Error("Timeout após " + timeout + "ms");
+    }
+    throw e;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36";

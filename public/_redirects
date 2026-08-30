@@ -1,0 +1,4 @@
+# Sem regras de redirecionamento necessárias.
+# Arquivos sensíveis (.env, server.js, functions/, etc.) nunca são publicados:
+# o Cloudflare Pages publica apenas o diretório de build (public/), então o 404
+# natural já os protege.

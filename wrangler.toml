@@ -1,0 +1,13 @@
+name = "alvorada-do-ceu"
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Nota Cloudflare Pages:
+# - As config de build (Build command / Build output directory) ficam no painel do
+#   Cloudflare (Workers & Pages > projeto > Settings > Builds & deployments).
+#   Recomendado: Build command "true", Build output directory "public".
+# - As secrets/variáveis (CF_ACCOUNT_ID, CF_API_TOKEN, OPENROUTER_API_KEY,
+#   MISTRAL_API_KEY, ...) ficam em Settings > Variables and Secrets.
+#   Com o flag nodejs_compat elas ficam disponíveis via process.env dentro da função.
+# - Este arquivo é usado principalmente para deploy via CLI:
+#   npx wrangler pages deploy public

@@ -65,26 +65,37 @@ curl http://localhost:8001/api/status
 ## Estrutura
 
 ```
-├── public/                      # site estático (publicado no Netlify)
+├── public/                        # site estático (output do build)
 │   ├── index.html
 │   ├── 404.html
 │   ├── css/style.css
-│   └── js/app.js
-├── netlify/
-│   └── functions/
-│       ├── api.mjs            # API serverless (espelho do server.js)
-│       └── core-ai.js         # motor de IA (Cloudflare + banco local)
-├── server.js                  # servidor local + POST /api/frase + POST /api/legenda + GET /api/status
-├── netlify.toml               # configuração de deploy Netlify
-├── .env                       # segredos locais (NUNCA suba no git)
+│   ├── js/app.js
+│   ├── _headers                  # headers de segurança + cache
+│   └── _redirects                # bloqueio de caminhos sensíveis
+├── functions/
+│   ├── api/
+│   │   ├── frase.js             # POST /api/frase
+│   │   ├── legenda.js           # POST /api/legenda
+│   │   └── status.js            # GET /api/status
+│   └── _lib/
+│       ├── core-ai.js           # motor de IA (Cloudflare + trabalho + banco local)
+│       └── load-core.mjs        # injeta env e carrega o core (nodejs_compat)
+├── server.js                     # servidor local (dev) + mesmas rotas /api
+├── wrangler.toml                 # configuração de deploy Cloudflare Pages
+├── .env                          # segredos locais (NUNCA suba no git)
 └── .env.example
 ```
 
-## Hospedar no Netlify
+## Hospedar no Cloudflare Pages
 
 1. Suba o repositório no GitHub (o `.env` já está no `.gitignore`).
-2. No [app.netlify.com](https://app.netlify.com): **Add new site → Import an existing project**.
-3. Configure as variáveis no painel (**Site configuration → Environment variables**):
+2. No [dash.cloudflare.com](https://dash.cloudflare.com): **Workers & Pages → Create → Pages → Connect to Git** e escolha o repositório.
+3. Na configuração de build use:
+   - **Build command:** `npm ci --omit=dev || npm install --omit=dev`
+   - **Build output directory:** `public`
+   - O `wrangler.toml` já define `build.command` e `output_directory`; se o painel não os detectar, preencha à mão.
+4. Ative o **Node.js compatibility**: **Settings → Functions → Compatibility flags** e adicione `nodejs_compat` (ou defina `compatibility_flags` no `wrangler.toml`, já incluído).
+5. Configure as **variáveis de ambiente** (secrets): **Settings → Variables and Secrets**:
 
 | Variável | Obrigatória? | Para quê |
 |---|---|---|
@@ -97,6 +108,27 @@ curl http://localhost:8001/api/status
 | `MISTRAL_MODEL` | Não | Modelo (padrão `mistral-small-latest`) |
 
 \* Nenhuma é obrigatória: sem nenhuma chave o app continua funcionando com o banco local.
+
+> Com o flag `nodejs_compat`, essas variáveis ficam disponíveis dentro da função via `process.env`, 
+> que é como o `core-ai.js` as lê — não é preciso alterar o motor de IA.
+
+### Rodar as funções localmente (com wrangler)
+
+Depois de `npm install`, copie suas chaves para `.dev.vars` (mesmo formato do `.env`) e rode:
+
+```bash
+npx wrangler pages dev public
+```
+
+Isso serve as funções de `functions/` mais o `public/` em `http://localhost:8788`.
+
+### Deploy manual via CLI (opcional)
+
+```bash
+npm run pages:deploy
+```
+
+## API
 
 ## API
 
