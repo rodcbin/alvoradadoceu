@@ -2,77 +2,28 @@
   "use strict";
 
   var CATEGORIAS = [
-    { id: "todas", label: "Todas", emoji: "🌈" },
-    { id: "deus", label: "Deus", emoji: "✨" },
-    { id: "jesus", label: "Jesus", emoji: "✝️" },
     { id: "fe", label: "Fé", emoji: "🙌" },
-    { id: "oracao", label: "Oração", emoji: "🙏" },
-    { id: "esperanca", label: "Esperança", emoji: "🌅" },
-    { id: "paz", label: "Paz", emoji: "🕊️" },
-    { id: "reflexao", label: "Reflexão", emoji: "💭" },
-    { id: "recomeco", label: "Recomeço", emoji: "🌱" },
-    { id: "gratidao", label: "Gratidão", emoji: "🌻" },
-    { id: "familia", label: "Família", emoji: "👨‍👩‍👧" },
-    { id: "protecao", label: "Proteção", emoji: "🛡️" },
-    { id: "ansiedade", label: "Ansiedade", emoji: "🌪️" },
-    { id: "momentos-dificeis", label: "Momentos difíceis", emoji: "🌧️" },
-    { id: "amor-de-deus", label: "Amor de Deus", emoji: "💛" },
-    { id: "confianca", label: "Confiança", emoji: "🏔️" },
-    { id: "superacao", label: "Superação", emoji: "⛰️" },
-    { id: "manha", label: "Mensagem da manhã", emoji: "☀️" },
-    { id: "noite", label: "Mensagem da noite", emoji: "🌆" },
-    { id: "dormir", label: "Antes de dormir", emoji: "🌙" },
-    { id: "domingo", label: "Domingo", emoji: "⛪" },
-    { id: "segunda", label: "Segunda-feira", emoji: "📅" },
-    { id: "fim-de-semana", label: "Final de semana", emoji: "🏖️" },
-    { id: "hoje", label: "Mensagem para hoje", emoji: "📌" },
-    { id: "frase-impacto", label: "Frase de impacto", emoji: "⚡" },
-    { id: "reflexao-espiritual", label: "Reflexão espiritual", emoji: "📖" },
-    { id: "sofrendo", label: "Para quem está sofrendo", emoji: "💔" }
+    { id: "oracao", label: "Oração", emoji: "🙏" }
   ];
 
   var TIPOS = [
-    { id: "curta", label: "Frase curta" },
-    { id: "muito_curta", label: "Muito curta" },
     { id: "impacto", label: "Frase de impacto" },
-    { id: "emocional", label: "Mensagem emocional" },
-    { id: "reflexao", label: "Reflexão" },
-    { id: "oracao", label: "Oração curta" },
-    { id: "imagem", label: "Mensagem para imagem" },
-    { id: "stories", label: "Mensagem para Stories" },
-    { id: "reel", label: "Mensagem para Reel" },
     { id: "sequencia", label: "Sequência para Reel" }
   ];
 
   var TAMANHOS = [
-    { id: "muito_curto", label: "Muito curto (5–12 palavras)" },
     { id: "curto", label: "Curto (12–25 palavras)" },
-    { id: "medio", label: "Médio (25–45 palavras)" },
     { id: "reel", label: "Reel (2–4 blocos)" }
   ];
 
   var ESTILOS = [
-    { id: "auto", label: "Automático (recomendado)" },
-    { id: "emocional", label: "Emocional e acolhedora" },
-    { id: "curto", label: "Curta e direta" },
-    { id: "pergunta", label: "Reflexão com pergunta" },
-    { id: "oracao", label: "Em forma de oração" }
+    { id: "curto", label: "Curta e viral (recomendado)" },
+    { id: "emocional", label: "Emocional e acolhedora" }
   ];
 
   var ABORDAGENS = [
-    { id: "auto", label: "Automático (variado)" },
-    { id: "reflexao", label: "Reflexão" },
-    { id: "pergunta", label: "Pergunta" },
-    { id: "alerta", label: "Alerta" },
-    { id: "consolo", label: "Consolo" },
-    { id: "promessa", label: "Promessa" },
-    { id: "contraste", label: "Contraste" },
-    { id: "identificacao", label: "Identificação" },
-    { id: "oracao", label: "Oração" },
-    { id: "ensinamento", label: "Ensinamento" },
-    { id: "mensagem-direta", label: "Mensagem direta" },
-    { id: "esperanca", label: "Esperança" },
-    { id: "testemunho", label: "Tom de testemunho" }
+    { id: "identificacao", label: "Identificação (isso sou eu)" },
+    { id: "contraste", label: "Contraste (luta × vitória)" }
   ];
 
   var INTENCOES = [
@@ -84,6 +35,11 @@
   ];
 
   var QUANTIDADES = [1, 5, 10, 20, 30];
+
+  var TOP10_HASHTAGS = {
+    fe: ["#Deus", "#Fé", "#FéEmDeus", "#DeusNoComando", "#Esperança", "#ConfiançaEmDeus", "#Jesus", "#CrerSemVer", "#VidaComDeus", "#alvoradadoceu"],
+    oracao: ["#Oração", "#Deus", "#Fé", "#Devocional", "#PalavraDeDeus", "#OraçãoDaManhã", "#VidaDeOração", "#ConversaComDeus", "#Paz", "#alvoradadoceu"]
+  };
 
   var IAs = [
     { id: "auto", label: "Automático (Cloudflare → OpenRouter → Mistral → banco local)" },
@@ -105,22 +61,27 @@
   var state = lerConfig();
 
   function lerConfig() {
+    var tem = function (arr, id) {
+      return id && arr.some(function (x) { return x.id === id; }) ? id : "";
+    };
     try {
       var cfg = JSON.parse(localStorage.getItem(LS_CFG)) || {};
+      var q = parseInt(cfg.quantidade, 10) || 1;
+      if (QUANTIDADES.indexOf(q) === -1) q = 1;
       return {
-        categoria: cfg.categoria || "todas",
-        tipo: cfg.tipo || "curta",
-        tamanho: cfg.tamanho || "curto",
+        categoria: tem(CATEGORIAS, cfg.categoria) || "fe",
+        tipo: tem(TIPOS, cfg.tipo) || "impacto",
+        tamanho: tem(TAMANHOS, cfg.tamanho) || "curto",
         altoImpacto: cfg.altoImpacto !== false,
         paraCompartilhar: !!cfg.paraCompartilhar,
-        provider: cfg.provider || "auto",
-        quantidade: cfg.quantidade || 1,
-        estilo: cfg.estilo || "auto",
-        abordagem: cfg.abordagem || "auto",
-        intencao: cfg.intencao || "auto"
+        provider: tem(IAs, cfg.provider) || "auto",
+        quantidade: q,
+        estilo: tem(ESTILOS, cfg.estilo) || "curto",
+        abordagem: tem(ABORDAGENS, cfg.abordagem) || "identificacao",
+        intencao: tem(INTENCOES, cfg.intencao) || "auto"
       };
     } catch (e) {
-      return { categoria: "todas", tipo: "curta", tamanho: "curto", altoImpacto: true, paraCompartilhar: false, provider: "auto", quantidade: 1, estilo: "auto", abordagem: "auto", intencao: "auto" };
+      return { categoria: "fe", tipo: "impacto", tamanho: "curto", altoImpacto: true, paraCompartilhar: false, provider: "auto", quantidade: 1, estilo: "curto", abordagem: "identificacao", intencao: "auto" };
     }
   }
 
@@ -203,9 +164,19 @@
         state.categoria = cat.id;
         salvarConfig();
         remarcarChips();
+        renderTop10();
       });
       chips.appendChild(b);
     });
+  }
+
+  function renderTop10() {
+    var lista = TOP10_HASHTAGS[state.categoria] || TOP10_HASHTAGS.fe;
+    var el = $("top10Lista");
+    if (!el) return;
+    el.innerHTML = lista.map(function (t) {
+      return '<span class="top10-tag">' + esc(t) + '</span>';
+    }).join("");
   }
 
   function remarcarChips() {
@@ -367,7 +338,7 @@
             '<button type="button" class="botao-secundario" data-acao="outra-legenda" title="Gerar outra versão desta legenda">✨ Gerar outra legenda</button>' +
           '</div>' +
           '<textarea class="legenda-input" rows="4" spellcheck="false" placeholder="Legenda pronta para o post…"></textarea>' +
-          '<span class="rotulo rotulo-det">Hashtags (máx. 5, relevantes ao tema)</span>' +
+          '<span class="rotulo rotulo-det">Hashtags das 10 melhores do nicho</span>' +
           '<div class="campo-palavra">' +
             '<input class="hashtags-input" spellcheck="false" placeholder="#Deus #Fé #Oração…" />' +
             '<button type="button" class="btn-icone" data-acao="copiar-hashtags" title="Copiar hashtags">📋</button>' +
@@ -417,7 +388,7 @@
   }
 
   function parsearHashtags(texto) {
-    var tokens = String(texto || "").split(/[\s,;]+/).map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 5);
+    var tokens = String(texto || "").split(/[\s,;]+/).map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 10);
     var out = [];
     var visto = {};
     tokens.forEach(function (t) {
@@ -644,7 +615,9 @@
         }
       }
       gravarBanco(banco);
-      var utilizada = banco.filter(function (r) { return r.id === article.getAttribute("data-id"); })[0].utilizada;
+      var reg = banco.filter(function (r) { return r.id === article.getAttribute("data-id"); })[0];
+      if (!reg) return;
+      var utilizada = reg.utilizada;
       article.classList.toggle("utilizada", utilizada);
       article.querySelector('[data-acao="utilizada"]').classList.toggle("on", utilizada);
       var tag = article.querySelector(".tag-utilizada");
@@ -910,6 +883,7 @@
   /* ================================================================ */
 
   montarChips();
+  renderTop10();
   montarSelecao("selTipo", TIPOS, state.tipo);
   montarSelecao("selTamanho", TAMANHOS, state.tamanho);
   montarSelecao("selIA", IAs, state.provider);
@@ -975,6 +949,11 @@
       $("filtroBanco").children[i].classList.toggle("ativo", $("filtroBanco").children[i] === b);
     }
     renderBanco(b.getAttribute("data-filtro"));
+  });
+
+  $("btnCopiarTop10").addEventListener("click", function () {
+    var lista = TOP10_HASHTAGS[state.categoria] || TOP10_HASHTAGS.fe;
+    copiarTexto(lista.join(" "));
   });
 
   registrarAcoes($("listaResultados"), "gerador");

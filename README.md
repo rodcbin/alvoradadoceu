@@ -12,11 +12,14 @@ Sem imagens, sem vídeos, sem complicação: texto puro gerado por IA.
 
 ## Recursos
 
-- **27 opções de categoria** (26 temas + "Todas"), com chip rápido de seleção.
-- **10 formatos**: frase curta, muito curta, impacto, emocional, reflexão, oração, para imagem, para Stories, para Reel e sequência para Reel.
-- **4 tamanhos**: muito curto (5–12 palavras), curto (12–25), médio (25–45) e Reel em blocos (2–4).
-- **12 abordagens de frase**: reflexão, pergunta, alerta, consolo, promessa, contraste, identificação, oração, ensinamento, mensagem direta, esperança e tom de testemunho (ou automático).
-- **5 estilos de legenda**: automático, emocional, curta, com pergunta e em forma de oração.
+- **2 categorias focadas no que mais viraliza no nicho**: Fé e Oração, com chip rápido de seleção.
+- **2 formatos**: Frase de impacto e Sequência para Reel (os mais usados em Reels cristãos).
+- **2 tamanhos** (o padrão de Reels): Curto (frase em 1 linha para o vídeo) e Reel em blocos (frases em sequência).
+- **2 abordagens de frase**: Identificação ("isso sou eu") e Contraste (luta × vitória) — os ganchos que prendem no 1º segundo.
+- **2 estilos de legenda**: Curta e viral (resumida, alto impacto) e Emocional e acolhedora.
+- **🎯 As 10 melhores hashtags do nicho**: bloco com as 10 hashtags de alto alcance por categoria (botão copiar) — a base para o algoritmo mostrar o Reels ao público certo.
+- **Hashtags por post**: até 10 tags otimizadas (amplo → nicho → subnicho → contexto → marca), sem #viral/#fyp que atraem o público errado.
+- **Legendas curtas e virais**: a IA é instruída a gerar no máximo ~35 palavras, com gancho emocional no 1º segundo, para compartilhamento e salvamento naturais.
 - **Intenção de engajamento**: identificação, compartilhamento, salvamento, comentário (ou automático) — usada internamente para a IA orientar o texto.
 - **Pipeline semântico**: TEMA → EMOÇÃO → DOR/DESEJO → INTENÇÃO → FRASE → LEGENDA → HASHTAGS → PALAVRAS-CHAVE, tudo conectado.
 - **Modo 🔥 Alto Impacto** (padrão) e **💌 Para Compartilhar**.
@@ -46,7 +49,15 @@ O texto é gerado por IA em cascata: **Cloudflare Workers AI** (principal) → *
 
 ## Categorias
 
-Deus, Jesus, Fé, Oração, Esperança, Paz, Reflexão, Recomeço, Gratidão, Família, Proteção, Ansiedade, Momentos difíceis, Amor de Deus, Confiança, Superação, Mensagem da manhã, Mensagem da noite, Antes de dormir, Domingo, Segunda-feira, Final de semana, Mensagem para hoje, Frase de impacto, Reflexão espiritual e Para quem está sofrendo.
+**Fé** e **Oração** — as duas categorias com maior taxa de compartilhamento, salvamento e comentários em Reels cristãos. O conteúdo é gerado para prender no primeiro segundo (identificação/contraste), emocionar e fechar com convite natural para seguir @alvoradadoceu.
+
+### As 10 melhores hashtags do nicho
+
+| Fé | Oração |
+|---|---|
+| #Deus, #Fé, #FéEmDeus, #DeusNoComando, #Esperança, #ConfiançaEmDeus, #Jesus, #CrerSemVer, #VidaComDeus, #alvoradadoceu | #Oração, #Deus, #Fé, #Devocional, #PalavraDeDeus, #OraçãoDaManhã, #VidaDeOração, #ConversaComDeus, #Paz, #alvoradadoceu |
+
+Cada post entregue já vem com **até 10 hashtags otimizadas** (2 amplas + 2 de nicho + 3 de subnicho + 2 de contexto + a marca) para o Reels ser mostrado ao público certo. Evite #viral, #fyp, #paravoce: atraem curiosos, não seguidores do nicho.
 
 ## Rodar localmente
 
@@ -157,10 +168,10 @@ Resposta:
   "itens": [
     {
       "frase": "A fé não é ver a saída. É confiar em quem mostra o caminho.",
-      "legenda": "Sabe aquele peso que você tenta esconder até de si mesmo? Deus já viu.\n\nA fé não elimina as perguntas; ela ensina a confiar mesmo sem respostas completas.\n\nVocê não está sozinho(a): Deus conhece a sua história até o fim.\n\nSiga @alvoradadoceu para mais mensagens que tocam o coração. 🙏",
-      "hashtags": ["#Fé", "#Deus", "#FéEmDeus", "#ConfiançaNoProcesso", "#alvoradadoceu"],
+      "legenda": "Sabe aquele peso que você tenta esconder até de si mesmo? Deus já viu.\n\nA fé ensina a confiar mesmo sem respostas completas.\n\nSiga @alvoradadoceu para mais palavras que tocam o coração. 🙏",
+      "hashtags": ["#Deus", "#Fé", "#FéEmDeus", "#DeusNoComando", "#Esperança", "#ConfiançaEmDeus", "#CrerSemVer", "#VidaComDeus", "#EsperançaEmDeus", "#alvoradadoceu"],
       "palavras_chave": ["fé", "confiança em Deus", "esperança", "oração", "Deus", "paz", "entrega"],
-      "palavra_chave": "mãos orando céu nuvens, faith praying hands sky"
+      "palavra_chave": "mãos orando céu nuvens luz, faith praying hands sky light"
     }
   ],
   "categoria": "fe",

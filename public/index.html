@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Gerador de frases espirituais para Instagram e Reels: frase de alto impacto, legenda pronta, palavra-chave para encontrar o vídeo no Pixabay ou Pexels e banco de favoritos." />
-  <meta name="theme-color" content="#2b1a4a" />
-  <title>Alvorada do Céu — Gerador de Frases Espirituais</title>
+  <meta name="description" content="Gerador de frases espirituais para Instagram e Reels: frase de alto impacto, legenda curta e viral, as 10 melhores hashtags do nicho, palavra-chave para encontrar o vídeo no Pixabay ou Pexels e banco de favoritos." />
+  <meta name="theme-color" content="#0d0a1a" />
+  <title>Alvorada do Céu — Frases e Legendas Virais para Reels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,600&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -32,7 +35,7 @@
         </g>
       </svg>
       <h1>Alvorada do Céu</h1>
-      <p>Frases espirituais curtas e de alto impacto para seus Reels</p>
+      <p>Frases, legendas curtas e as <span class="destaque-dourado">10 hashtags</span> que fazem o nicho crescer — conteúdo pronto para o seu Reels.</p>
     </div>
   </header>
 
@@ -49,6 +52,15 @@
       <div class="cartao controles">
         <h2 class="rotulo">Categoria</h2>
         <div class="chips" id="chips" role="tablist" aria-label="Categorias"></div>
+
+        <div class="painel-top10">
+          <div class="top10-cabecalho">
+            <span class="rotulo">🎯 As 10 hashtags que fazem o nicho crescer</span>
+            <button type="button" class="botao-secundario" id="btnCopiarTop10" title="Copiar as 10 hashtags">Copiar 10 📋</button>
+          </div>
+          <div class="top10-lista" id="top10Lista"></div>
+          <p class="top10-dica">Cole no 1º comentário e na legenda do Reels. Hashtags do nicho dizem ao Instagram para quem mostrar o seu conteúdo — sem #viral nem #fyp, que atraem o público errado.</p>
+        </div>
 
         <div class="grade-2">
           <div>
@@ -126,7 +138,7 @@
 
   <footer class="rodape">
     <p id="rodapeProvedores">Gerado por IA, com backup local de frases selecionadas.</p>
-    <p class="rodape-menor">Frases geradas por IA para inspiração de conteúdo cristão e espiritual. Revise antes de publicar. Seus dados ficam apenas no seu navegador.</p>
+    <p class="rodape-menor">Frases e legendas geradas por IA para inspiração de conteúdo cristão e espiritual. Revise antes de publicar. Seus dados ficam apenas no seu navegador.</p>
   </footer>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

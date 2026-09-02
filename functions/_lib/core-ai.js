@@ -17,38 +17,15 @@ const PROVIDER_LABELS = {
 };
 
 const MAX_QUANTIDADE = 30;
+const MAX_OUTPUT_TOKENS = 8192;
 const MODO_ALTO_IMPACTO_TIPO = {};
 
 /* ------------------------------------------------------------------ */
 /* Categorias                                                          */
 /* ------------------------------------------------------------------ */
 const CATEGORIAS = [
-  { id: "deus", label: "Deus", emoji: "✨", kw: "ceu luz maos em oracao, god sky light praying hands", tags: "#deus #fe #esperanca #oracao #alvoradadoceu" },
-  { id: "jesus", label: "Jesus", emoji: "✝️", kw: "cruz luz por do sol, jesus cross sunset light", tags: "#jesus #deus #fe #salvacao #alvoradadoceu" },
-  { id: "fe", label: "Fé", emoji: "🙌", kw: "maos orando ceu nuvens, faith praying hands sky", tags: "#fe #deus #oracao #esperanca #alvoradadoceu" },
-  { id: "oracao", label: "Oração", emoji: "🙏", kw: "maos em oracao vela biblia, prayer hands candle bible", tags: "#oracao #fe #deus #paz #alvoradadoceu" },
-  { id: "esperanca", label: "Esperança", emoji: "🌅", kw: "nascer do sol horizonte luz, hope sunrise horizon light", tags: "#esperanca #fe #deus #recomeco #alvoradadoceu" },
-  { id: "paz", label: "Paz", emoji: "🕊️", kw: "mar calmo natureza tranquila, peace calm ocean nature", tags: "#paz #deus #fe #calma #alvoradadoceu" },
-  { id: "reflexao", label: "Reflexão", emoji: "💭", kw: "silencio natureza contemplacao, reflection quiet nature", tags: "#reflexao #deus #fe #introspeccao #alvoradadoceu" },
-  { id: "recomeco", label: "Recomeço", emoji: "🌱", kw: "amanhecer broto planta, new beginning sunrise sprout", tags: "#recomeco #esperanca #deus #novociclo #alvoradadoceu" },
-  { id: "gratidao", label: "Gratidão", emoji: "🌻", kw: "maos agradecendo por do sol, thanksgiving sunset hands", tags: "#gratidao #deus #fe #oracao #alvoradadoceu" },
-  { id: "familia", label: "Família", emoji: "👨‍👩‍👧", kw: "familia juntos natureza luz, family together light nature", tags: "#familia #amor #deus #protecao #alvoradadoceu" },
-  { id: "protecao", label: "Proteção", emoji: "🛡️", kw: "anjo luz branca protecao, angel light protection", tags: "#protecao #deus #fe #salmo91 #alvoradadoceu" },
-  { id: "ansiedade", label: "Ansiedade", emoji: "🌪️", kw: "mar calmo silencio paz, anxiety calm quiet peace", tags: "#ansiedade #paz #deus #calma #alvoradadoceu" },
-  { id: "momentos-dificeis", label: "Momentos difíceis", emoji: "🌧️", kw: "tempestade luz arco-iris, storm rain light hope", tags: "#momentosdificeis #esperanca #deus #forca #alvoradadoceu" },
-  { id: "amor-de-deus", label: "Amor de Deus", emoji: "💛", kw: "coracao luz ceu, god love heart sky light", tags: "#amordeDeus #deus #fe #gratidao #alvoradadoceu" },
-  { id: "confianca", label: "Confiança", emoji: "🏔️", kw: "montanha estrada luz, trust mountain path light", tags: "#confianca #deus #fe #coragem #alvoradadoceu" },
-  { id: "superacao", label: "Superação", emoji: "⛰️", kw: "montanha vitoria amanhecer, victory mountain sunrise", tags: "#superacao #fe #forca #deus #alvoradadoceu" },
-  { id: "manha", label: "Mensagem da manhã", emoji: "☀️", kw: "amanhecer sol flores, good morning sunrise flowers", tags: "#bomdia #fe #deus #gratidao #alvoradadoceu" },
-  { id: "noite", label: "Mensagem da noite", emoji: "🌆", kw: "por do sol silhueta, evening sunset silhouette", tags: "#boanoite #fe #deus #paz #alvoradadoceu" },
-  { id: "dormir", label: "Antes de dormir", emoji: "🌙", kw: "lua estrelas ceu noturno, good night moon stars sky", tags: "#boanoite #paz #deus #fe #alvoradadoceu" },
-  { id: "domingo", label: "Domingo", emoji: "⛪", kw: "igreja luz domingo, church light sunday", tags: "#domingo #deus #igreja #fe #alvoradadoceu" },
-  { id: "segunda", label: "Segunda-feira", emoji: "📅", kw: "novo comeco amanhecer trabalho, monday new start", tags: "#segundafeira #recomeco #deus #fe #alvoradadoceu" },
-  { id: "fim-de-semana", label: "Final de semana", emoji: "🏖️", kw: "natureza descanso familia, weekend rest nature", tags: "#fimdesemana #descanso #deus #fe #alvoradadoceu" },
-  { id: "hoje", label: "Mensagem para hoje", emoji: "📌", kw: "hoje novo dia luz, today new day light", tags: "#hoje #deus #fe #reflexao #alvoradadoceu" },
-  { id: "frase-impacto", label: "Frase de impacto", emoji: "⚡", kw: "luz raio ceu impacto, impact light sky", tags: "#frasedeimpacto #deus #fe #reflexao #alvoradadoceu" },
-  { id: "reflexao-espiritual", label: "Reflexão espiritual", emoji: "📖", kw: "biblia luz janela, spiritual reflection bible light", tags: "#reflexao #espiritualidade #deus #fe #alvoradadoceu" },
-  { id: "sofrendo", label: "Para quem está sofrendo", emoji: "💔", kw: "abraco luz amanhecer, comfort embrace light sunrise", tags: "#consolo #deus #fe #esperanca #alvoradadoceu" }
+  { id: "fe", label: "Fé", emoji: "🙌", kw: "maos orando ceu nuvens luz, faith praying hands sky light", tags: "#fe #deus #feemdeus #esperanca #alvoradadoceu" },
+  { id: "oracao", label: "Oração", emoji: "🙏", kw: "maos em oracao vela biblia luz, prayer hands candle bible light", tags: "#oracao #deus #fe #devocional #alvoradadoceu" }
 ];
 
 const CATEGORIA_POR_ID = Object.fromEntries(CATEGORIAS.map((c) => [c.id, c]));
@@ -57,15 +34,7 @@ const CATEGORIA_POR_ID = Object.fromEntries(CATEGORIAS.map((c) => [c.id, c]));
 /* Formatos (tipos de conteúdo) e tamanhos                             */
 /* ------------------------------------------------------------------ */
 const TIPOS = {
-  curta: { label: "Frase curta", instrucao: "frase curta e direta" },
-  muito_curta: { label: "Frase muito curta", instrucao: "frase bem curta (5 a 12 palavras), quase um sussurro que fica na mente" },
   impacto: { label: "Frase de impacto", instrucao: "frase de impacto, com gancho forte no início e final memorável" },
-  emocional: { label: "Mensagem emocional", instrucao: "mensagem emocional, acolhedora, que pareça escrita para quem lê" },
-  reflexao: { label: "Reflexão", instrucao: "uma reflexão breve, com uma virada de pensamento no final" },
-  oracao: { label: "Oração curta", instrucao: "oração curta, natural, emocional, fácil de ler e de narrar, falando diretamente com Deus (ex.: \"Senhor, ...\")" },
-  imagem: { label: "Mensagem para imagem", instrucao: "mensagem curta que fique bem sobreposta a uma imagem" },
-  stories: { label: "Mensagem para Stories", instrucao: "mensagem curta e escaneável, ideal para o topo de um story" },
-  reel: { label: "Mensagem para Reel", instrucao: "mensagem que aparece em texto na tela de um Reel" },
   sequencia: { label: "Sequência para Reel", instrucao: "sequência de 2 a 4 blocos curtos que aparecem um por vez na tela do Reel" }
 };
 
@@ -89,12 +58,12 @@ function catLabel(id) {
 
 function kwFor(id) {
   const c = CATEGORIA_POR_ID[id];
-  return c ? c.kw : CATEGORIAS[2].kw;
+  return c ? c.kw : CATEGORIAS[0].kw;
 }
 
 function tagsFor(id) {
   const c = CATEGORIA_POR_ID[id];
-  return c ? c.tags : CATEGORIAS[2].tags;
+  return c ? c.tags : CATEGORIAS[0].tags;
 }
 
 /* ================================================================== */
@@ -125,27 +94,14 @@ const CTA_BANIDOS = [
 
 /* Formatos de abordagem da frase (variação para não parecer fórmula)   */
 const FORMATOS_FRASE = [
-  { id: "reflexao", label: "Reflexão", instrucao: "UMA REFLEXÃO que provoca uma virada de pensamento no final" },
-  { id: "pergunta", label: "Pergunta", instrucao: "UMA PERGUNTA direta que faz a pessoa se enxergar na situação" },
-  { id: "alerta", label: "Alerta", instrucao: "UM ALERTA carinhoso que desperta a atenção sem assustar" },
-  { id: "consolo", label: "Consolo", instrucao: "UM CONSOLO que abraça quem está ferido" },
-  { id: "promessa", label: "Promessa", instrucao: "UMA PROMESSA de esperança ancorada na fidelidade de Deus" },
-  { id: "contraste", label: "Contraste", instrucao: "UM CONTRASTE entre o que parece (perda, silêncio, fim) e o que Deus está fazendo" },
-  { id: "identificacao", label: "Identificação", instrucao: "IDENTIFICAÇÃO: uma frase que faz a pessoa pensar \u201Cisso sou eu\u201D" },
-  { id: "oracao", label: "Oração", instrucao: "UMA ORAÇÃO curta e pessoal falando diretamente com Deus" },
-  { id: "ensinamento", label: "Ensinamento", instrucao: "UM ENSINAMENTO espiritual aplicado à vida prática, sem soar sermão" },
-  { id: "mensagem-direta", label: "Mensagem direta", instrucao: "MENSAGEM DIRETA em segunda pessoa, como um conselho de quem sente ao lado" },
-  { id: "esperanca", label: "Esperança", instrucao: "ESPERANÇA com uma luz clara no horizonte" },
-  { id: "testemunho", label: "Tom de testemunho", instrucao: "TOM DE TESTEMUNHO: alguém que já passou por isso conta em primeira pessoa o que Deus fez" }
+  { id: "identificacao", label: "Identificação", instrucao: "IDENTIFICAÇÃO: uma frase que faz a pessoa pensar \u201Cisso sou eu\u201D — reconhecer a própria dor/esperança no primeiro segundo" },
+  { id: "contraste", label: "Contraste", instrucao: "UM CONTRASTE entre o que parece (perda, silêncio, fim, fraqueza) e o que Deus está fazendo (vitória, presença, recomeço, força)" }
 ];
 
 /* Formatos de legenda (estilos escolhidos pelo usuário)                */
 const ESTILOS_LEGENDA = [
-  { id: "auto", label: "Automático", instrucao: "" },
-  { id: "emocional", label: "Emocional e acolhedora", instrucao: "desenvolva CONEXÃO (a dor/situação) → MENSAGEM (Deus/fé/esperança) → ACOLHIMENTO (você não está sozinho) → opcionalmente uma reflexão natural" },
-  { id: "curto", label: "Curta e direta", instrucao: "2 a 3 linhas diretas e emocionantes, sem rodeios" },
-  { id: "pergunta", label: "Reflexão com pergunta", instrucao: "termine com uma pergunta natural que gere comentários (sem pedir resposta de forma forçada)" },
-  { id: "oracao", label: "Em forma de oração", instrucao: "legenda em forma de oração, falando diretamente com Deus com carinho" }
+  { id: "curto", label: "Curta e viral", instrucao: "legenda RESUMIDA, de alto impacto: no máximo 4 linhas e ~30 palavras; 1.ª linha = gancho emocional que prende e gera identificação, depois 1-2 linhas de mensagem com força e 1 linha final de convite natural para seguir @alvoradadoceu. Tom direto, moderno e reverente, sem rodeios" },
+  { id: "emocional", label: "Emocional e acolhedora", instrucao: "legenda emocional e acolhedora e RESUMIDA (~30-45 palavras): abre com uma cena/dor que toca (conexão), passa pela mensagem de Deus/fé/esperança, acolhe (você não está sozinho) e fecha com convite natural e VARIADO para seguir @alvoradadoceu" }
 ];
 
 /* Intenções de engajamento (usadas internamente para guiar o texto)    */
@@ -156,7 +112,7 @@ const INTENCOES_ENGAJAMENTO = [
   { id: "identification", label: "Identificação", instrucao: "fazer a pessoa sentir que a mensagem foi escrita para ela, \u201Cisso sou eu\u201D" }
 ];
 
-const FORMATOS_FRASE_AUTO = "reflexão, pergunta, identificação, contraste, esperança, consolo, promessa, oração, ensinamento, alerta";
+const FORMATOS_FRASE_AUTO = "identificação, contraste";
 
 /* ---------------------------------------------------------------- */
 /* Banco inteligente de hashtags por categoria                       */
@@ -186,9 +142,9 @@ const FAMILIAS = {
     ]
   },
   fe: {
-    amplo: ["#Fé", "#Deus", "#Esperança"],
-    nicho: ["#FéEmDeus", "#AndandoNaFé"],
-    especifico: ["#ConfiançaEmDeus", "#CrerSemVer", "#AcrediteEmDeus", "#VidaComDeus"],
+    amplo: ["#Deus", "#Fé", "#Esperança"],
+    nicho: ["#FéEmDeus", "#DeusNoComando", "#ConfiançaEmDeus"],
+    especifico: ["#CrerSemVer", "#VidaComDeus", "#AcrediteEmDeus", "#Jesus", "#MilagresAcontecem"],
     kwBase: ["fé", "confiança", "crer sem ver", "espera em Deus", "coragem", "milagre", "Deus"],
     emo: { emocao: "esperança", necessidade: "segurança para crer sem ver", dor: "dúvida e insegurança" },
     msg: [
@@ -198,8 +154,8 @@ const FAMILIAS = {
   },
   oracao: {
     amplo: ["#Oração", "#Deus", "#Fé"],
-    nicho: ["#VidaDeOração", "#Devocional", "#PalavraDeDeus"],
-    especifico: ["#OraçãoDaManhã", "#OraçãoDaNoite", "#MomentoComDeus", "#ConversaComDeus"],
+    nicho: ["#Devocional", "#PalavraDeDeus", "#VidaDeOração"],
+    especifico: ["#OraçãoDaManhã", "#OraçãoDaNoite", "#MomentoComDeus", "#ConversaComDeus", "#Paz"],
     kwBase: ["oração", "fé", "intimidade com Deus", "orar", "entrega", "Deus", "paz", "diálogo com Deus"],
     emo: { emocao: "paz", necessidade: "entregar o peso a Deus", dor: "angústia e noites em claro" },
     msg: [
@@ -452,6 +408,13 @@ const FAMILIAS = {
 };
 FAMILIAS.todas = FAMILIAS.deus;
 
+/* As 10 melhores hashtags do nicho (fé/spiritual) — alto alcance e relevância.
+   Misturam 1 termo amplo + nicho + subnicho + contexto + a marca da página. */
+const HASHTAGS_TOP10 = {
+  fe: ["#Deus", "#Fé", "#FéEmDeus", "#DeusNoComando", "#Esperança", "#ConfiançaEmDeus", "#Jesus", "#CrerSemVer", "#VidaComDeus", "#alvoradadoceu"],
+  oracao: ["#Oração", "#Deus", "#Fé", "#Devocional", "#PalavraDeDeus", "#OraçãoDaManhã", "#VidaDeOração", "#ConversaComDeus", "#Paz", "#alvoradadoceu"]
+};
+
 /* Detecção de contexto de publicação → hashtag específica (#5)         */
 const CONTEXTO_TAGS = [
   { re: /manh[aã]|amanhecer|acordou|acordar/i, tags: ["#OraçãoDaManhã"] },
@@ -595,14 +558,24 @@ function limparHashtags(arr) {
     out.push("#" + nome.replace(/\s+/g, ""));
     visto.add(key);
   }
-  return out.slice(0, 5);
+  return out.slice(0, 10);
 }
 
-function montarComQuinta(lista) {
-  const out = lista.slice(0, 5);
-  const temMarca = out.some((t) => normKey(t) === "alvoradadoceu");
-  if (!temMarca && out.length < 5) out.push("#alvoradadoceu");
-  return out.slice(0, 5);
+function montarComDez(lista, poolExtras) {
+  const out = lista.slice(0, 10);
+  const visto = new Set(out.map((x) => normKey(String(x).replace(/^#+/, ""))));
+  for (const raw of poolExtras || []) {
+    if (out.length >= 10) break;
+    const nome = String(raw || "").replace(/^#+/, "").replace(/\s+/g, "").trim();
+    const k = normKey(nome);
+    if (!k || !nome || visto.has(k)) continue;
+    out.push("#" + nome);
+    visto.add(k);
+  }
+  const temMarca = out.some((t) => normKey(String(t).replace(/^#+/, "")) === "alvoradadoceu");
+  if (!temMarca && out.length < 10) out.push("#alvoradadoceu");
+  else if (!temMarca && out.length === 10) out[out.length - 1] = "#alvoradadoceu";
+  return out;
 }
 
 function detectarTagsContexto(texto) {
@@ -621,22 +594,29 @@ function selecionarHashtags(catId, texto, evitar) {
     .map((c) => c.map((x) => normKey(x)).filter(Boolean));
   const base = [].concat(f.amplo || []);
   if (base.length < 2) base.push(FAMILIAS.deus.amplo[0]);
+  const extras = [].concat(f.nicho || [], f.especifico || [], detectarTagsContexto(texto));
 
-  for (let off = 0; off < 4; off++) {
-    const cand = base.slice(0, 2);
+  for (let off = 0; off < 6; off++) {
     const n = f.nicho || [];
-    if (n.length) cand.push(n[(h + off) % n.length]);
     const e = f.especifico || [];
-    if (e.length) cand.push(e[(h + off * 3 + 1) % e.length]);
     const ctx = detectarTagsContexto(texto);
-    if (ctx.length) cand.push(ctx[h % ctx.length]);
+    const ordem = [
+      n[(h + off) % (n.length || 1)],
+      n[(h + off + 2) % (n.length || 1)],
+      e[(h + off * 3 + 1) % (e.length || 1)],
+      e[(h + off * 5 + 2) % (e.length || 1)],
+      e[(h + off * 7 + 3) % (e.length || 1)],
+      ctx[0],
+      ctx[1]
+    ].filter(Boolean);
+    const cand = base.slice(0, 2).concat(ordem);
     const limpos = limparHashtags(cand);
     const chave = limpos.map((x) => normKey(x)).filter(Boolean).join("|");
-    if (limpos.length >= 4 && !combos.some((c) => c.join("|") === chave)) {
-      return montarComQuinta(limpos);
+    if (limpos.length >= 6 && !combos.some((c) => c.join("|") === chave)) {
+      return montarComDez(limpos, extras);
     }
   }
-  return montarComQuinta(limparHashtags(base));
+  return montarComDez(limparHashtags(base), extras);
 }
 
 function derivarPalavrasChave(catId, frase, legenda, hashtags) {
@@ -758,13 +738,15 @@ function validarItem(item, catId, evitar) {
       }
     }
   }
-  if (!l || l.split(/\s+/).length < 15) probs.push("legenda-curta");
+  const palLegenda = l ? l.split(/\s+/).length : 0;
+  if (!l || palLegenda < 10) probs.push("legenda-curta");
+  else if (palLegenda > 70) probs.push("legenda-longa");
   else {
     const primeira = f.split(/[.!?\n]/)[0].trim().toLowerCase();
     if (primeira.length > 22 && l.toLowerCase().indexOf(primeira) !== -1) probs.push("legenda-repete-frase");
   }
   const hs = item.hashtags || [];
-  if (!hs.length || hs.length > 5) probs.push("hashtags");
+  if (!hs.length || hs.length > 10) probs.push("hashtags");
   else {
     for (const h of hs) {
       const nome = String(h).replace(/^#/, "").trim().toLowerCase();
@@ -784,7 +766,7 @@ function repararItem(item, catId, evitar) {
   const l = String(novo.legenda || "");
   novo.hashtags = (novo.hashtags && novo.hashtags.length ? novo.hashtags : selecionarHashtags(catId, f + " " + l, evitar));
   novo.palavras_chave = derivarPalavrasChave(catId, f, l, novo.hashtags);
-  if (!l || l.split(/\s+/).length < 15) novo.legenda = buildLegendaLocal(f, catId);
+  if (!l || l.split(/\s+/).length < 10 || l.split(/\s+/).length > 70) novo.legenda = buildLegendaLocal(f, catId);
   novo.palavra_chave = novo.palavra_chave || kwFor(catId);
   return novo;
 }
@@ -1120,7 +1102,7 @@ async function cloudflare(messages) {
     method: "POST",
     timeout: 30000,
     headers: { "Content-Type": "application/json", Authorization: "Bearer " + CF_TOKEN }
-  }, { model: CF_TEXT_MODEL, messages, temperature: 0.9, max_tokens: 2600 });
+  }, { model: CF_TEXT_MODEL, messages, temperature: 0.9, max_tokens: MAX_OUTPUT_TOKENS });
   if (res.status !== 200) throw new Error("Cloudflare HTTP " + res.status + ": " + res.body.slice(0, 160));
   let data;
   try { data = JSON.parse(res.body); } catch { throw new Error("Cloudflare: resposta inválida"); }
@@ -1147,7 +1129,7 @@ async function openrouter(messages) {
       "HTTP-Referer": "https://alvoradadoceu.com",
       "X-Title": "Alvorada do Ceu"
     }
-  }, { model: OPENROUTER_MODEL, messages, temperature: 0.9, max_tokens: 2600 });
+  }, { model: OPENROUTER_MODEL, messages, temperature: 0.9, max_tokens: MAX_OUTPUT_TOKENS });
   if (res.status !== 200) throw new Error("OpenRouter HTTP " + res.status + ": " + res.body.slice(0, 160));
   let data;
   try { data = JSON.parse(res.body); } catch { throw new Error("OpenRouter: resposta inválida"); }
@@ -1169,7 +1151,7 @@ async function mistral(messages) {
     method: "POST",
     timeout: 30000,
     headers: { "Content-Type": "application/json", Authorization: "Bearer " + MISTRAL_KEY }
-  }, { model: MISTRAL_MODEL, messages, temperature: 0.9, max_tokens: 2600 });
+  }, { model: MISTRAL_MODEL, messages, temperature: 0.9, max_tokens: MAX_OUTPUT_TOKENS });
   if (res.status !== 200) throw new Error("Mistral HTTP " + res.status + ": " + res.body.slice(0, 160));
   let data;
   try { data = JSON.parse(res.body); } catch { throw new Error("Mistral: resposta inválida"); }
@@ -1243,25 +1225,23 @@ function buildMessages(opts) {
   );
 
   const estJ = ESTILOS_LEGENDA.find((s) => s.id === estilo);
-  if (estJ && estJ.instrucao) {
-    linhas.push("LEGENDA neste formato: " + estJ.instrucao + ".");
-  } else {
-    linhas.push(
-      "LEGENDA: desenvolva (1) CONEX\u00C3O com a dor/situa\u00E7\u00E3o da frase, (2) MENSAGEM sobre Deus/f\u00E9/esperan\u00E7a/restaura\u00E7\u00E3o, " +
-      "(3) ACOLHIMENTO para a pessoa sentir que n\u00E3o est\u00E1 sozinha, e (4) opcionalmente uma reflex\u00E3o ou pergunta natural. " +
-      "Aprofunde a frase SEM repeti-la. Use de 4 a 7 linhas. Inclua naturalmente palavras de SEO do tema como: " +
-      (fml.kwBase || []).slice(0, 5).join(", ") + " \u2014 sem fazer keyword stuffing. N\u00C3O coloque hashtags dentro da legenda."
-    );
-  }
   linhas.push(
-    "Convite para seguir: em quase todos os itens, feche com um convite natural e VARIADO \u00E0 p\u00E1gina @alvoradadoceu " +
+    "LEGENDA \u2014 REGRA DE OURO: RESUMIDA E VIRAL. No m\u00E1ximo 4 linhas e ~35 palavras no total (curta; n\u00E3o \u00E9 texto longo). " +
+    (estJ && estJ.instrucao ? "Formato escolhido: " + estJ.instrucao + ". " : "Formato: gancho emocional \u2192 mensagem de impacto \u2192 convite natural para seguir. ") +
+    "Sempre: 1.\u00AA linha \u00E9 o gancho que prende (identifica\u00E7\u00E3o ou contraste \u2014 nunca clich\u00EA tipo \u201CDeus est\u00E1 com voc\u00EA\u201D); depois 1-2 linhas de mensagem com for\u00E7a; voc\u00EA pode usar 1 linha de pergunta que gere coment\u00E1rio natural. " +
+    "Depois de escrever, conte as palavras e ENCURTE: se passou de 35, corte. " +
+    "N\u00C3O repita a FRASE na legenda; N\u00C3O coloque hashtags dentro da legenda; inclua de forma natural 1-2 das palavras de SEO: " +
+    (fml.kwBase || []).slice(0, 4).join(", ") + " \u2014 sem keyword stuffing."
+  );
+  linhas.push(
+    "Convite para seguir: em todos os itens, feche com um convite natural de no m\u00E1ximo 1 linha e VARIADO \u00E0 p\u00E1gina @alvoradadoceu " +
     "(ex.: \u201CSiga @alvoradadoceu para mais palavras que tocam o cora\u00E7\u00E3o \uD83D\uDE4F\u201D, \u201CReflex\u00F5es di\u00E1rias para alimentar a sua f\u00E9 \u2014 siga @alvoradadoceu \uD83D\uDC9B\u201D). Nunca repetir a mesma chamada em todos os itens."
   );
   linhas.push(
-    "HASHTAGS: m\u00E1ximo 5 hashtags, integradas e RELEVANTES ao tema (n\u00E3o repita sempre as mesmas entre publica\u00E7\u00F5es). " +
-    "Se\u00E7\u00E3o sugerida: 1 termo amplo do nicho (ex. #Deus, #F\u00E9, #J\u00E9sus), 1 categoria principal (ex. #Ora\u00E7\u00E3o, #Devocional, #PalavraDeDeus), " +
-    "1 subnicho (ex. #CuraEmocional, #DeusRestaura), 1 tema espec\u00EDfico, 1 contexto da publica\u00E7\u00E3o. " +
-    "Se apenas 4 forem realmente relevantes, use 4. PROIBIDAS: #viral, #fyp, #fy, #foryou, #explore, #trending, #instagood, #reels."
+    "HASHTAGS: m\u00E1ximo 10 hashtags, todas integradas e RELEVANTES ao tema (n\u00E3o repita sempre as mesmas entre publica\u00E7\u00F5es). " +
+    "Use como base as 10 de ALTO ALCANCE do nicho: " + (HASHTAGS_TOP10[catId] || HASHTAGS_TOP10.fe).join(" ") +
+    ". Estruture: 2 termos amplos (#Deus, #F\u00E9), 2 da categoria (#F\u00E9EmDeus/#Devocional), 3 subnicho, 2 de contexto do texto, e sempre a marca #alvoradadoceu. " +
+    "PROIBIDAS: #viral, #fyp, #fy, #foryou, #explore, #trending, #instagood, #reels."
   );
   linhas.push(
     "PALAVRAS-CHAVE: de 5 a 8 termos em portugu\u00EAs que representam o conte\u00FAdo real da publica\u00E7\u00E3o " +
@@ -1284,8 +1264,8 @@ function buildMessages(opts) {
     "RESPONDA APENAS com blocos. Para cada publica\u00E7\u00E3o escreva um bloco separado por uma linha contendo somente: ---\n" +
     "Formato exato de cada bloco:\n" +
     "FRASE: <frase de impacto, por extenso>\n" +
-    "LEGENDA: <legenda pronta, SEM hashtags, com emojis, podendo ter linhas>\n" +
-    "HASHTAGS: <at\u00E9 5 hashtags separadas por espa\u00E7o>\n" +
+    "LEGENDA: <legenda curta e viral, SEM hashtags, com emojis, podendo ter linhas>\n" +
+    "HASHTAGS: <at\u00E9 10 hashtags separadas por espa\u00E7o>\n" +
     "PALAVRAS-CHAVE: <5 a 8 termos em portugu\u00EAs separados por v\u00EDrgula>\n" +
     "V\u00CDDEO: <3-4 termos para buscar v\u00EDdeo de fundo no Pexels em portugu\u00EAs e ingl\u00EAs, separados por v\u00EDrgula>"
   );
@@ -1302,7 +1282,7 @@ function buildMessagesLegenda(opts) {
   const emo = fml.emo || {};
 
   const system =
-    "Voc\u00EA \u00E9 o copywriter crist\u00E3o da p\u00E1gina \u201CAlvorada do C\u00E9u\u201D. Escreve legendas originais e humanas para Instagram Reels em portugu\u00EAs do Brasil. " +
+    "Voc\u00EA \u00E9 o copywriter crist\u00E3o da p\u00E1gina \u201CAlvorada do C\u00E9u\u201D. Escreve legendas curtas, virais e humanas para Instagram Reels em portugu\u00EAs do Brasil. " +
     "Regras: legenda original, acolhedora, sem clich\u00EA; proibido \u201Ccomente AM\u00C9M\u201D, \u201Cdigite EU CREIO\u201D, \u201Ccompartilhe com N pessoas\u201D; " +
     "proibido inventar cita\u00E7\u00F5es b\u00EDblicas; n\u00E3o colocar hashtags dentro da legenda; n\u00E3o repetir a frase na legenda.";
   const linhas = [];
@@ -1310,17 +1290,19 @@ function buildMessagesLegenda(opts) {
   if (legendaAtual) linhas.push("Essa \u00E9 a legenda atual a ser SUBSTITU\u00CDDA por algo diferente (forma e tom):\n\u201C" + String(legendaAtual).slice(0, 600) + "\u201D");
   if (emo.emocao) linhas.push("Emo\u00E7\u00E3o a evocar: " + emo.emocao + ". Necessidade: " + emo.necessidade + ". Dor: " + emo.dor + ".");
   const estJ = ESTILOS_LEGENDA.find((s) => s.id === estilo);
-  linhas.push(estJ && estJ.instrucao ? "Formato da nova legenda: " + estJ.instrucao + "." : "Formato: conex\u00E3o \u2192 mensagem \u2192 acolhimento \u2192 (opcional) pergunta natural.");
+  linhas.push(estJ && estJ.instrucao
+    ? "Regra de ouro: a nova legenda deve ser CURTA e VIRAL \u2014 m\u00E1ximo 4 linhas e ~35 palavras. Formato: " + estJ.instrucao + ". Depois de escrever, conte e encurte se passou de 35."
+    : "Regra de ouro: a nova legenda deve ser CURTA e VIRAL \u2014 m\u00E1ximo 4 linhas e ~35 palavras. Formato: gancho emocional \u2192 mensagem de impacto \u2192 convite natural para seguir.");
   const intJ = INTENCOES_ENGAJAMENTO.find((i) => i.id === intencao);
   if (intJ) linhas.push("Inten\u00E7\u00E3o de engajamento: " + intJ.instrucao + ".");
-  linhas.push("Inclua de forma natural 3 a 5 palavras de SEO do tema como: " + (fml.kwBase || []).slice(0, 5).join(", ") + ".");
+  linhas.push("Inclua de forma natural 1-2 das palavras de SEO do tema como: " + (fml.kwBase || []).slice(0, 4).join(", ") + ".");
   linhas.push("Encerre com um convite natural e novo para seguir @alvoradadoceu (n\u00E3o repita o convite da legenda anterior).");
 
   linhas.push(
     "RESPONDA APENAS com o bloco no formato exato:\n" +
     "FRASE: " + frase + "\n" +
-    "LEGENDA: <nova legenda, SEM hashtags>\n" +
-    "HASHTAGS: <at\u00E9 5 hashtags relacionadas \u00E0 nova legenda, separadas por espa\u00E7o>\n" +
+    "LEGENDA: <nova legenda curta e viral, SEM hashtags>\n" +
+    "HASHTAGS: <at\u00E9 10 hashtags relacionadas \u00E0 nova legenda, separadas por espa\u00E7o>\n" +
     "PALAVRAS-CHAVE: <5 a 8 termos em portugu\u00EAs separados por v\u00EDrgula>\n" +
     "V\u00CDDEO: <3-4 termos de v\u00EDdeo de fundo em portugu\u00EAs e ingl\u00EAs>"
   );
@@ -1444,10 +1426,11 @@ function normalizeItems(items, categoria, keywordHint, evitar) {
     const extra = extrairHashtagsDoTexto(String(it.legenda || ""));
     const legenda = extra.texto || buildLegendaLocal(frase, catId);
     let hs = limparHashtags([].concat(it.hashtags || [], extra.hashtags));
+    const poolFam = FAMILIAS[catId] || FAMILIAS.deus;
     if (hs.length < 3) {
       hs = limparHashtags(hs.concat(selecionarHashtags(catId, frase + " " + legenda, evitarCombos)));
     } else {
-      hs = montarComQuinta(hs);
+      hs = montarComDez(hs, [].concat(poolFam.nicho || [], poolFam.especifico || [], detectarTagsContexto(frase + " " + legenda)));
     }
     const kws = (Array.isArray(it.palavras_chave) && it.palavras_chave.length)
       ? it.palavras_chave.map((x) => String(x).trim()).filter(Boolean)
@@ -1473,12 +1456,12 @@ function generatePhrase(opts) {
 async function generate(optsRaw) {
   const opts = optsRaw || {};
   const quantidade = Math.max(1, Math.min(MAX_QUANTIDADE, parseInt(opts.quantidade, 10) || 1));
-  const tipo = Object.prototype.hasOwnProperty.call(TIPOS, opts.tipo) ? opts.tipo : "curta";
+  const tipo = Object.prototype.hasOwnProperty.call(TIPOS, opts.tipo) ? opts.tipo : "impacto";
   const tamanho = Object.prototype.hasOwnProperty.call(TAMANHOS, opts.tamanho) ? opts.tamanho : "curto";
   const categoria = sanitizeCategoria(opts.categoria);
   const catId = (categoria === "todas") ? "deus" : categoria;
   const paraCompartilhar = opts.paraCompartilhar === true;
-  const estilo = ESTILOS_LEGENDA.some((s) => s.id === opts.estilo) ? opts.estilo : "auto";
+  const estilo = ESTILOS_LEGENDA.some((s) => s.id === opts.estilo) ? opts.estilo : "curto";
   const abordagem = FORMATOS_FRASE.some((f) => f.id === opts.abordagem) ? opts.abordagem : "auto";
   const intencao = INTENCOES_ENGAJAMENTO.some((i) => i.id === opts.intencao) ? opts.intencao : "auto";
   const escolha = String(opts.provider || "auto").toLowerCase().trim();
@@ -1577,7 +1560,7 @@ async function gerarLegenda(optsRaw) {
   if (!frase) throw new Error("Frase de impacto obrigatória.");
   const categoria = sanitizeCategoria(opts.categoria);
   const catId = (categoria === "todas") ? "deus" : categoria;
-  const estilo = ESTILOS_LEGENDA.some((s) => s.id === opts.estilo) ? opts.estilo : "auto";
+  const estilo = ESTILOS_LEGENDA.some((s) => s.id === opts.estilo) ? opts.estilo : "curto";
   const intencao = INTENCOES_ENGAJAMENTO.some((i) => i.id === opts.intencao) ? opts.intencao : "auto";
   const escolha = String(opts.provider || "auto").toLowerCase().trim();
   const evitar = normalizarEvitar(opts.evitar);
@@ -1642,6 +1625,7 @@ module.exports = {
   kwFor,
   tagsFor,
   validarItem,
+  HASHTAGS_TOP10,
   PROVIDER_LABELS,
   CATEGORIAS,
   TIPOS,
